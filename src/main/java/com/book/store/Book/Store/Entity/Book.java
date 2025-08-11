@@ -16,10 +16,10 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID Id;
-    private String title;
-    private String author;
-    private String description;
-    private int quantity;
-    private float price;
+    private String Title;
+    private String Author;
+    private String Description;
+    private int Quantity;
+    private float Price;
 
 }
