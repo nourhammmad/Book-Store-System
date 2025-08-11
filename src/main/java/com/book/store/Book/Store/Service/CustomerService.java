@@ -64,6 +64,7 @@ public class CustomerService {
         }
         //  TODO:check balance
 
+
         Orders order = orderService.placeOrder(bookId, quantity);
         customer.getOrders().add(order);
         customerRepository.save(customer);
