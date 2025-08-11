@@ -24,4 +24,9 @@ public class Orders {
     private int quantity;
     private float totalPrice;
     private LocalDateTime orderDate;
+
+    // Relationship with Customer
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 }
