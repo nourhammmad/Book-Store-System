@@ -22,7 +22,7 @@ public class Customer {
 
     @OneToMany
     @JoinColumn(name = "customer_id")
-    private List<Orders> orders;
+    private List<Order> orders;
 
     @OneToMany
     @JoinColumn(name = "customer_id")
