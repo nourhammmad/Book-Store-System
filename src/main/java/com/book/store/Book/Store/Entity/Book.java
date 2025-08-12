@@ -1,14 +1,12 @@
 package com.book.store.Book.Store.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
+@Data
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
