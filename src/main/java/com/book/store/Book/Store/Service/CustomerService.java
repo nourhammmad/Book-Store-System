@@ -50,25 +50,4 @@ public class CustomerService {
     public Page<Customer> searchCustomersByName(String name, Pageable pageable) {
         return customerRepository.findByNameContaining(name, pageable);
     }
-    public Order placeOrder(UUID customerId, UUID bookId, int quantity) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
-
-        // Assuming OrderService is available to handle order placement
-        if(bookId == null || quantity <= 0) {
-            throw new IllegalArgumentException("Invalid book ID or quantity");
-        }
-        //  TODO:check balance
-
-
-        Order order = orderService.placeOrder(bookId, quantity);
-        customer.getOrders().add(order);
-        customerRepository.save(customer);
-
-        return order;
-    }
-
-
-
-
 }
