@@ -21,14 +21,4 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     void deleteById(UUID id);
     List<Customer> findAll();
     Page<Customer> findByNameContaining(String name, Pageable pageable);
-
-    @Query("SELECT c FROM Customer c JOIN c.books b WHERE b.title = :title")
-    Page<Customer> findCustomersByBookTitle(String title, Pageable pageable);
-
-    @Query("SELECT c FROM Customer c JOIN c.books b WHERE b.id = :bookId")
-    Page<Customer> findCustomersByBookId(String bookId, Pageable pageable);
-
-
-
-
 }

@@ -50,10 +50,6 @@ public class CustomerService {
     public Page<Customer> searchCustomersByName(String name, Pageable pageable) {
         return customerRepository.findByNameContaining(name, pageable);
     }
-    public Page<Customer> getCustomersByBookTitle(String title, Pageable pageable) {
-        return customerRepository.findCustomersByBookTitle(title, pageable);
-    }
-
     public Order placeOrder(UUID customerId, UUID bookId, int quantity) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));

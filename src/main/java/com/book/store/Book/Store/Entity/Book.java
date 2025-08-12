@@ -16,9 +16,4 @@ public class Book {
     private String description;
     private int quantity;
     private float price;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
-
 }

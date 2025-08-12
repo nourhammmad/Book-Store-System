@@ -12,8 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
-
-    List<Order> findByBook_Title(String title);
     Optional<Order> findById(UUID id);
     // Pagination example
     Page<Order> findAll(Pageable pageable);
