@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,11 +25,11 @@ public class CustomerService {
     public Customer createCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
-    public Customer getCustomerById(Long id) {
+    public Customer getCustomerById(UUID id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
-    public Customer updateCustomer(Long id, Customer updatedCustomer) {
+    public Customer updateCustomer(UUID id, Customer updatedCustomer) {
         return customerRepository.findById(id)
                 .map(customer -> {
                     customer.setName(updatedCustomer.getName());
@@ -37,14 +38,14 @@ public class CustomerService {
                 })
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(UUID id) {
         customerRepository.deleteById(id);
     }
     public Customer getCustomerByEmail(String email) {
         return customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Customer not found with email " + email));
     }
-    public Page<Customer> getAllCustomers(Pageable pageable) {
+    public List<Customer> getAllCustomers(Pageable pageable) {
         return customerRepository.findAll();
     }
     public Page<Customer> searchCustomersByName(String name, Pageable pageable) {
@@ -54,7 +55,7 @@ public class CustomerService {
         return customerRepository.findCustomersByBookTitle(title, pageable);
     }
 
-    public Orders placeOrder(Long customerId, UUID bookId, int quantity) {
+    public Orders placeOrder(UUID customerId, UUID bookId, int quantity) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
 

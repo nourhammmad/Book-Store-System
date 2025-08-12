@@ -12,12 +12,12 @@ import java.util.UUID;
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID Id;
-    private String Title;
-    private String Author;
-    private String Description;
-    private int Quantity;
-    private float Price;
+    private UUID id;
+    private String title;
+    private String author;
+    private String description;
+    private int quantity;
+    private float price;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
