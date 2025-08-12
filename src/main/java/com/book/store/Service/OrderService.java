@@ -1,19 +1,18 @@
-package com.book.store.Book.Store.Service;
+package com.book.store.Service;
 
-import com.book.store.Book.Store.Entity.Book;
-import com.book.store.Book.Store.Entity.Customer;
-import com.book.store.Book.Store.Entity.Order;
-import com.book.store.Book.Store.Entity.OrderItem;
-import com.book.store.Book.Store.Repository.BookRepository;
-import com.book.store.Book.Store.Repository.CustomerRepository;
-import com.book.store.Book.Store.Repository.OrderRepository;
+import com.book.store.Entity.Book;
+import com.book.store.Entity.Customer;
+import com.book.store.Entity.Order;
+import com.book.store.Entity.OrderItem;
+import com.book.store.Repository.BookRepository;
+import com.book.store.Repository.CustomerRepository;
+import com.book.store.Repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

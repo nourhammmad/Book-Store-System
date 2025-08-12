@@ -1,10 +1,9 @@
-package com.book.store.Book.Store.Repository;
+package com.book.store.Repository;
 
-import com.book.store.Book.Store.Entity.Customer;
+import com.book.store.Entity.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

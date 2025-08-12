@@ -1,11 +1,11 @@
-package com.book.store.Book.Store.Seed;
+package com.book.store.Seed;
 
-import com.book.store.Book.Store.Entity.Book;
-import com.book.store.Book.Store.Entity.Customer;
-import com.book.store.Book.Store.Entity.Order;
-import com.book.store.Book.Store.Service.BookService;
-import com.book.store.Book.Store.Service.CustomerService;
-import com.book.store.Book.Store.Service.OrderService;
+import com.book.store.Entity.Book;
+import com.book.store.Entity.Customer;
+import com.book.store.Entity.Order;
+import com.book.store.Service.BookService;
+import com.book.store.Service.CustomerService;
+import com.book.store.Service.OrderService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

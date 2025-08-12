@@ -1,8 +1,7 @@
-package com.book.store.Book.Store.Service;
+package com.book.store.Service;
 
-import com.book.store.Book.Store.Entity.Customer;
-import com.book.store.Book.Store.Entity.Order;
-import com.book.store.Book.Store.Repository.CustomerRepository;
+import com.book.store.Entity.Customer;
+import com.book.store.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

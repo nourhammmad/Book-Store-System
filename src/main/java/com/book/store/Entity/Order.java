@@ -1,4 +1,4 @@
-package com.book.store.Book.Store.Entity;
+package com.book.store.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
