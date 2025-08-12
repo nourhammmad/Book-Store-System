@@ -26,7 +26,15 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
-    public Book createBook(Book book) {
+    public Book createBook(String author, String title, int quantity, float price, String description) {
+
+        Book book = new Book();
+        book.setAuthor(author);
+        book.setQuantity(quantity);
+        book.setTitle(title);
+        book.setDescription(description);
+        book.setPrice(price);
+
         return bookRepository.save(book);
     }
 
