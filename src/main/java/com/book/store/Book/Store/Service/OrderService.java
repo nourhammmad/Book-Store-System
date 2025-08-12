@@ -1,7 +1,7 @@
 package com.book.store.Book.Store.Service;
 
 import com.book.store.Book.Store.Entity.Book;
-import com.book.store.Book.Store.Entity.Orders;
+import com.book.store.Book.Store.Entity.Order;
 import com.book.store.Book.Store.Repository.BookRepository;
 import com.book.store.Book.Store.Repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +22,14 @@ public class OrderService {
 
 
     // Get all orders with pagination
-    public Page<Orders> findAll(int page, int size) {
+    public Page<Order> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return orderRepository.findAll(pageable);
     }
 
 
     // Delete an order
-    public void delete(Orders order) {
+    public void delete(Order order) {
         if (order.getId() == null) {
             throw new IllegalArgumentException("Order ID must not be null for deletion");
         }
@@ -37,7 +37,7 @@ public class OrderService {
     }
 
     // Place a new order for a book
-    public Orders placeOrder(UUID bookId, int quantity) {
+    public Order placeOrder(UUID bookId, int quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
 
@@ -45,7 +45,7 @@ public class OrderService {
             throw new IllegalArgumentException("Not enough stock available");
         }
 
-        Orders order = new Orders();
+        Order order = new Order();
         order.setBook(book);
         order.setQuantity(quantity);
         order.setTotalPrice(book.getPrice() * quantity);
@@ -59,7 +59,7 @@ public class OrderService {
     }
 
     // Find order by ID
-    public Orders findById(UUID id) {
+    public Order findById(UUID id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }

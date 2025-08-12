@@ -1,6 +1,6 @@
 package com.book.store.Book.Store.Repository;
 
-import com.book.store.Book.Store.Entity.Orders;
+import com.book.store.Book.Store.Entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Orders, UUID> {
+public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    List<Orders> findByBook_Title(String title);
-    Optional<Orders> findById(UUID id);
+    List<Order> findByBook_Title(String title);
+    Optional<Order> findById(UUID id);
     // Pagination example
-    Page<Orders> findAll(Pageable pageable);
+    Page<Order> findAll(Pageable pageable);
 }

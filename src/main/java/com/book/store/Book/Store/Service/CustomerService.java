@@ -1,9 +1,8 @@
 package com.book.store.Book.Store.Service;
 
 import com.book.store.Book.Store.Entity.Customer;
-import com.book.store.Book.Store.Entity.Orders;
+import com.book.store.Book.Store.Entity.Order;
 import com.book.store.Book.Store.Repository.CustomerRepository;
-import jakarta.persistence.criteria.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +54,7 @@ public class CustomerService {
         return customerRepository.findCustomersByBookTitle(title, pageable);
     }
 
-    public Orders placeOrder(UUID customerId, UUID bookId, int quantity) {
+    public Order placeOrder(UUID customerId, UUID bookId, int quantity) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
 
@@ -66,7 +65,7 @@ public class CustomerService {
         //  TODO:check balance
 
 
-        Orders order = orderService.placeOrder(bookId, quantity);
+        Order order = orderService.placeOrder(bookId, quantity);
         customer.getOrders().add(order);
         customerRepository.save(customer);
 
