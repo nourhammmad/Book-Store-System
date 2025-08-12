@@ -1,4 +1,4 @@
-package com.book.store.Book.Store;
+package com.book.store;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

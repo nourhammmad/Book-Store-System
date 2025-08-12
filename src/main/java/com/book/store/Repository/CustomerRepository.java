@@ -1,10 +1,9 @@
-package com.book.store.Book.Store.Repository;
+package com.book.store.Repository;
 
-import com.book.store.Book.Store.Entity.Customer;
+import com.book.store.Entity.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,14 +20,4 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     void deleteById(UUID id);
     List<Customer> findAll();
     Page<Customer> findByNameContaining(String name, Pageable pageable);
-
-    @Query("SELECT c FROM Customer c JOIN c.books b WHERE b.title = :title")
-    Page<Customer> findCustomersByBookTitle(String title, Pageable pageable);
-
-    @Query("SELECT c FROM Customer c JOIN c.books b WHERE b.id = :bookId")
-    Page<Customer> findCustomersByBookId(String bookId, Pageable pageable);
-
-
-
-
 }

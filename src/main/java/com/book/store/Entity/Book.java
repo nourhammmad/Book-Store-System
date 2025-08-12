@@ -1,14 +1,12 @@
-package com.book.store.Book.Store.Entity;
+package com.book.store.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
+@Data
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -18,9 +16,4 @@ public class Book {
     private String description;
     private int quantity;
     private float price;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
-
 }

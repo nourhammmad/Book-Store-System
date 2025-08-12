@@ -1,9 +1,7 @@
-package com.book.store.Book.Store.Service;
+package com.book.store.Service;
 
-import com.book.store.Book.Store.Entity.Customer;
-import com.book.store.Book.Store.Entity.Orders;
-import com.book.store.Book.Store.Repository.CustomerRepository;
-import jakarta.persistence.criteria.Order;
+import com.book.store.Entity.Customer;
+import com.book.store.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,29 +49,4 @@ public class CustomerService {
     public Page<Customer> searchCustomersByName(String name, Pageable pageable) {
         return customerRepository.findByNameContaining(name, pageable);
     }
-    public Page<Customer> getCustomersByBookTitle(String title, Pageable pageable) {
-        return customerRepository.findCustomersByBookTitle(title, pageable);
-    }
-
-    public Orders placeOrder(UUID customerId, UUID bookId, int quantity) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
-
-        // Assuming OrderService is available to handle order placement
-        if(bookId == null || quantity <= 0) {
-            throw new IllegalArgumentException("Invalid book ID or quantity");
-        }
-        //  TODO:check balance
-
-
-        Orders order = orderService.placeOrder(bookId, quantity);
-        customer.getOrders().add(order);
-        customerRepository.save(customer);
-
-        return order;
-    }
-
-
-
-
 }

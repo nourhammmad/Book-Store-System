@@ -1,14 +1,12 @@
-package com.book.store.Book.Store.Entity;
+package com.book.store.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @Entity
 public class Customer {
 
@@ -22,12 +20,6 @@ public class Customer {
 
     @OneToMany
     @JoinColumn(name = "customer_id")
-    private List<Orders> orders;
-
-    @OneToMany
-    @JoinColumn(name = "customer_id")
-    private List<Book> books;
-
-
+    private List<Order> orders;
 
 }

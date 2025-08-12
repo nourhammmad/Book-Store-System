@@ -1,16 +1,19 @@
-package com.book.store.Book.Store.Service;
+package com.book.store.Service;
 
-import com.book.store.Book.Store.Entity.Book;
-import com.book.store.Book.Store.Entity.Orders;
-import com.book.store.Book.Store.Repository.BookRepository;
-import com.book.store.Book.Store.Repository.OrderRepository;
+import com.book.store.Entity.Book;
+import com.book.store.Entity.Customer;
+import com.book.store.Entity.Order;
+import com.book.store.Entity.OrderItem;
+import com.book.store.Repository.BookRepository;
+import com.book.store.Repository.CustomerRepository;
+import com.book.store.Repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,17 +22,18 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
+    private final CustomerRepository customerRepository;
 
 
     // Get all orders with pagination
-    public Page<Orders> findAll(int page, int size) {
+    public Page<Order> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return orderRepository.findAll(pageable);
     }
 
 
     // Delete an order
-    public void delete(Orders order) {
+    public void delete(Order order) {
         if (order.getId() == null) {
             throw new IllegalArgumentException("Order ID must not be null for deletion");
         }
@@ -37,19 +41,27 @@ public class OrderService {
     }
 
     // Place a new order for a book
-    public Orders placeOrder(UUID bookId, int quantity) {
+    public Order placeOrder(UUID customerId, UUID bookId, int quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
 
         if (book.getQuantity() < quantity) {
             throw new IllegalArgumentException("Not enough stock available");
         }
 
-        Orders order = new Orders();
-        order.setBook(book);
-        order.setQuantity(quantity);
-        order.setTotalPrice(book.getPrice() * quantity);
-        order.setOrderDate(LocalDateTime.now());
+        OrderItem orderItem = new OrderItem();
+        orderItem.setBook(book);
+        orderItem.setQuantity(quantity);
+        orderItem.setPrice(book.getPrice() * quantity);
+
+        Order order = new Order();
+        order.setCustomer(customer); // Set the customer on the order
+        order.setItems(List.of(orderItem));
+        order.setTotalPrice(orderItem.getPrice() * orderItem.getQuantity());
+        orderItem.setOrder(order);
 
         // Reduce stock
         book.setQuantity(book.getQuantity() - quantity);
@@ -59,7 +71,7 @@ public class OrderService {
     }
 
     // Find order by ID
-    public Orders findById(UUID id) {
+    public Order findById(UUID id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
