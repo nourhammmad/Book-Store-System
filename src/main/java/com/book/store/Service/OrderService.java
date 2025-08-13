@@ -1,7 +1,7 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Book;
-import com.book.store.Entity.User;
+import com.book.store.Entity.Customer;
 import com.book.store.Entity.Order;
 import com.book.store.Entity.OrderItem;
 import com.book.store.Repository.BookRepository;
@@ -45,7 +45,7 @@ public class OrderService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
 
-        User customer = customerRepository.findById(customerId)
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
 
         if (book.getQuantity() < quantity) {

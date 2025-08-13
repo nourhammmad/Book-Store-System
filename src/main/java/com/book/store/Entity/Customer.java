@@ -1,22 +1,25 @@
 package com.book.store.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.List;
+import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
-@Entity
 @Data
-public class Customer extends User {
-    private float balance;
+@Entity
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    private String name;
+    private String email;
     private String address;
+    private float balance;
 
     @OneToMany
     @JoinColumn(name = "customer_id")
     private List<Order> orders;
+
 }
