@@ -2,6 +2,7 @@ package com.book.store.Seed;
 
 import com.book.store.Entity.Book;
 import com.book.store.Entity.Customer;
+import com.book.store.Entity.User;
 import com.book.store.Entity.Order;
 import com.book.store.Service.BookService;
 import com.book.store.Service.CustomerService;
@@ -20,14 +21,16 @@ public class DataSeeder {
 
     @PostConstruct
     public void seed() {
-        // Create a fake customer
-        Customer user = new Customer();
-        user.setName("Jane Doe");
-        user.setEmail("test@test.com");
-        user.setAddress("123 Main St, Springfield");
-        user.setBalance(100.0f);
-        user = customerService.createCustomer(user);
-        System.out.println("Seeded customer: " + user.getId() + " - " + user.getName());
+
+        Customer customer = new Customer();
+        customer.setName("Jane Doe");
+        customer.setEmail("test@test.com");
+        customer.setAddress("123 Main St, Springfield");
+        customer.setBalance(100.0f);
+
+        customer = customerService.createCustomer(customer);
+        System.out.println("Seeded customer: " + customer.getId() + " - " + customer.getName());
+
 
 
         // Create a fake book
@@ -40,7 +43,7 @@ public class DataSeeder {
         );
 
         // Place an order for 2 copies of the book
-        Order order = orderService.placeOrder(user.getId(), book.getId(), 2);
+        Order order = orderService.placeOrder(customer.getId(), book.getId(), 2);
 
         System.out.println("Seeded order: " + order.getId() + " for book: " + book.getTitle());
     }
