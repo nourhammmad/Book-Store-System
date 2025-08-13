@@ -1,6 +1,7 @@
 package com.book.store.Repository;
 
 import com.book.store.Entity.Customer;
+import com.book.store.Entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,8 +17,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     Optional<Customer> findById(UUID id);
 
     Optional<Customer> findByEmail(String email);
-    Customer save(Customer customer);
     void deleteById(UUID id);
     List<Customer> findAll();
-    Page<Customer> findByNameContaining(String name, Pageable pageable);
+//    Page<Customer> findByNameContaining(String name, Pageable pageable);
 }

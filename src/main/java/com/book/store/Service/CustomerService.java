@@ -1,6 +1,7 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Customer;
+import com.book.store.Entity.Customer;
 import com.book.store.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,8 +46,5 @@ public class CustomerService {
     }
     public List<Customer> getAllCustomers(Pageable pageable) {
         return customerRepository.findAll();
-    }
-    public Page<Customer> searchCustomersByName(String name, Pageable pageable) {
-        return customerRepository.findByNameContaining(name, pageable);
     }
 }
