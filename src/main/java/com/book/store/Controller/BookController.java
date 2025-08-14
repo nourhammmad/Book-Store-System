@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/books")
 public class BookController {
 
+
     private final BookService bookService;
     private final BookMapper bookMapper;
 
@@ -58,6 +59,13 @@ public class BookController {
     public  ResponseEntity<BookDTO> DeleteBook(@PathVariable Long id){
          bookService.deleteBook(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
+
+    @GetMapping("/description/{id}")
+    public  ResponseEntity<String> GetDescriptionById(@PathVariable Long id){
+        String description = bookService.GetDescriptionById(id);
+        return ResponseEntity.ok(description.toLowerCase());
 
     }
 }
