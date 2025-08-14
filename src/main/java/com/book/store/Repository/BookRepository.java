@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, UUID> {
+public interface BookRepository extends JpaRepository<Book, Long> {
    Optional<Book>  findByTitle(String title);
-   Optional<Book> findById(Long id);
+  // Book findById(Long id);
 
 }
