@@ -1,55 +1,67 @@
 package com.book.store.Controller;
 
-import com.book.store.DTO.OrderDTO;
+import com.examle.demo.server.api.OrdersApi; // OpenAPI-generated interface
+import com.examle.demo.server.dto.OrderApiDto;
+import com.examle.demo.server.dto.OrdersApiDto;
+import com.book.store.Service.OrderService;
 import com.book.store.Entity.Order;
 import com.book.store.Mapper.OrderMapper;
-import com.book.store.Service.OrderService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/orders")
-@RequiredArgsConstructor
-public class OrderController {
+public class OrderController implements OrdersApi {
 
     private final OrderService orderService;
     private final OrderMapper orderMapper;
 
-    // http://localhost:8080/api/orders?page=0&size=5
-    @GetMapping
-    public ResponseEntity<Page<OrderDTO>> getAllOrders(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<Order> orders = orderService.findAll(page, size);
-        Page<OrderDTO> orderDTOs = orders.map(orderMapper::toDTO);
-        return ResponseEntity.ok(orderDTOs);
+    public OrderController(OrderService orderService, OrderMapper orderMapper) {
+        this.orderService = orderService;
+        this.orderMapper = orderMapper;
     }
 
-    // ✅ Get order by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
-        Order order = orderService.findById(id);
-        return ResponseEntity.ok(orderMapper.toDTO(order));
+    @Override
+    public ResponseEntity<Void> deleteOrderById(Integer id) {
+        return null;
     }
 
-    // http://localhost:8080/api/orders?customerId=1&bookId=2&quantity=2
-    @PostMapping
-    public ResponseEntity<OrderDTO> placeOrder(
-            @RequestParam Long customerId,
-            @RequestParam Long bookId,
-            @RequestParam int quantity) {
-        Order order = orderService.placeOrder(customerId, bookId, quantity);
-        return ResponseEntity.ok(orderMapper.toDTO(order));
+    //http://localhost:8080/orders?page=0&size=10
+    @Override
+    public ResponseEntity<OrdersApiDto> findAllOrders(Integer page, Integer size) {
+        List<Order> orders = orderService.findAll(page, size).getContent();
+        List<OrderApiDto> dtoList = orders.stream()
+                .map(orderMapper::toDTO)
+                .collect(Collectors.toList());
+
+        OrdersApiDto ordersApiDto = new OrdersApiDto();
+        ordersApiDto.setOrders(dtoList);
+
+        return new ResponseEntity<>(ordersApiDto, HttpStatus.OK);
     }
 
-    //  Delete order by ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
-        Order order = orderService.findById(id);
-        orderService.delete(order);
-        return ResponseEntity.ok("Order deleted successfully");
+    @Override
+    public ResponseEntity<OrderApiDto> findOrderById(Integer id) {
+        return null;
     }
+
+    //http://localhost:8080/orders
+    //{
+    //  "customer": {
+    //    "id": 1
+    //  },
+    //  "book": {
+    //    "id": 2
+    //  },
+    //  "quantity": 3
+    //}
+    @Override
+    public ResponseEntity<OrderApiDto> placeOrder(OrderApiDto orderApiDto) {
+        Order createdOrder = orderService.placeOrder(orderApiDto);
+        return new ResponseEntity<>(orderMapper.toDTO(createdOrder), HttpStatus.CREATED);
+    }
+
+
 }

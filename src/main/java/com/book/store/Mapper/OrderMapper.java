@@ -1,21 +1,46 @@
 package com.book.store.Mapper;
 
-import com.book.store.DTO.OrderDTO;
+import com.examle.demo.server.dto.OrderApiDto;
+import com.examle.demo.server.dto.OrderItemApiDto;
 import com.book.store.Entity.Order;
-import org.springframework.stereotype.Component;
+import com.book.store.Entity.OrderItem;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
-@Component
-public class OrderMapper {
-    public OrderDTO toDTO(Order order) {
-        return OrderDTO.builder()
-                .id(order.getId())
-//                .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null)
-//                .bookId(order.getBook() != null ? order.getBook().getId() : null)
-                .quantity(order.getQuantity())
-                .orderDate(LocalDateTime.now())
-                .build();
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
+public interface OrderMapper {
+
+    OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
+
+    // Map OrderApiDto -> Order entity
+    Order toEntity(OrderApiDto orderApiDto);
+
+    // Map Order entity -> OrderApiDto
+    OrderApiDto toDTO(Order order);
+
+    // Partial update (ignores null fields)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Order partialUpdate(OrderApiDto orderApiDto, @MappingTarget Order order);
+
+    // Map OrderItemApiDto -> OrderItem
+    OrderItem toEntity(OrderItemApiDto orderItemApiDto);
+
+    // Map OrderItem -> OrderItemApiDto
+    OrderItemApiDto toDTO(OrderItem orderItem);
+
+    // Conversion helpers for OffsetDateTime <-> LocalDateTime
+    default LocalDateTime map(OffsetDateTime value) {
+        return value == null ? null : value.toLocalDateTime();
     }
 
+    default OffsetDateTime map(LocalDateTime value) {
+        return value == null ? null : value.atOffset(OffsetDateTime.now().getOffset());
+    }
 }
