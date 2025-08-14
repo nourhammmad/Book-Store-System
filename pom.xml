@@ -122,7 +122,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.1.0</version>
+                <version>6.6.0</version>
 
                 <executions>
                     <!-- 📚 Book API -->
@@ -132,7 +132,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>C:\Users\AbdElRashidS\Documents\Book-Store-System\OpenAPI\BookContract.yml</inputSpec>
+                            <inputSpec>${project.basedir}/OpenAPI/BookContract.yml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.book.store.server.api</apiPackage>
                             <modelPackage>com.book.store.server.dto</modelPackage>
@@ -151,14 +151,40 @@
                         </configuration>
                     </execution>
 
-                    <!-- 📦 Order API -->
+                    <!-- 🛒 Orders API -->
                     <execution>
-                        <id>generate-order-api</id>
+                        <id>generate-orders-api</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>C:\Users\AbdElRashidS\Documents\Book-Store-System\OpenAPI\orders-api.yml</inputSpec>
+                            <inputSpec>${project.basedir}/OpenAPI/orders-api.yml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.book.store.server.api</apiPackage>
+                            <modelPackage>com.book.store.server.dto</modelPackage>
+                            <modelNameSuffix>ApiDto</modelNameSuffix>
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                                <documentationProvider>none</documentationProvider>
+                                <interfaceOnly>true</interfaceOnly>
+                                <openApiNullable>false</openApiNullable>
+                                <reactive>false</reactive>
+                                <serializableModel>true</serializableModel>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useTags>true</useTags>
+                                <groupOperationsByTags>true</groupOperationsByTags>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- 👥 Customers API -->
+                    <execution>
+                        <id>generate-customers-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/OpenAPI/customers-api.yml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.book.store.server.api</apiPackage>
                             <modelPackage>com.book.store.server.dto</modelPackage>
