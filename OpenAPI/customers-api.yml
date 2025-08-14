@@ -1,0 +1,169 @@
+openapi: 3.0.1
+info:
+  title: Customers API
+  version: 1.0.0
+  description: API for managing customers in the Book Store System
+servers:
+  - url: 'http://localhost:8080/'
+    description: Development Environment
+
+tags:
+  - name: Customers
+    description: Operations related to customers
+
+paths:
+  /customers:
+    get:
+      tags:
+        - Customers
+      summary: Find all customers
+      description: Retrieve a paginated list of customers
+      operationId: findAllCustomers
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+          description: Page number
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 10
+          description: Page size
+      responses:
+        '200':
+          description: Successfully retrieved customers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customers'
+              examples:
+                customersExample:
+                  $ref: '#/components/examples/customersExample'
+
+    post:
+      tags:
+        - Customers
+      summary: Create a new customer
+      description: Add a new customer to the system
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+            example:
+              name: "Jane Doe"
+              email: "jane@example.com"
+              address: "123 Main St, Springfield"
+              balance: 500
+      responses:
+        '201':
+          description: Successfully created customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+
+  /customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Find customer by ID
+      description: Retrieve a specific customer by ID
+      operationId: findCustomerById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the customer
+      responses:
+        '200':
+          description: Successfully retrieved the customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+
+    delete:
+      tags:
+        - Customers
+      summary: Delete customer by ID
+      description: Delete a specific customer by ID
+      operationId: deleteCustomerById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the customer to delete
+      responses:
+        '204':
+          description: Successfully deleted the customer
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+
+components:
+  schemas:
+    customers:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/customer'
+
+    customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        balance:
+          type: number
+          format: float
+
+    CustomError:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        message:
+          type: string
+
+  examples:
+    customersExample:
+      value:
+        customers:
+          - id: 1
+            name: "Jane Doe"
+            email: "jane@example.com"
+            address: "123 Main St, Springfield"
+            balance: 500
+          - id: 2
+            name: "John Smith"
+            email: "john@example.com"
+            address: "456 Elm St, Springfield"
+            balance: 300
