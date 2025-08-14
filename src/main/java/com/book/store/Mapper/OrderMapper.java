@@ -1,7 +1,7 @@
 package com.book.store.Mapper;
 
-import com.examle.demo.server.dto.OrderApiDto;
-import com.examle.demo.server.dto.OrderItemApiDto;
+import com.book.store.server.dto.OrderApiDto;
+import com.book.store.server.dto.OrderItemApiDto;
 import com.book.store.Entity.Order;
 import com.book.store.Entity.OrderItem;
 import org.mapstruct.BeanMapping;

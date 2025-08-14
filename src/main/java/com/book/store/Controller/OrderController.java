@@ -1,8 +1,8 @@
 package com.book.store.Controller;
 
-import com.examle.demo.server.api.OrdersApi; // OpenAPI-generated interface
-import com.examle.demo.server.dto.OrderApiDto;
-import com.examle.demo.server.dto.OrdersApiDto;
+import com.book.store.server.api.OrdersApi; // OpenAPI-generated interface
+import com.book.store.server.dto.OrderApiDto;
+import com.book.store.server.dto.OrdersApiDto;
 import com.book.store.Service.OrderService;
 import com.book.store.Entity.Order;
 import com.book.store.Mapper.OrderMapper;

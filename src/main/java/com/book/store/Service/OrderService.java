@@ -7,7 +7,7 @@ import com.book.store.Entity.OrderItem;
 import com.book.store.Repository.BookRepository;
 import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.OrderRepository;
-import com.examle.demo.server.dto.OrderApiDto; // your OpenAPI DTO
+import com.book.store.server.dto.OrderApiDto; // your OpenAPI DTO
 import com.book.store.Mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
