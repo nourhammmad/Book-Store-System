@@ -15,11 +15,19 @@ import java.util.UUID;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+<<<<<<< Updated upstream
+=======
+    @CreationTimestamp
+    @Column(updatable = false, nullable = false)
+>>>>>>> Stashed changes
     private LocalDateTime orderDate;
+    @ManyToOne
+    private Book book;  // <-- This must match .getBook()
 
+    private int quantity; // <-- This must match .getQuantity()
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;

@@ -13,11 +13,15 @@ import java.util.UUID;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 
-    Optional<Customer> findById(UUID id);
+    Optional<Customer> findById(Long id);
 
     Optional<Customer> findByEmail(String email);
+<<<<<<< Updated upstream
     Customer save(Customer customer);
     void deleteById(UUID id);
+=======
+    void deleteById(Long id);
+>>>>>>> Stashed changes
     List<Customer> findAll();
     Page<Customer> findByNameContaining(String name, Pageable pageable);
 }
