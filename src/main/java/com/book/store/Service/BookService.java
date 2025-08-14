@@ -66,8 +66,7 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public String GetDescriptionById(Long Id){
-       Optional<Book> book= bookRepository.findById(Id);
-       return book.map(Book::getDescription).orElse(null);
+    public String GetDescriptionById(Long id){
+       return bookRepository.getDescriptionById(id);
     }
 }

@@ -60,4 +60,11 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
+
+    @GetMapping("/description/{id}")
+    public  ResponseEntity<String> GetDescriptionById(@PathVariable Long id){
+        String description = bookService.GetDescriptionById(id);
+        return ResponseEntity.ok(description.toLowerCase());
+
+    }
 }
