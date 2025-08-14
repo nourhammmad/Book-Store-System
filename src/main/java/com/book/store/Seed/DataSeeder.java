@@ -1,7 +1,7 @@
 package com.book.store.Seed;
 
+import com.book.store.DTO.CustomerDTO;
 import com.book.store.Entity.Book;
-import com.book.store.Entity.Customer;
 import com.book.store.Entity.Order;
 import com.book.store.Service.BookService;
 import com.book.store.Service.CustomerService;
@@ -23,14 +23,15 @@ public class DataSeeder {
 
     @PostConstruct
     public void seed() {
-        // Create customer
-        Customer customer = new Customer();
-        customer.setName("Jane Doe");
-        customer.setEmail("test@test.com");
-        customer.setAddress("123 Main St, Springfield");
-        customer.setBalance(500.0f);
-        customer = customerService.createCustomer(customer);
-        System.out.println("✅ Seeded customer: " + customer.getId());
+        // Create customer using DTO
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setName("Jane Doe");
+        customerDTO.setEmail("test@test.com");
+        customerDTO.setAddress("123 Main St, Springfield");
+        customerDTO.setBalance(500.0f);
+
+        // Save customer and get the created entity back (with ID)
+        var customer = customerService.createCustomer(customerDTO);
 
         // List of books to seed
         List<Book> books = Arrays.asList(

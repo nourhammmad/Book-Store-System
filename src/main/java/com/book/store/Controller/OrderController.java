@@ -35,7 +35,7 @@ public class OrderController {
         return ResponseEntity.ok(orderMapper.toDTO(order));
     }
 
-    // http://localhost:8080/api/orders?customerId=dd7d482b-3362-411f-8c43-95dfe8a8ce2e	&bookId=a7712798-597d-40ef-bb29-bef21e8f9a0f&quantity=2
+    // http://localhost:8080/api/orders?customerId=1&bookId=2&quantity=2
     @PostMapping
     public ResponseEntity<OrderDTO> placeOrder(
             @RequestParam Long customerId,
