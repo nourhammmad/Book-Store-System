@@ -113,24 +113,55 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+
+
+
+
+
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>6.6.0</version>
-                <configuration>
-                    <additionalProperties>removeEnumValuePrefix=false</additionalProperties>
-                </configuration>
+                <version>7.1.0</version>
+
                 <executions>
+                    <!-- 📚 Book API -->
                     <execution>
-                        <id>generate-api</id>
+                        <id>generate-book-api</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/OpenAPI/orders-api.yml</inputSpec>
+                            <inputSpec>C:\Users\AbdElRashidS\Documents\Book-Store-System\OpenAPI\BookContract.yml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.examle.demo.server.api</apiPackage>
-                            <modelPackage>com.examle.demo.server.dto</modelPackage>
+                            <apiPackage>com.book.store.server.api</apiPackage>
+                            <modelPackage>com.book.store.server.dto</modelPackage>
+                            <modelNameSuffix>ApiDto</modelNameSuffix>
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                                <documentationProvider>none</documentationProvider>
+                                <interfaceOnly>true</interfaceOnly>
+                                <openApiNullable>false</openApiNullable>
+                                <reactive>false</reactive>
+                                <serializableModel>true</serializableModel>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <useTags>true</useTags>
+                                <groupOperationsByTags>true</groupOperationsByTags>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- 📦 Order API -->
+                    <execution>
+                        <id>generate-order-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>C:\Users\AbdElRashidS\Documents\Book-Store-System\OpenAPI\orders-api.yml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.book.store.server.api</apiPackage>
+                            <modelPackage>com.book.store.server.dto</modelPackage>
                             <modelNameSuffix>ApiDto</modelNameSuffix>
                             <configOptions>
                                 <dateLibrary>java8</dateLibrary>
@@ -147,18 +178,9 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
+
+
+
         </plugins>
     </build>
 
