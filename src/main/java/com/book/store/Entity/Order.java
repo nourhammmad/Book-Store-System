@@ -2,6 +2,7 @@ package com.book.store.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,11 +19,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-<<<<<<< Updated upstream
-=======
+
     @CreationTimestamp
     @Column(updatable = false, nullable = false)
->>>>>>> Stashed changes
     private LocalDateTime orderDate;
     @ManyToOne
     private Book book;  // <-- This must match .getBook()

@@ -23,29 +23,6 @@ public class DataSeeder {
 
     @PostConstruct
     public void seed() {
-<<<<<<< Updated upstream
-        // Create a fake customer
-        Customer user = new Customer();
-        user.setName("Jane Doe");
-        user.setEmail("test@test.com");
-        user.setAddress("123 Main St, Springfield");
-        user.setBalance(100.0f);
-        user = customerService.createCustomer(user);
-        System.out.println("Seeded customer: " + user.getId() + " - " + user.getName());
-
-
-        // Create a fake book
-        Book book = bookService.createBook(
-                "John Doe",
-                "Spring Boot in Action",
-                10,
-                29.99f,
-                "A practical guide to Spring Boot."
-        );
-
-        // Place an order for 2 copies of the book
-        Order order = orderService.placeOrder(user.getId(), book.getId(), 2);
-=======
         // Create customer
         Customer customer = new Customer();
         customer.setName("Jane Doe");
@@ -74,7 +51,6 @@ public class DataSeeder {
                     book.getDescription()
             );
             System.out.println("📚 Seeded book: " + savedBook.getTitle());
->>>>>>> Stashed changes
 
             // Place an order for 1 copy of each book
             Order order = orderService.placeOrder(customer.getId(), savedBook.getId(), 1);
