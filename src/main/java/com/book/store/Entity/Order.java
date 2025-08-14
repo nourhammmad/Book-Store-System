@@ -16,20 +16,28 @@ import java.util.UUID;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
 
     @CreationTimestamp
+    @Column(updatable = false, nullable = false)
     private LocalDateTime orderDate;
+    @ManyToOne
+    private Book book;  // <-- This must match .getBook()
 
+    private int quantity; // <-- This must match .getQuantity()
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+    private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
     private float totalPrice;
 
-
+    @PrePersist
+    protected void onCreate() {
+        orderDate = LocalDateTime.now();
+    }
 }

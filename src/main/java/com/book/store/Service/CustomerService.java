@@ -1,7 +1,6 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Customer;
-import com.book.store.Entity.Customer;
 import com.book.store.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +22,11 @@ public class CustomerService {
     public Customer createCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
-    public Customer getCustomerById(UUID id) {
+    public Customer getCustomerById(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
-    public Customer updateCustomer(UUID id, Customer updatedCustomer) {
+    public Customer updateCustomer(Long id, Customer updatedCustomer) {
         return customerRepository.findById(id)
                 .map(customer -> {
                     customer.setName(updatedCustomer.getName());
@@ -37,7 +35,7 @@ public class CustomerService {
                 })
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + id));
     }
-    public void deleteCustomer(UUID id) {
+    public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }
     public Customer getCustomerByEmail(String email) {
@@ -46,5 +44,8 @@ public class CustomerService {
     }
     public List<Customer> getAllCustomers(Pageable pageable) {
         return customerRepository.findAll();
+    }
+    public Page<Customer> searchCustomersByName(String name, Pageable pageable) {
+        return customerRepository.findByNameContaining(name, pageable);
     }
 }

@@ -1,7 +1,7 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Book;
-import com.book.store.Entity.User;
+import com.book.store.Entity.Customer;
 import com.book.store.Entity.Order;
 import com.book.store.Entity.OrderItem;
 import com.book.store.Repository.BookRepository;
@@ -13,8 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -41,15 +41,16 @@ public class OrderService {
     }
 
     // Place a new order for a book
-    public Order placeOrder(UUID customerId, UUID bookId, int quantity) {
+    public Order placeOrder(Long customerId, Long bookId, int quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
 
-        User customer = customerRepository.findById(customerId)
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
 
         if (book.getQuantity() < quantity) {
-            throw new IllegalArgumentException("Not enough stock available");
+            throw new RuntimeException("Requested quantity (" + quantity +
+                    ") exceeds available stock (" + book.getQuantity() + ")");
         }
 
         OrderItem orderItem = new OrderItem();
@@ -57,10 +58,14 @@ public class OrderService {
         orderItem.setQuantity(quantity);
         orderItem.setPrice(book.getPrice() * quantity);
 
+
         Order order = new Order();
-        order.setCustomer(customer); // Set the customer on the order
+        order.setCustomer(customer);
+        order.setBook(orderItem.getBook());
         order.setItems(List.of(orderItem));
+        order.setOrderDate(LocalDateTime.now());
         order.setTotalPrice(orderItem.getPrice() * orderItem.getQuantity());
+        order.setQuantity(orderItem.getQuantity());
         orderItem.setOrder(order);
 
         // Reduce stock
@@ -71,7 +76,7 @@ public class OrderService {
     }
 
     // Find order by ID
-    public Order findById(UUID id) {
+    public Order findById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
