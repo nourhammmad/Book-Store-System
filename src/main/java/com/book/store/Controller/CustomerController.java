@@ -6,12 +6,10 @@ import com.book.store.server.dto.CustomersApiDto;
 import com.book.store.Service.CustomerService;
 import com.book.store.Entity.Customer;
 import com.book.store.Mapper.CustomerMapper; // you will create this like OrderMapper
-import com.book.store.server.api.CustomersApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class CustomerController implements CustomersApi {
