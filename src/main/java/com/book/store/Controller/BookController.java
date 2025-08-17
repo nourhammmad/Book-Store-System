@@ -25,23 +25,6 @@ public class BookController implements BooksApi {
         this.bookMapper = bookMapper;
         this.bookService = bookService;
     }
-
-
-//    @GetMapping("/description/{id}")
-//    public  ResponseEntity<String> GetDescriptionById(@PathVariable Long id){
-//        String description = bookService.GetDescriptionById(id);
-//        return ResponseEntity.ok(description.toLowerCase());
-//
-//    }
-
-
-
-//    @Override
-//    public ResponseEntity<BookDTOApiDto> updateBook(Long id, BookDTOApiDto bookApiDto) {
-//        Book book = bookService.updateBook(bookApiDto, id);
-//        return ResponseEntity.ok(bookMapper.toDto(book));
-//    }
-
     @Override
     public ResponseEntity<BookApiDto> createBook(BookApiDto bookApiDto) {
         Book book = BookMapper.INSTANCE.toEntity(bookApiDto);
@@ -52,10 +35,9 @@ public class BookController implements BooksApi {
 
     @Override
     public ResponseEntity<Void> deleteBookById(Integer id) {
-//        Long Id = Long(id);
-//        bookService.deleteBook(Id);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        return null;
+        bookService.deleteBook(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
     @Override
@@ -70,7 +52,7 @@ public class BookController implements BooksApi {
 
     @Override
     public ResponseEntity<BookApiDto> findBookById(Integer id) {
-       return null;
+          return new ResponseEntity<>(BookMapper.INSTANCE.toDto(bookService.getBookById(id)), HttpStatus.OK);
     }
 
     @Override
