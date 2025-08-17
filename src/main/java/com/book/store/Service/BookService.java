@@ -1,42 +1,40 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Book;
+import com.book.store.Mapper.BookMapper;
 import com.book.store.Repository.BookRepository;
+import com.book.store.server.dto.BookApiDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
     private final BookRepository  bookRepository;
+    private final BookMapper  bookMapper;
 
 
 
 
-    public Page<Book>  getAllBooks(int page, int size) {
+    public List<BookApiDto>  getAllBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return bookRepository.findAll(pageable);
+        return bookRepository.findAll(pageable).stream()
+                .map(bookMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public Book getBookById(Long id) {
+    public Book getBookById(Integer id) {
         return bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 
-    public Book createBook(String author, String title, int quantity, float price, String description) {
+    public Book createBook(Book book) {
 
-        Book book = new Book();
-        book.setAuthor(author);
-        book.setQuantity(quantity);
-        book.setTitle(title);
-        book.setDescription(description);
-        book.setPrice(price);
 
         return bookRepository.save(book);
     }
@@ -45,15 +43,15 @@ public class BookService {
 
 
 
-    public Book updateBook( Book updatedBook, Long id) {
+    public Book updateBook(BookApiDto updatedBook, Integer id) {
         return bookRepository.findById(id)
                 .map(book -> {
 
                     if (updatedBook.getTitle()!=null) book.setTitle(updatedBook.getTitle());
                     if(updatedBook.getPrice()!= 0.0) book.setPrice(updatedBook.getPrice());
-                    if (updatedBook.getAuthor()!=null) book.setAuthor(updatedBook.getAuthor());
-                    if (updatedBook.getQuantity() !=0) book.setQuantity(updatedBook.getQuantity());
-                    if (updatedBook.getDescription()!= null) book.setDescription(updatedBook.getDescription());
+                  // if (updatedBook.getAuthor()!=null) book.setAuthor(updatedBook.getAuthor());
+                   // if (updatedBook.getQuantity() !=0) book.setQuantity(updatedBook.getQuantity());
+                    //if (updatedBook.getDescription()!= null) book.setDescription(updatedBook.getDescription());
 
                     return bookRepository.save(book);
                 })
@@ -62,11 +60,11 @@ public class BookService {
 
     }
 
-    public void deleteBook(Long id) {
+    public void deleteBook(Integer id) {
         bookRepository.deleteById(id);
     }
 
-    public String GetDescriptionById(Long id){
+    public String GetDescriptionById(Integer id){
         return bookRepository.getDescriptionById(id);
     }
 }

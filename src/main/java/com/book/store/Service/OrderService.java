@@ -36,7 +36,7 @@ public class OrderService {
     // Place an order from OpenAPI DTO
     public Order placeOrder(OrderApiDto orderDto) {
         Long customerId = Long.valueOf(orderDto.getCustomer().getId());
-        Long bookId = Long.valueOf(orderDto.getBook().getId());
+        Integer bookId = (orderDto.getBook().getId());
         int quantity = orderDto.getQuantity();
         return placeOrder(customerId, bookId, quantity); // reuse existing method
     }
@@ -54,7 +54,7 @@ public class OrderService {
     }
 
     // Existing placeOrder method
-    public Order placeOrder(Long customerId, Long bookId, int quantity) {
+    public Order placeOrder(Long customerId, Integer bookId, int quantity) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
         Customer customer = customerRepository.findById(customerId)
