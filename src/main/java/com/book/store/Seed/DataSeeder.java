@@ -57,8 +57,8 @@ public class DataSeeder {
             System.out.println("📚 Seeded book: " + savedBook.getTitle());
 //
 //            // Order 1 copy of each
-            Order order = orderService.placeOrder(savedCustomer.getId(), book.getId(), 1);
-            System.out.println("🛒 Placed order for: " + savedBook.getTitle());
+//            Order order = orderService.placeOrder(savedCustomer.getId(), book.getId(), 1);
+//            System.out.println("🛒 Placed order for: " + savedBook.getTitle());
         }
     }
 }

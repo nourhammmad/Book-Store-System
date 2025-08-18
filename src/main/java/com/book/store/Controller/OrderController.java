@@ -8,6 +8,8 @@ import com.book.store.Entity.Order;
 import com.book.store.Mapper.OrderMapper;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.book.store.server.dto.UpdateOrderRequestApiDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,12 +25,15 @@ public class OrderController implements OrdersApi {
         this.orderMapper = orderMapper;
     }
 
+    // DELETE /orders/{id}
+
     @Override
     public ResponseEntity<Void> deleteOrderById(Integer id) {
-        return null;
+        orderService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    //http://localhost:8080/orders?page=0&size=10
+    // GET /orders?page=0&size=10
     @Override
     public ResponseEntity<OrdersApiDto> findAllOrders(Integer page, Integer size) {
         List<Order> orders = orderService.findAll(page, size).getContent();
@@ -42,25 +47,38 @@ public class OrderController implements OrdersApi {
         return new ResponseEntity<>(ordersApiDto, HttpStatus.OK);
     }
 
+    // GET /orders/{id}
     @Override
     public ResponseEntity<OrderApiDto> findOrderById(Integer id) {
-        return null;
+        Order order = orderService.findById(id);
+        return new ResponseEntity<>(orderMapper.toDTO(order), HttpStatus.OK);
     }
 
+    // POST /orders
     //http://localhost:8080/orders
     //{
     //  "customer": {
     //    "id": 1
     //  },
-    //  "book": {
-    //    "id": 2
-    //  },
-    //  "quantity": 3
+    //  "items": [
+    //    {
+    //      "book": { "id": 2 },
+    //      "quantity": 1
+    //    }
+    //  ]
     //}
     @Override
     public ResponseEntity<OrderApiDto> placeOrder(OrderApiDto orderApiDto) {
         Order createdOrder = orderService.placeOrder(orderApiDto);
         return new ResponseEntity<>(orderMapper.toDTO(createdOrder), HttpStatus.CREATED);
+    }
+
+    // PUT /orders/{id}
+    @Override
+    public ResponseEntity<OrderApiDto> updateOrder(Integer id, UpdateOrderRequestApiDto updateOrderRequestApiDto) {
+//        Order updatedOrder = orderService.updateOrder(id.longValue(), updateOrderRequestApiDto);
+//        return new ResponseEntity<>(orderMapper.toDTO(updatedOrder), HttpStatus.OK);
+        return null;
     }
 
 
