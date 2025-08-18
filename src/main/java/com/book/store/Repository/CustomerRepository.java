@@ -10,10 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, UUID> {
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Customer> findById(Long id);
 

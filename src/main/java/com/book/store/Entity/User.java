@@ -3,9 +3,6 @@ package com.book.store.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-import java.util.UUID;
-
 @Data
 @Entity
 @Table(name = "users")
