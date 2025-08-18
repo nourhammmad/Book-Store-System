@@ -183,4 +183,94 @@ class CustomerServiceTest {
         assertEquals("Customer not found", exception.getMessage());
         verify(customerRepository).findById(null);
     }
+
+    @Test
+    void createCustomerWithEmptyFields() {
+        Customer emptyCustomer = new Customer();
+        emptyCustomer.setName("");
+        emptyCustomer.setEmail("");
+
+        when(customerRepository.save(emptyCustomer)).thenReturn(emptyCustomer);
+
+        Customer result = customerService.createCustomer(emptyCustomer);
+
+        assertNotNull(result);
+        assertEquals("", result.getName());
+        assertEquals("", result.getEmail());
+        verify(customerRepository).save(emptyCustomer);
+    }
+
+    @Test
+    void createCustomerWithNegativeBalance() {
+        customer.setBalance(-50.0f);
+        when(customerRepository.save(customer)).thenReturn(customer);
+
+        Customer result = customerService.createCustomer(customer);
+
+        assertNotNull(result);
+        assertEquals(-50.0f, result.getBalance());
+        verify(customerRepository).save(customer);
+    }
+
+    @Test
+    void getAllCustomersWithNegativePageNumber() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> customerService.getAllCustomers(-5, 10)
+        );
+
+        assertEquals("Page index must not be less than zero", exception.getMessage());
+        verify(customerRepository, never()).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void getAllCustomersWithZeroPageSize() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> customerService.getAllCustomers(0, 0)
+        );
+
+        assertEquals("Page size must not be less than one", exception.getMessage());
+        verify(customerRepository, never()).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void getAllCustomersMapperThrowsException() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Customer> customerPage = new PageImpl<>(List.of(customer));
+
+        when(customerRepository.findAll(pageable)).thenReturn(customerPage);
+        when(customerMapper.toDTO(customer)).thenThrow(new RuntimeException("Mapping error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            customerService.getAllCustomers(0, 10);
+        });
+
+        verify(customerRepository).findAll(pageable);
+        verify(customerMapper).toDTO(customer);
+    }
+
+    @Test
+    void findCustomerByIdMapperThrowsException() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(customerMapper.toDTO(customer)).thenThrow(new RuntimeException("Mapping error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            customerService.findCustomerById(1L);
+        });
+
+        verify(customerRepository).findById(1L);
+        verify(customerMapper).toDTO(customer);
+    }
+
+    @Test
+    void deleteCustomerRepositoryThrowsException() {
+        doThrow(new RuntimeException("Database error")).when(customerRepository).deleteById(1L);
+
+        assertThrows(RuntimeException.class, () -> {
+            customerService.deleteCustomer(1L);
+        });
+
+        verify(customerRepository).deleteById(1L);
+    }
 }

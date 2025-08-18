@@ -298,4 +298,156 @@ class OrderServiceTest {
         assertEquals("Order not found", exception.getMessage());
         verify(orderRepository).findById(999L);
     }
+
+    @Test
+    void placeOrderWithZeroQuantity() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+            () -> orderService.placeOrder(1L, 1, 0)
+        );
+
+        assertEquals("Quantity must be greater than zero", exception.getMessage());
+        verify(bookRepository).findById(1);
+        verify(customerRepository).findById(1L);
+    }
+
+    @Test
+    void placeOrderWithNegativeQuantity() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+            () -> orderService.placeOrder(1L, 1, -5)
+        );
+
+        assertEquals("Quantity must be greater than zero", exception.getMessage());
+        verify(bookRepository).findById(1);
+        verify(customerRepository).findById(1L);
+    }
+
+    @Test
+    void placeOrderCalculatesTotalPriceCorrectly() {
+        book.setPrice(15.50f);
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
+            Order savedOrder = invocation.getArgument(0);
+            return savedOrder;
+        });
+
+        Order result = orderService.placeOrder(1L, 1, 3);
+
+        assertNotNull(result);
+        assertEquals(46.50f, result.getTotalPrice());
+        assertEquals(3, result.getQuantity());
+    }
+
+    @Test
+    void placeOrderFromDtoWithInvalidBookId() {
+        orderApiDto.getBook().setId(999);
+        when(bookRepository.findById(999)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> orderService.placeOrder(orderApiDto)
+        );
+
+        assertEquals("Book not found", exception.getMessage());
+        verify(bookRepository).findById(999);
+    }
+
+    @Test
+    void placeOrderFromDtoWithInvalidCustomerId() {
+        orderApiDto.getCustomer().setId(999L);
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(customerRepository.findById(999L)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(
+            RuntimeException.class,
+            () -> orderService.placeOrder(orderApiDto)
+        );
+
+        assertEquals("Customer not found with id 999", exception.getMessage());
+    }
+
+    @Test
+    void findAllWithNegativePageNumber() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> orderService.findAll(-1, 10)
+        );
+
+        assertEquals("Page index must not be less than zero", exception.getMessage());
+        verify(orderRepository, never()).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void findAllWithZeroPageSize() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> orderService.findAll(0, 0)
+        );
+
+        assertEquals("Page size must not be less than one", exception.getMessage());
+        verify(orderRepository, never()).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void deleteOrderRepositoryThrowsException() {
+        order.setId(1L);
+        doThrow(new RuntimeException("Database error")).when(orderRepository).delete(order);
+
+        assertThrows(RuntimeException.class, () -> {
+            orderService.delete(order);
+        });
+
+        verify(orderRepository).delete(order);
+    }
+
+    @Test
+    void deleteByIdRepositoryThrowsException() {
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        doThrow(new RuntimeException("Database error")).when(orderRepository).delete(order);
+
+        assertThrows(RuntimeException.class, () -> {
+            orderService.deleteById(1L);
+        });
+
+        verify(orderRepository).findById(1L);
+        verify(orderRepository).delete(order);
+    }
+
+    @Test
+    void placeOrderBookRepositorySaveThrowsException() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class))).thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            orderService.placeOrder(1L, 1, 2);
+        });
+
+        verify(bookRepository).save(book);
+        verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    void placeOrderOrderRepositorySaveThrowsException() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        when(orderRepository.save(any(Order.class))).thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            orderService.placeOrder(1L, 1, 2);
+        });
+
+        verify(bookRepository).save(book);
+        verify(orderRepository).save(any(Order.class));
+    }
 }

@@ -203,4 +203,90 @@ class BookServiceTest {
         assertNull(result);
         verify(bookRepository).getDescriptionById(999);
     }
+
+    @Test
+    void getAllBooksHandlesNegativePageNumber() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> bookService.getAllBooks(-1, 10)
+        );
+
+        assertEquals("Page number must be non-negative and size must be positive", exception.getMessage());
+        verify(bookRepository, never()).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void getAllBooksHandlesZeroPageSize() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> bookService.getAllBooks(0, 0)
+        );
+
+        assertEquals("Page number must be non-negative and size must be positive", exception.getMessage());
+        verify(bookRepository, never()).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void updateBookWithAllNullFields() {
+        BookApiDto updateDto = new BookApiDto();
+        updateDto.setPrice(null);
+
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+
+        Book result = bookService.updateBook(updateDto, 1);
+
+        assertNotNull(result);
+        assertEquals("Test Book", book.getTitle());
+        assertEquals(29.99f, book.getPrice());
+        verify(bookRepository).save(book);
+    }
+
+    @Test
+    void updateBookWithZeroPrice() {
+        BookApiDto updateDto = new BookApiDto();
+        updateDto.setTitle("Updated Title");
+        updateDto.setPrice(0.0f);
+
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+
+        Book result = bookService.updateBook(updateDto, 1);
+
+        assertEquals("Updated Title", book.getTitle());
+        assertEquals(29.99f, book.getPrice());
+    }
+
+    @Test
+    void createBookWithNullFields() {
+        Book bookWithNulls = new Book();
+        bookWithNulls.setTitle("Only Title");
+
+        when(bookRepository.save(bookWithNulls)).thenReturn(bookWithNulls);
+
+        Book result = bookService.createBook(bookWithNulls);
+
+        assertNotNull(result);
+        assertEquals("Only Title", result.getTitle());
+        verify(bookRepository).save(bookWithNulls);
+    }
+
+    @Test
+    void deleteBookWithNonExistentId() {
+        doNothing().when(bookRepository).deleteById(999);
+
+        assertDoesNotThrow(() -> bookService.deleteBook(999));
+
+        verify(bookRepository).deleteById(999);
+    }
+
+    @Test
+    void getDescriptionByIdWithEmptyString() {
+        when(bookRepository.getDescriptionById(1)).thenReturn("");
+
+        String result = bookService.GetDescriptionById(1);
+
+        assertEquals("", result);
+        verify(bookRepository).getDescriptionById(1);
+    }
 }
