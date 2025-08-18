@@ -5,8 +5,9 @@ import com.book.store.Entity.Customer;
 import com.book.store.Entity.Order;
 import com.book.store.Entity.OrderItem;
 import com.book.store.Repository.BookRepository;
-import com.book.store.Repository.CustomerRepository;
+
 import com.book.store.Repository.OrderRepository;
+import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.OrderApiDto; // your OpenAPI DTO
 import com.book.store.Mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
-    private final CustomerRepository customerRepository;
+    private final UserRepository customerRepository;
     private final OrderMapper orderMapper; // map entity <-> DTO
 
     // Find all orders with pagination

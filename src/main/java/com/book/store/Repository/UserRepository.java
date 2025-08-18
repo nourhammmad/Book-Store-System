@@ -1,6 +1,7 @@
 package com.book.store.Repository;
 
 import com.book.store.Entity.Customer;
+import com.book.store.Entity.User;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,16 +11,15 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Integer>{
+public interface UserRepository extends JpaRepository<User, Integer> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<User> findById(Long id);
 
-
-       // Optional<Customer> findByEmail(String email);
-       // void deleteById(Integer id);
-        List<Customer> findAllCustomers(Pageable pageable);
-        Page<Customer> findByNameContaining(String name, Pageable pageable);
-
-
-
+    Optional<User> findByEmail(String email);
+   // void deleteById(Integer id);
+    List<User> findAll();
+    Page<User> findByNameContaining(String name, Pageable pageable);
 }

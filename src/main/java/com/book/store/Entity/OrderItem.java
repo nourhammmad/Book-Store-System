@@ -21,6 +21,6 @@ public class OrderItem {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    private int quantity;
-    private float price;
+//    private int quantity;
+//    private float price;
 }

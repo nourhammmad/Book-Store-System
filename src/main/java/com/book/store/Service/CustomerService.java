@@ -1,8 +1,11 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Customer;
+import com.book.store.Entity.User;
 import com.book.store.Mapper.CustomerMapper;
+
 import com.book.store.Repository.CustomerRepository;
+import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,20 +30,20 @@ public class CustomerService {
 
     // Delete customer
     @Transactional
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(Integer id) {
         customerRepository.deleteById(id);
     }
 
     // List all customers
     public List<CustomerApiDto> getAllCustomers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return customerRepository.findAll(pageable).stream()
+        return customerRepository.findAllCustomers(pageable).stream()
                 .map(customerMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     // Find by ID
-    public CustomerApiDto findCustomerById(Long id) {
+    public CustomerApiDto findCustomerById(Integer id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
         return customerMapper.toDTO(customer);

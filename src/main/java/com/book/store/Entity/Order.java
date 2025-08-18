@@ -3,7 +3,7 @@ package com.book.store.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-
+import com.book.store.Entity.User;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +24,13 @@ public class Order {
     @Column(updatable = false, nullable = false)
     private LocalDateTime orderDate;
     @ManyToOne
-    private Book book;  // <-- This must match .getBook()
+    private Book book;
 
-    private int quantity; // <-- This must match .getQuantity()
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    private int quantity;
+
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
