@@ -2,9 +2,10 @@ package com.book.store.Service;
 
 import com.book.store.Entity.Admin;
 import com.book.store.Entity.Customer;
-import com.book.store.Repository.AdminRepository;
-import com.book.store.Repository.BookHistoryRepository;
-import com.book.store.Repository.CustomerRepository;
+import com.book.store.Entity.User;
+import com.book.store.Mapper.AdminMapper;
+import com.book.store.Repository.*;
+import com.book.store.server.dto.AdminApiDto;
 import com.book.store.server.dto.CustomerApiDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,9 +24,16 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final BookHistoryRepository bokHistoryRepository;
     private final BookHistoryService bookHistoryService;
+    private final AdminMapper adminMapper;
+    private final UserRepository userRepository;
+    private final BookRepository bookRepository;
+    private final BookService bookService;
 
 
     public Admin createAdmin(Admin admin) {
+
+        admin.setEmail(admin.getEmail());
+        admin.setName(admin.getName());
         return adminRepository.save(admin);
     }
 
@@ -33,8 +43,11 @@ public class AdminService {
         adminRepository.deleteById(id);
     }
 
-    public List<Admin> findAllAdmins(Pageable pageable) {
-        return adminRepository.findAll(pageable).getContent();
+    public List<AdminApiDto> findAllAdmins(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return adminRepository.findAll(pageable).stream()
+                .map(adminMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     public Admin findAdminById(Integer id) {
@@ -42,6 +55,20 @@ public class AdminService {
     }
 
     public void updateBookFields(Integer entityId, String field, String oldValue, String newValue,Integer changedBy){
+         bookRepository.findById(entityId)
+                .map(book -> {
+                    if (Objects.equals(field.toLowerCase(), "title")) book.setTitle(newValue);
+                    if(Objects.equals(field.toLowerCase(), "price")) book.setPrice(Float.parseFloat(newValue));
+                    if (Objects.equals(field.toLowerCase(), "author")) {
+                        book.setAuthor(newValue);
+                       }
+                    if (Objects.equals(field.toLowerCase(), "quantity")) book.setQuantity(Integer.parseInt(newValue));
+                    if (Objects.equals(field.toLowerCase(), "description")) book.setDescription(newValue);
+
+                    return bookRepository.save(book);
+                })
+                .orElseThrow(() -> new RuntimeException("Book not found with id " + entityId));
+
         bookHistoryService.logChange( entityId,  field,  oldValue,  newValue, changedBy);
     }
 
