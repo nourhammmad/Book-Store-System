@@ -3,7 +3,6 @@ package com.book.store.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
 @Getter
 @Setter

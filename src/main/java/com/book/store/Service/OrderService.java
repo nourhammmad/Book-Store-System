@@ -54,6 +54,9 @@ public class OrderService {
                     throw new IllegalStateException("Requested quantity exceeds available stock for book " + book.getId());
                 }
 
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
                 // Map DTO -> entity
                 OrderItem item = orderMapper.toEntity(itemDto);
                 item.setBook(book);

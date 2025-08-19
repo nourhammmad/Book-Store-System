@@ -20,6 +20,9 @@ public class CustomerService {
     private final CustomerMapper customerMapper;
     // Create customer from API DTO
     public Customer createCustomer(Customer customer) {
+        if (customer == null) {
+            throw new NullPointerException("Customer must not be null");
+        }
         return customerRepository.save(customer);
     }
     // Delete customer
