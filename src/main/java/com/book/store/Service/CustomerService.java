@@ -24,7 +24,7 @@ public class CustomerService {
     }
     // Delete customer
     @Transactional
-    public void deleteCustomer(Integer id) {
+    public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }
     // List all customers
@@ -35,7 +35,7 @@ public class CustomerService {
                 .collect(Collectors.toList());
     }
     // Find by ID
-    public CustomerApiDto findCustomerById(Integer id) {
+    public CustomerApiDto findCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
         return customerMapper.toDTO(customer);

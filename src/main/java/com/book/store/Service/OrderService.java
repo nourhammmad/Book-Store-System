@@ -34,7 +34,7 @@ public class OrderService {
      */
     public Order placeOrder(OrderApiDto orderApiDto) {
         // Fetch customer
-        Integer customerId = orderApiDto.getCustomer().getId();
+        Long customerId = orderApiDto.getCustomer().getId();
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found with id " + customerId));
 
@@ -72,7 +72,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order findById(Integer id) {
+    public Order findById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id " + id));
     }
@@ -89,7 +89,7 @@ public class OrderService {
     /**
      * Delete an order and restore stock
      */
-    public void deleteById(Integer orderId) {
+    public void deleteById(Long orderId) {
         Order order = findById(orderId);
 
         for (OrderItem item : order.getItems()) {
@@ -104,7 +104,7 @@ public class OrderService {
     /**
      * Update order: status and items
      */
-//    public Order updateOrder(Integer orderId, UpdateOrderRequestApiDto updateDto) {
+//    public Order updateOrder(Long orderId, UpdateOrderRequestApiDto updateDto) {
 //        Order order = findById(orderId);
 //
 //        // Update status

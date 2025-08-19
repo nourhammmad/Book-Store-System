@@ -29,7 +29,7 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public Book getBookById(Integer id) {
+    public Book getBookById(Long id) {
         return bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 
@@ -43,7 +43,7 @@ public class BookService {
 
 
 
-    public Book updateBook(BookApiDto updatedBook, Integer id) {
+    public Book updateBook(BookApiDto updatedBook, Long id) {
         return bookRepository.findById(id)
                 .map(book -> {
 
@@ -60,11 +60,11 @@ public class BookService {
 
     }
 
-    public void deleteBook(Integer id) {
+    public void deleteBook(Long id) {
         bookRepository.deleteById(id);
     }
 
-    public String GetDescriptionById(Integer id){
+    public String GetDescriptionById(Long id){
         return bookRepository.getDescriptionById(id);
     }
 }

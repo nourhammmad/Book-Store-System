@@ -11,7 +11,7 @@ import java.util.List;
 //Fetch all items of an order without loading the whole order object.
 @Repository
 public interface OrderItemRepository {
-    List<OrderItem> findByBookId(Integer bookId);
-    List<OrderItem> findByOrderId(Integer orderId);
+    List<OrderItem> findByBookId(Long bookId);
+    List<OrderItem> findByOrderId(Long orderId);
 
 }

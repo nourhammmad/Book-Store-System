@@ -28,7 +28,7 @@ public class OrderController implements OrdersApi {
     // DELETE /orders/{id}
 
     @Override
-    public ResponseEntity<Void> deleteOrderById(Integer id) {
+    public ResponseEntity<Void> deleteOrderById(Long id) {
         orderService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -49,7 +49,7 @@ public class OrderController implements OrdersApi {
 
     // GET /orders/{id}
     @Override
-    public ResponseEntity<OrderApiDto> findOrderById(Integer id) {
+    public ResponseEntity<OrderApiDto> findOrderById(Long id) {
         Order order = orderService.findById(id);
         return new ResponseEntity<>(orderMapper.toDTO(order), HttpStatus.OK);
     }
@@ -75,7 +75,7 @@ public class OrderController implements OrdersApi {
 
     // PUT /orders/{id}
     @Override
-    public ResponseEntity<OrderApiDto> updateOrder(Integer id, UpdateOrderRequestApiDto updateOrderRequestApiDto) {
+    public ResponseEntity<OrderApiDto> updateOrder(Long id, UpdateOrderRequestApiDto updateOrderRequestApiDto) {
 //        Order updatedOrder = orderService.updateOrder(id.longValue(), updateOrderRequestApiDto);
 //        return new ResponseEntity<>(orderMapper.toDTO(updatedOrder), HttpStatus.OK);
         return null;
