@@ -21,7 +21,7 @@ public class BookHistory {
 
    // private String entityType;
     private Integer entityId;
-    private String fieldChanged;
+    private String field;
     private String oldValue;
     private String newValue;
 
