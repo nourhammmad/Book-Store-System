@@ -45,13 +45,13 @@ public class AdminController implements AdminsApi {
     }
 
     @Override
-    public ResponseEntity<Void> adminsIdDelete(Integer id) {
+    public ResponseEntity<Void> adminsIdDelete(Long id) {
         adminService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<AdminApiDto> adminsIdGet(Integer id) {
+    public ResponseEntity<AdminApiDto> adminsIdGet(Long id) {
         adminService.findAdminById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -75,10 +75,10 @@ public class AdminController implements AdminsApi {
     @Override
     public ResponseEntity<Void> adminsUpdateBookFieldPost(BookFieldUpdateApiDto bookFieldUpdateApiDto) {
         String field = bookFieldUpdateApiDto.getField();
-        Integer changer = bookFieldUpdateApiDto.getChangedBy();
+        Long changer = bookFieldUpdateApiDto.getChangedBy();
         String oldValue = bookFieldUpdateApiDto.getOldValue();
         String newValue = bookFieldUpdateApiDto.getNewValue();
-        Integer entityId = bookFieldUpdateApiDto.getEntityId();
+        Long entityId = bookFieldUpdateApiDto.getEntityId();
 //        bookService.updateBook(bookFieldUpdateApiDto);
         adminService.updateBookFields(entityId,field,oldValue,newValue,changer);
 

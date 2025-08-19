@@ -39,7 +39,7 @@ public class AdminService {
 
     // Delete customer
     @Transactional
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         adminRepository.deleteById(id);
     }
 
@@ -50,11 +50,11 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    public Admin findAdminById(Integer id) {
+    public Admin findAdminById(Long id) {
         return adminRepository.findById(id).get();
     }
 
-    public void updateBookFields(Integer entityId, String field, String oldValue, String newValue,Integer changedBy){
+    public void updateBookFields(Long entityId, String field, String oldValue, String newValue,Long changedBy){
          bookRepository.findById(entityId)
                 .map(book -> {
                     if (Objects.equals(field.toLowerCase(), "title")) book.setTitle(newValue);

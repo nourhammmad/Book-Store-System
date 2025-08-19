@@ -56,6 +56,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: Customer details
@@ -73,6 +74,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '204':
           description: Customer deleted
@@ -125,6 +127,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '200':
           description: Admin details
@@ -142,6 +145,7 @@ paths:
           required: true
           schema:
             type: integer
+            format: int64
       responses:
         '204':
           description: Admin deleted
@@ -167,6 +171,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
         email:
           type: string
         name:
@@ -182,6 +187,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
         name:
           type: string
         email:
@@ -197,6 +203,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
         name:
           type: string
         email:
@@ -208,6 +215,7 @@ components:
       properties:
         entityId:
           type: integer
+          format: int64
         field:
           type: string
         oldValue:
@@ -216,3 +224,4 @@ components:
           type: string
         changedBy:
           type: integer
+          format: int64

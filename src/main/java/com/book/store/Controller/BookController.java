@@ -34,7 +34,7 @@ public class BookController implements BooksApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteBookById(Integer id) {
+    public ResponseEntity<Void> deleteBookById(Long id) {
         bookService.deleteBook(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
@@ -51,12 +51,12 @@ public class BookController implements BooksApi {
     }
 
     @Override
-    public ResponseEntity<BookApiDto> findBookById(Integer id) {
+    public ResponseEntity<BookApiDto> findBookById(Long id) {
           return new ResponseEntity<>(BookMapper.INSTANCE.toDto(bookService.getBookById(id)), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<BookApiDto> updateBookById(Integer id, BookApiDto bookApiDto) {
+    public ResponseEntity<BookApiDto> updateBookById(Long id, BookApiDto bookApiDto) {
         Book book = bookService.updateBook(bookApiDto, id);
         return ResponseEntity.ok(bookMapper.toDto(book));
     }

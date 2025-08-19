@@ -17,16 +17,16 @@ public class BookHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
    // private String entityType;
-    private Integer entityId;
+    private Long entityId;
     private String field;
     private String oldValue;
     private String newValue;
 
 
-    private Integer changedBy;
+    private Long changedBy;
     private LocalDateTime timestamp;
 
 }

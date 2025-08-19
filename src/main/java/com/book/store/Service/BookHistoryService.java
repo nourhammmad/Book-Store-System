@@ -17,7 +17,7 @@ public class BookHistoryService {
     private final BookRepository bookRepository;
 
 
-    public BookHistory logChange(Integer entityId, String field, String oldValue, String newValue, Integer changedBy) {
+    public BookHistory logChange(Long entityId, String field, String oldValue, String newValue, Long changedBy) {
         BookHistory history = new BookHistory();
       //  log.setEntityType(entityType);
         history.setEntityId(entityId);
@@ -26,7 +26,7 @@ public class BookHistoryService {
         history.setNewValue(newValue);
         history.setChangedBy(changedBy);
         history.setTimestamp(LocalDateTime.now());
-        bookHistoryRepository.save(history);
+
 
         return  bookHistoryRepository.save(history);
     }

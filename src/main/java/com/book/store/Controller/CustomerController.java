@@ -70,13 +70,13 @@ public class CustomerController implements CustomersApi {
 //    }
 
     @Override
-    public ResponseEntity<Void> customersIdDelete(Integer id) {
+    public ResponseEntity<Void> customersIdDelete(Long id) {
          customerService.deleteCustomer(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<CustomerApiDtoApiDto> customersIdGet(Integer id) {
+    public ResponseEntity<CustomerApiDtoApiDto> customersIdGet(Long id) {
         customerService.findCustomerById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
