@@ -13,16 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Long>{
 
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Customer> findById(Long id);
 
-       // Optional<Customer> findByEmail(String email);
-       // void deleteById(Integer id);
-
-
-      //  Page<Customer> findAll(Pageable pageable);
-        Page<Customer> findByNameContaining(String name, Pageable pageable);
-
-
+    Optional<Customer> findByEmail(String email);
+    Customer save(Customer customer);
+    void deleteById(Long id);
+    List<Customer> findAll();
+    Page<Customer> findByNameContaining(String name, Pageable pageable);
 
 }

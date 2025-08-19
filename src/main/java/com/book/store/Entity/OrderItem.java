@@ -1,13 +1,25 @@
 package com.book.store.Entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
-import java.util.UUID;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+//for extra safety measures
+@ToString(exclude = {"order", "book"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 public class OrderItem {
+    @Builder
+    public OrderItem(Order order, Book book, int quantity) {
+        this.order = order;
+        this.book = book;
+        this.quantity = quantity;
+        //do not pass price manually
+        this.price = book.getPrice() * quantity;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +33,9 @@ public class OrderItem {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-//    private int quantity;
-//    private float price;
+
+    private int quantity;
+    private float price;
+
+
 }
