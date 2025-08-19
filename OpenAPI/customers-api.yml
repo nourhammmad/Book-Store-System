@@ -1,135 +1,183 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
-  title: Customers API
+  title: Bookstore User API
   version: 1.0.0
-  description: API for managing customers in the Book Store System
+  description: API for managing customers and admins
 servers:
   - url: 'http://localhost:8080/'
     description: Development Environment
 
-tags:
-  - name: Customers
-    description: Operations related to customers
-
 paths:
   /customers:
     get:
-      tags:
-        - Customers
-      summary: Find all customers
-      description: Retrieve a paginated list of customers
-      operationId: findAllCustomers
+      summary: Get all customers (paginated)
+      tags: ["Customers"]
       parameters:
-        - in: query
-          name: page
+        - name: page
+          in: query
+          required: false
           schema:
             type: integer
-            default: 0
-          description: Page number
-        - in: query
-          name: size
+        - name: size
+          in: query
+          required: false
           schema:
             type: integer
-            default: 10
-          description: Page size
       responses:
         '200':
-          description: Successfully retrieved customers
+          description: List of customers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/customers'
-              examples:
-                customersExample:
-                  $ref: '#/components/examples/customersExample'
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerApiDto'
 
     post:
-      tags:
-        - Customers
       summary: Create a new customer
-      description: Add a new customer to the system
-      operationId: createCustomer
+      tags: ["Customers"]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/customer'
-            example:
-              name: "Jane Doe"
-              email: "jane@example.com"
-              address: "123 Main St, Springfield"
-              balance: 500
+              $ref: '#/components/schemas/Customer'
       responses:
         '201':
-          description: Successfully created customer
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/customer'
+          description: Customer created
 
   /customers/{id}:
     get:
-      tags:
-        - Customers
-      summary: Find customer by ID
-      description: Retrieve a specific customer by ID
-      operationId: findCustomerById
+      summary: Get customer by ID
+      tags: ["Customers"]
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
-          description: ID of the customer
       responses:
         '200':
-          description: Successfully retrieved the customer
+          description: Customer details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/customer'
-        '404':
-          description: Customer not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomError'
+                $ref: '#/components/schemas/CustomerApiDto'
 
     delete:
-      tags:
-        - Customers
       summary: Delete customer by ID
-      description: Delete a specific customer by ID
-      operationId: deleteCustomerById
+      tags: ["Customers"]
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
-          description: ID of the customer to delete
       responses:
         '204':
-          description: Successfully deleted the customer
-        '404':
-          description: Customer not found
+          description: Customer deleted
+
+  /admins:
+    get:
+      summary: Get all admins (paginated)
+      tags: ["Admins"]
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of admins
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CustomError'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Admin'
+
+    post:
+      summary: Create a new admin
+      tags: ["Admins"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Admin'
+      responses:
+        '201':
+          description: Admin created
+
+  /admins/{id}:
+    get:
+      summary: Get admin by ID
+      tags: ["Admins"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Admin details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+
+    delete:
+      summary: Delete admin by ID
+      tags: ["Admins"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Admin deleted
+
+  /admins/update-book-field:
+    post:
+      summary: Log a book field update
+      tags: ["Admins"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookFieldUpdate'
+      responses:
+        '200':
+          description: Book field update logged
 
 components:
   schemas:
-    customers:
+    Customer:
       type: object
       properties:
-        customers:
-          type: array
-          items:
-            $ref: '#/components/schemas/customer'
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        balance:
+          type: number
+          format: float
 
-    customer:
+    CustomerApiDto:
       type: object
       properties:
         id:
@@ -144,26 +192,27 @@ components:
           type: number
           format: float
 
-    CustomError:
+    Admin:
       type: object
       properties:
-        status:
+        id:
           type: integer
-          example: 404
-        message:
+        name:
+          type: string
+        email:
           type: string
 
-  examples:
-    customersExample:
-      value:
-        customers:
-          - id: 1
-            name: "Jane Doe"
-            email: "jane@example.com"
-            address: "123 Main St, Springfield"
-            balance: 500
-          - id: 2
-            name: "John Smith"
-            email: "john@example.com"
-            address: "456 Elm St, Springfield"
-            balance: 300
+
+    BookFieldUpdate:
+      type: object
+      properties:
+        entityId:
+          type: integer
+        field:
+          type: string
+        oldValue:
+          type: string
+        newValue:
+          type: string
+        changedBy:
+          type: integer

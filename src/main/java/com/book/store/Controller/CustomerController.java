@@ -1,49 +1,92 @@
 package com.book.store.Controller;
 
+import com.book.store.Entity.Admin;
+import com.book.store.Mapper.AdminMapper;
+import com.book.store.Service.AdminService;
 import com.book.store.server.api.CustomersApi;
+
+import com.book.store.server.dto.AdminApiDto;
+import com.book.store.server.dto.BookFieldUpdateApiDto;
 import com.book.store.server.dto.CustomerApiDto;
-import com.book.store.server.dto.CustomersApiDto;
+
 import com.book.store.Service.CustomerService;
 import com.book.store.Entity.Customer;
-import com.book.store.Mapper.CustomerMapper; // you will create this like OrderMapper
+import com.book.store.Mapper.CustomerMapper;
+import com.book.store.server.dto.CustomerApiDtoApiDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
 public class CustomerController implements CustomersApi {
 
+
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
+
+
 
     public CustomerController(CustomerService customerService, CustomerMapper customerMapper) {
         this.customerService = customerService;
         this.customerMapper = customerMapper;
+
     }
 
+//    @Override
+//    public ResponseEntity<CustomersApiDto> findAllCustomers(Integer page, Integer size) {
+//
+//    }
+
+//
+//    @Override
+//    public ResponseEntity<CustomerApiDto> findCustomerById(Integer id) {
+//        return null;
+//    }
+
+
+
+
+
     @Override
-    public ResponseEntity<CustomersApiDto> findAllCustomers(Integer page, Integer size) {
-        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
+   public ResponseEntity<List<CustomerApiDtoApiDto>> customersGet(Integer page, Integer size) {
+//        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
+//        CustomerApiDtoApiDto response = (CustomerApiDtoApiDto) customerDtos;
+//
+//        return new ResponseEntity<>( response,HttpStatus.OK);
 
-        CustomersApiDto response = new CustomersApiDto();
-        response.setCustomers(customerDtos);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-
-    @Override
-    public ResponseEntity<CustomerApiDto> findCustomerById(Integer id) {
         return null;
     }
 
+//    @Override
+//    public ResponseEntity<List<CustomerApiDto>> customersGet() {
+//        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
+//
+//        CustomersApiDto response = new CustomersApiDto();
+//        response.setCustomers(customerDtos);
+//
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
     @Override
-    public ResponseEntity<CustomerApiDto> createCustomer(CustomerApiDto customerApiDto) {
+    public ResponseEntity<Void> customersIdDelete(Integer id) {
+         customerService.deleteCustomer(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<CustomerApiDtoApiDto> customersIdGet(Integer id) {
+        customerService.findCustomerById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> customersPost(CustomerApiDto customerApiDto) {
         // Convert API DTO to entity
         Customer customerEntity = customerMapper.toEntity(customerApiDto);
-
+        customerEntity.setName(customerApiDto.getName());
+        customerEntity.setEmail(customerApiDto.getEmail());
         // Save the customer entity
         Customer savedCustomer = customerService.createCustomer(customerEntity);
 
@@ -51,13 +94,6 @@ public class CustomerController implements CustomersApi {
         CustomerApiDto responseDto = customerMapper.toDTO(savedCustomer);
 
         // Return response with CREATED status
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
-
-    @Override
-    public ResponseEntity<Void> deleteCustomerById(Integer id) {
-        return null;
-    }
-
-
 }
