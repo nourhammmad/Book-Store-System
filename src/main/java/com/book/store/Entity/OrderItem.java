@@ -3,8 +3,6 @@ package com.book.store.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Entity
 @Data
 public class OrderItem {

@@ -59,6 +59,9 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Book not found"));
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
         if (book.getQuantity() < quantity)
             throw new RuntimeException("Requested quantity exceeds available stock");
 
