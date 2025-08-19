@@ -40,7 +40,7 @@ class BookServiceTest {
     @BeforeEach
     void setUp() {
         book = new Book();
-        book.setId(1);
+        book.setId(1L);
         book.setTitle("Test Book");
         book.setAuthor("Test Author");
         book.setPrice(29.99f);
@@ -48,7 +48,7 @@ class BookServiceTest {
         book.setDescription("Test Description");
 
         bookApiDto = new BookApiDto();
-        bookApiDto.setId(1);
+        bookApiDto.setId(1L);
         bookApiDto.setTitle("Test Book");
         bookApiDto.setPrice(29.99f);
     }
@@ -86,27 +86,27 @@ class BookServiceTest {
 
     @Test
     void getBookByIdReturnsBookWhenExists() {
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
-        Book result = bookService.getBookById(1);
+        Book result = bookService.getBookById(1L);
 
         assertNotNull(result);
         assertEquals(1, result.getId());
         assertEquals("Test Book", result.getTitle());
-        verify(bookRepository).findById(1);
+        verify(bookRepository).findById(1L);
     }
 
     @Test
     void getBookByIdThrowsExceptionWhenNotFound() {
-        when(bookRepository.findById(999)).thenReturn(Optional.empty());
+        when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> bookService.getBookById(999)
+            () -> bookService.getBookById(999L)
         );
 
         assertEquals("Order not found", exception.getMessage());
-        verify(bookRepository).findById(999);
+        verify(bookRepository).findById(999L);
     }
 
     @Test
@@ -127,15 +127,15 @@ class BookServiceTest {
         updateDto.setTitle("Updated Title");
         updateDto.setPrice(39.99f);
 
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
-        Book result = bookService.updateBook(updateDto, 1);
+        Book result = bookService.updateBook(updateDto, 1L);
 
         assertNotNull(result);
         assertEquals("Updated Title", book.getTitle());
         assertEquals(39.99f, book.getPrice());
-        verify(bookRepository).findById(1);
+        verify(bookRepository).findById(1L);
         verify(bookRepository).save(book);
     }
 
@@ -145,15 +145,15 @@ class BookServiceTest {
         updateDto.setTitle("Updated Title");
         updateDto.setPrice(0.0f);
 
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
-        Book result = bookService.updateBook(updateDto, 1);
+        Book result = bookService.updateBook(updateDto, 1L);
 
         assertNotNull(result);
         assertEquals("Updated Title", book.getTitle());
         assertEquals(29.99f, book.getPrice()); // Original price preserved
-        verify(bookRepository).findById(1);
+        verify(bookRepository).findById(1L);
         verify(bookRepository).save(book);
     }
 
@@ -162,46 +162,46 @@ class BookServiceTest {
         BookApiDto updateDto = new BookApiDto();
         updateDto.setTitle("Updated Title");
 
-        when(bookRepository.findById(999)).thenReturn(Optional.empty());
+        when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(
             RuntimeException.class,
-            () -> bookService.updateBook(updateDto, 999)
+            () -> bookService.updateBook(updateDto, 999L)
         );
 
         assertEquals("Book not found with id 999", exception.getMessage());
-        verify(bookRepository).findById(999);
+        verify(bookRepository).findById(999L);
         verify(bookRepository, never()).save(any());
     }
 
     @Test
     void deleteBookCallsRepositoryDelete() {
-        doNothing().when(bookRepository).deleteById(1);
+        doNothing().when(bookRepository).deleteById(1L);
 
-        bookService.deleteBook(1);
+        bookService.deleteBook(1L);
 
-        verify(bookRepository).deleteById(1);
+        verify(bookRepository).deleteById(1L);
     }
 
     @Test
     void getDescriptionByIdReturnsDescription() {
         String expectedDescription = "Test Description";
-        when(bookRepository.getDescriptionById(1)).thenReturn(expectedDescription);
+        when(bookRepository.getDescriptionById(1L)).thenReturn(expectedDescription);
 
-        String result = bookService.GetDescriptionById(1);
+        String result = bookService.GetDescriptionById(1L);
 
         assertEquals(expectedDescription, result);
-        verify(bookRepository).getDescriptionById(1);
+        verify(bookRepository).getDescriptionById(1L);
     }
 
     @Test
     void getDescriptionByIdReturnsNullWhenNotFound() {
-        when(bookRepository.getDescriptionById(999)).thenReturn(null);
+        when(bookRepository.getDescriptionById(999L)).thenReturn(null);
 
-        String result = bookService.GetDescriptionById(999);
+        String result = bookService.GetDescriptionById(999L);
 
         assertNull(result);
-        verify(bookRepository).getDescriptionById(999);
+        verify(bookRepository).getDescriptionById(999L);
     }
 
     @Test
@@ -231,10 +231,10 @@ class BookServiceTest {
         BookApiDto updateDto = new BookApiDto();
         updateDto.setPrice(null);
 
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
-        Book result = bookService.updateBook(updateDto, 1);
+        Book result = bookService.updateBook(updateDto, 1L);
 
         assertNotNull(result);
         assertEquals("Test Book", book.getTitle());
@@ -248,10 +248,10 @@ class BookServiceTest {
         updateDto.setTitle("Updated Title");
         updateDto.setPrice(0.0f);
 
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
-        Book result = bookService.updateBook(updateDto, 1);
+        Book result = bookService.updateBook(updateDto, 1L);
 
         assertEquals("Updated Title", book.getTitle());
         assertEquals(29.99f, book.getPrice());
@@ -273,20 +273,20 @@ class BookServiceTest {
 
     @Test
     void deleteBookWithNonExistentId() {
-        doNothing().when(bookRepository).deleteById(999);
+        doNothing().when(bookRepository).deleteById(999L);
 
-        assertDoesNotThrow(() -> bookService.deleteBook(999));
+        assertDoesNotThrow(() -> bookService.deleteBook(999L));
 
-        verify(bookRepository).deleteById(999);
+        verify(bookRepository).deleteById(999L);
     }
 
     @Test
     void getDescriptionByIdWithEmptyString() {
-        when(bookRepository.getDescriptionById(1)).thenReturn("");
+        when(bookRepository.getDescriptionById(1L)).thenReturn("");
 
-        String result = bookService.GetDescriptionById(1);
+        String result = bookService.GetDescriptionById(1L);
 
         assertEquals("", result);
-        verify(bookRepository).getDescriptionById(1);
+        verify(bookRepository).getDescriptionById(1L);
     }
 }

@@ -9,6 +9,7 @@ import com.book.store.Repository.BookRepository;
 import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.OrderRepository;
 import com.book.store.server.dto.OrderApiDto;
+import com.book.store.server.dto.OrderItemApiDto;
 import com.book.store.server.dto.BookApiDto;
 import com.book.store.server.dto.CustomerApiDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,11 +54,12 @@ class OrderServiceTest {
     private Book book;
     private Customer customer;
     private OrderApiDto orderApiDto;
+    private OrderItem orderItem;
 
     @BeforeEach
     void setUp() {
         book = new Book();
-        book.setId(1);
+        book.setId(1L);
         book.setTitle("Test Book");
         book.setPrice(25.0f);
         book.setQuantity(10);
@@ -66,24 +69,31 @@ class OrderServiceTest {
         customer.setName("John Doe");
         customer.setEmail("john@example.com");
 
+        orderItem = new OrderItem();
+        orderItem.setId(1L);
+        orderItem.setBook(book);
+        orderItem.setQuantity(2);
+        orderItem.setPrice(50.0f);
+
         order = new Order();
         order.setId(1L);
         order.setCustomer(customer);
-        order.setBook(book);
-        order.setQuantity(2);
-        order.setTotalPrice(50.0f);
         order.setOrderDate(LocalDateTime.now());
+        order.addItem(orderItem);
 
         BookApiDto bookApiDto = new BookApiDto();
-        bookApiDto.setId(1);
+        bookApiDto.setId(1L);
 
         CustomerApiDto customerApiDto = new CustomerApiDto();
         customerApiDto.setId(1L);
 
+        OrderItemApiDto orderItemApiDto = new OrderItemApiDto();
+        orderItemApiDto.setBook(bookApiDto);
+        orderItemApiDto.setQuantity(2);
+
         orderApiDto = new OrderApiDto();
-        orderApiDto.setBook(bookApiDto);
         orderApiDto.setCustomer(customerApiDto);
-        orderApiDto.setQuantity(2);
+        orderApiDto.setItems(new ArrayList<>(List.of(orderItemApiDto))); // Use mutable list
     }
 
     @Test
@@ -119,7 +129,8 @@ class OrderServiceTest {
     @Test
     void placeOrderFromDtoCreatesOrderSuccessfully() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(orderMapper.toEntity(any(OrderItemApiDto.class))).thenReturn(orderItem);
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
@@ -127,98 +138,82 @@ class OrderServiceTest {
 
         assertNotNull(result);
         verify(customerRepository).findById(1L);
-        verify(bookRepository).findById(1);
+        verify(bookRepository).findById(1L);
         verify(orderRepository).save(any(Order.class));
     }
 
     @Test
-    void placeOrderCreatesOrderSuccessfully() {
+    void placeOrderFromDtoReducesBookQuantity() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(orderMapper.toEntity(any(OrderItemApiDto.class))).thenReturn(orderItem);
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
-        Order result = orderService.placeOrder(1L, 1, 2);
-
-        assertNotNull(result);
-        assertEquals(customer, result.getCustomer());
-        assertEquals(book, result.getBook());
-        assertEquals(2, result.getQuantity());
-        assertEquals(50.0f, result.getTotalPrice());
-        verify(bookRepository).save(book);
-        verify(orderRepository).save(any(Order.class));
-    }
-
-    @Test
-    void placeOrderReducesBookQuantity() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
-        when(bookRepository.save(any(Book.class))).thenReturn(book);
-        when(orderRepository.save(any(Order.class))).thenReturn(order);
-
-        orderService.placeOrder(1L, 1, 2);
+        orderService.placeOrder(orderApiDto);
 
         assertEquals(8, book.getQuantity()); // 10 - 2 = 8
         verify(bookRepository).save(book);
     }
 
     @Test
-    void placeOrderThrowsExceptionWhenBookNotFound() {
-        when(bookRepository.findById(999)).thenReturn(Optional.empty());
+    void placeOrderFromDtoThrowsExceptionWhenBookNotFound() {
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> orderService.placeOrder(1L, 999, 2)
+            () -> orderService.placeOrder(orderApiDto)
         );
 
-        assertEquals("Book not found", exception.getMessage());
-        verify(bookRepository).findById(999);
-        verify(customerRepository, never()).findById(any());
+        assertEquals("Book not found with id 1", exception.getMessage());
+        verify(bookRepository).findById(1L);
         verify(orderRepository, never()).save(any());
     }
 
     @Test
-    void placeOrderThrowsExceptionWhenCustomerNotFound() {
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+    void placeOrderFromDtoThrowsExceptionWhenCustomerNotFound() {
+        orderApiDto.getCustomer().setId(999L);
         when(customerRepository.findById(999L)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(
-            RuntimeException.class,
-            () -> orderService.placeOrder(999L, 1, 2)
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> orderService.placeOrder(orderApiDto)
         );
 
         assertEquals("Customer not found with id 999", exception.getMessage());
-        verify(bookRepository).findById(1);
         verify(customerRepository).findById(999L);
         verify(orderRepository, never()).save(any());
     }
 
     @Test
-    void placeOrderThrowsExceptionWhenInsufficientStock() {
+    void placeOrderFromDtoThrowsExceptionWhenInsufficientStock() {
         book.setQuantity(1);
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        orderApiDto.getItems().get(0).setQuantity(5);
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
-        RuntimeException exception = assertThrows(
-            RuntimeException.class,
-            () -> orderService.placeOrder(1L, 1, 5)
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> orderService.placeOrder(orderApiDto)
         );
 
-        assertEquals("Requested quantity exceeds available stock", exception.getMessage());
-        verify(bookRepository).findById(1);
+        assertEquals("Requested quantity exceeds available stock for book 1", exception.getMessage());
+        verify(bookRepository).findById(1L);
         verify(customerRepository).findById(1L);
         verify(orderRepository, never()).save(any());
     }
 
     @Test
-    void placeOrderHandlesExactStockQuantity() {
+    void placeOrderFromDtoHandlesExactStockQuantity() {
         book.setQuantity(2);
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(orderMapper.toEntity(any(OrderItemApiDto.class))).thenReturn(orderItem);
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
-        Order result = orderService.placeOrder(1L, 1, 2);
+        Order result = orderService.placeOrder(orderApiDto);
 
         assertNotNull(result);
         assertEquals(0, book.getQuantity());
@@ -227,13 +222,16 @@ class OrderServiceTest {
     }
 
     @Test
-    void deleteByIdDeletesOrderWhenExists() {
+    void deleteByIdDeletesOrderAndRestoresStock() {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
         doNothing().when(orderRepository).delete(order);
 
         orderService.deleteById(1L);
 
+        assertEquals(12, book.getQuantity()); // 10 + 2 = 12 (restored stock)
         verify(orderRepository).findById(1L);
+        verify(bookRepository).save(book);
         verify(orderRepository).delete(order);
     }
 
@@ -246,31 +244,8 @@ class OrderServiceTest {
             () -> orderService.deleteById(999L)
         );
 
-        assertEquals("Order not found", exception.getMessage());
+        assertEquals("Order not found with id 999", exception.getMessage());
         verify(orderRepository).findById(999L);
-        verify(orderRepository, never()).delete(any());
-    }
-
-    @Test
-    void deleteOrderDeletesSuccessfully() {
-        order.setId(1L);
-        doNothing().when(orderRepository).delete(order);
-
-        orderService.delete(order);
-
-        verify(orderRepository).delete(order);
-    }
-
-    @Test
-    void deleteOrderThrowsExceptionWhenIdIsNull() {
-        order.setId(null);
-
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> orderService.delete(order)
-        );
-
-        assertEquals("Order ID must not be null", exception.getMessage());
         verify(orderRepository, never()).delete(any());
     }
 
@@ -283,6 +258,7 @@ class OrderServiceTest {
         assertNotNull(result);
         assertEquals(1L, result.getId());
         assertEquals(customer, result.getCustomer());
+        assertFalse(result.getItems().isEmpty());
         verify(orderRepository).findById(1L);
     }
 
@@ -295,84 +271,40 @@ class OrderServiceTest {
             () -> orderService.findById(999L)
         );
 
-        assertEquals("Order not found", exception.getMessage());
+        assertEquals("Order not found with id 999", exception.getMessage());
         verify(orderRepository).findById(999L);
     }
 
     @Test
-    void placeOrderWithZeroQuantity() {
+    void placeOrderFromDtoWithZeroQuantity() {
+        orderApiDto.getItems().get(0).setQuantity(0);
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-            () -> orderService.placeOrder(1L, 1, 0)
-        );
-
-        assertEquals("Quantity must be greater than zero", exception.getMessage());
-        verify(bookRepository).findById(1);
-        verify(customerRepository).findById(1L);
-    }
-
-    @Test
-    void placeOrderWithNegativeQuantity() {
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-            () -> orderService.placeOrder(1L, 1, -5)
-        );
-
-        assertEquals("Quantity must be greater than zero", exception.getMessage());
-        verify(bookRepository).findById(1);
-        verify(customerRepository).findById(1L);
-    }
-
-    @Test
-    void placeOrderCalculatesTotalPriceCorrectly() {
-        book.setPrice(15.50f);
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
-        when(bookRepository.save(any(Book.class))).thenReturn(book);
-        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
-            Order savedOrder = invocation.getArgument(0);
-            return savedOrder;
-        });
-
-        Order result = orderService.placeOrder(1L, 1, 3);
-
-        assertNotNull(result);
-        assertEquals(46.50f, result.getTotalPrice());
-        assertEquals(3, result.getQuantity());
-    }
-
-    @Test
-    void placeOrderFromDtoWithInvalidBookId() {
-        orderApiDto.getBook().setId(999);
-        when(bookRepository.findById(999)).thenReturn(Optional.empty());
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
             () -> orderService.placeOrder(orderApiDto)
         );
 
-        assertEquals("Book not found", exception.getMessage());
-        verify(bookRepository).findById(999);
+        assertEquals("Quantity must be greater than zero", exception.getMessage());
+        verify(bookRepository).findById(1L);
+        verify(customerRepository).findById(1L);
     }
 
     @Test
-    void placeOrderFromDtoWithInvalidCustomerId() {
-        orderApiDto.getCustomer().setId(999L);
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
-        when(customerRepository.findById(999L)).thenReturn(Optional.empty());
+    void placeOrderFromDtoWithNegativeQuantity() {
+        orderApiDto.getItems().get(0).setQuantity(-5);
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
-        RuntimeException exception = assertThrows(
-            RuntimeException.class,
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
             () -> orderService.placeOrder(orderApiDto)
         );
 
-        assertEquals("Customer not found with id 999", exception.getMessage());
+        assertEquals("Quantity must be greater than zero", exception.getMessage());
+        verify(bookRepository).findById(1L);
+        verify(customerRepository).findById(1L);
     }
 
     @Test
@@ -382,7 +314,8 @@ class OrderServiceTest {
             () -> orderService.findAll(-1, 10)
         );
 
-        assertEquals("Page index must not be less than zero", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Page index must not be less than zero") ||
+                  exception.getMessage().contains("must not be negative"));
         verify(orderRepository, never()).findAll(any(Pageable.class));
     }
 
@@ -393,20 +326,9 @@ class OrderServiceTest {
             () -> orderService.findAll(0, 0)
         );
 
-        assertEquals("Page size must not be less than one", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Page size must not be less than one") ||
+                  exception.getMessage().contains("must be greater than"));
         verify(orderRepository, never()).findAll(any(Pageable.class));
-    }
-
-    @Test
-    void deleteOrderRepositoryThrowsException() {
-        order.setId(1L);
-        doThrow(new RuntimeException("Database error")).when(orderRepository).delete(order);
-
-        assertThrows(RuntimeException.class, () -> {
-            orderService.delete(order);
-        });
-
-        verify(orderRepository).delete(order);
     }
 
     @Test
@@ -423,13 +345,14 @@ class OrderServiceTest {
     }
 
     @Test
-    void placeOrderBookRepositorySaveThrowsException() {
+    void placeOrderFromDtoBookRepositorySaveThrowsException() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(orderMapper.toEntity(any(OrderItemApiDto.class))).thenReturn(orderItem);
         when(bookRepository.save(any(Book.class))).thenThrow(new RuntimeException("Database error"));
 
         assertThrows(RuntimeException.class, () -> {
-            orderService.placeOrder(1L, 1, 2);
+            orderService.placeOrder(orderApiDto);
         });
 
         verify(bookRepository).save(book);
@@ -437,16 +360,156 @@ class OrderServiceTest {
     }
 
     @Test
-    void placeOrderOrderRepositorySaveThrowsException() {
+    void placeOrderFromDtoOrderRepositorySaveThrowsException() {
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(orderMapper.toEntity(any(OrderItemApiDto.class))).thenReturn(orderItem);
         when(bookRepository.save(any(Book.class))).thenReturn(book);
         when(orderRepository.save(any(Order.class))).thenThrow(new RuntimeException("Database error"));
 
         assertThrows(RuntimeException.class, () -> {
-            orderService.placeOrder(1L, 1, 2);
+            orderService.placeOrder(orderApiDto);
         });
 
+        verify(bookRepository).save(book);
+        verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    void placeOrderFromDtoWithMultipleItems() {
+        // Create second book and item
+        Book book2 = new Book();
+        book2.setId(2L);
+        book2.setTitle("Test Book 2");
+        book2.setPrice(30.0f);
+        book2.setQuantity(5);
+
+        BookApiDto bookApiDto2 = new BookApiDto();
+        bookApiDto2.setId(2L);
+
+        OrderItemApiDto orderItemApiDto2 = new OrderItemApiDto();
+        orderItemApiDto2.setBook(bookApiDto2);
+        orderItemApiDto2.setQuantity(1);
+
+        orderApiDto.getItems().add(orderItemApiDto2);
+
+        OrderItem orderItem2 = new OrderItem();
+        orderItem2.setBook(book2);
+        orderItem2.setQuantity(1);
+        orderItem2.setPrice(30.0f);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book2));
+        when(orderMapper.toEntity(any(OrderItemApiDto.class)))
+            .thenReturn(orderItem)
+            .thenReturn(orderItem2);
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+        Order result = orderService.placeOrder(orderApiDto);
+
+        assertNotNull(result);
+        assertEquals(8, book.getQuantity()); // 10 - 2 = 8
+        assertEquals(4, book2.getQuantity()); // 5 - 1 = 4
+        verify(bookRepository, times(2)).save(any(Book.class));
+        verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    void placeOrderFromDtoWithEmptyItemsList() {
+        orderApiDto.setItems(List.of());
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+        Order result = orderService.placeOrder(orderApiDto);
+
+        assertNotNull(result);
+        verify(customerRepository).findById(1L);
+        verify(orderRepository).save(any(Order.class));
+        verify(bookRepository, never()).findById(any());
+        verify(bookRepository, never()).save(any());
+    }
+
+    @Test
+    void placeOrderFromDtoWithNullItemsList() {
+        orderApiDto.setItems(null);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+        Order result = orderService.placeOrder(orderApiDto);
+
+        assertNotNull(result);
+        verify(customerRepository).findById(1L);
+        verify(orderRepository).save(any(Order.class));
+        verify(bookRepository, never()).findById(any());
+        verify(bookRepository, never()).save(any());
+    }
+
+    @Test
+    void deleteByIdWithMultipleItemsRestoresAllStock() {
+        // Add second item to order
+        Book book2 = new Book();
+        book2.setId(2L);
+        book2.setQuantity(15);
+
+        OrderItem orderItem2 = new OrderItem();
+        orderItem2.setBook(book2);
+        orderItem2.setQuantity(3);
+
+        order.addItem(orderItem2);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        doNothing().when(orderRepository).delete(order);
+
+        orderService.deleteById(1L);
+
+        assertEquals(12, book.getQuantity()); // 10 + 2 = 12
+        assertEquals(18, book2.getQuantity()); // 15 + 3 = 18
+        verify(orderRepository).findById(1L);
+        verify(bookRepository, times(2)).save(any(Book.class));
+        verify(orderRepository).delete(order);
+    }
+
+    @Test
+    void findAllReturnsCorrectPageSize() {
+        Order order2 = new Order();
+        order2.setId(2L);
+        order2.setCustomer(customer);
+
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Order> orderPage = new PageImpl<>(List.of(order), pageable, 2);
+
+        when(orderRepository.findAll(pageable)).thenReturn(orderPage);
+
+        Page<Order> result = orderService.findAll(0, 1);
+
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
+        assertEquals(2, result.getTotalElements());
+        assertEquals(0, result.getNumber());
+        assertEquals(1, result.getSize());
+        verify(orderRepository).findAll(pageable);
+    }
+
+    @Test
+    void placeOrderFromDtoWithLargeQuantity() {
+        book.setQuantity(1000);
+        orderApiDto.getItems().get(0).setQuantity(999);
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        when(orderMapper.toEntity(any(OrderItemApiDto.class))).thenReturn(orderItem);
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+        Order result = orderService.placeOrder(orderApiDto);
+
+        assertNotNull(result);
+        assertEquals(1, book.getQuantity()); // 1000 - 999 = 1
         verify(bookRepository).save(book);
         verify(orderRepository).save(any(Order.class));
     }

@@ -10,16 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Integer> {
+public interface BookRepository extends JpaRepository<Book, Long> {
    Optional<Book>  findByTitle(String title);
-
-
-
     @Query("SELECT b.description FROM Book b WHERE b.id = :id")
-   String  getDescriptionById(Integer id);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Book> findById(Integer id);
-
-
+   String  getDescriptionById(Long id);
 }

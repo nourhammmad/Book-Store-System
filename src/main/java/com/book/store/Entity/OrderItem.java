@@ -1,11 +1,25 @@
 package com.book.store.Entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+//for extra safety measures
+@ToString(exclude = {"order", "book"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+
 public class OrderItem {
+    @Builder
+    public OrderItem(Order order, Book book, int quantity) {
+        this.order = order;
+        this.book = book;
+        this.quantity = quantity;
+        //do not pass price manually
+        this.price = book.getPrice() * quantity;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +35,5 @@ public class OrderItem {
 
     private int quantity;
     private float price;
+
 }

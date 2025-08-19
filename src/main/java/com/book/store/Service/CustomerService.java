@@ -16,10 +16,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
-
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
-
     // Create customer from API DTO
     public Customer createCustomer(Customer customer) {
         if (customer == null) {
@@ -27,13 +25,11 @@ public class CustomerService {
         }
         return customerRepository.save(customer);
     }
-
     // Delete customer
     @Transactional
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }
-
     // List all customers
     public List<CustomerApiDto> getAllCustomers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -41,7 +37,6 @@ public class CustomerService {
                 .map(customerMapper::toDTO)
                 .collect(Collectors.toList());
     }
-
     // Find by ID
     public CustomerApiDto findCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
