@@ -1,9 +1,13 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Customer;
+import com.book.store.Entity.User;
 import com.book.store.Mapper.CustomerMapper;
+
 import com.book.store.Repository.CustomerRepository;
+import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
+import com.book.store.server.dto.CustomerApiDtoApiDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -16,13 +20,18 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
+
+private final UserRepository userRepository;
+
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     // Create customer from API DTO
     public Customer createCustomer(Customer customer) {
+
         if (customer == null) {
             throw new NullPointerException("Customer must not be null");
         }
+
         return customerRepository.save(customer);
     }
     // Delete customer

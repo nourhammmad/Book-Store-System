@@ -6,11 +6,17 @@ import com.book.store.Entity.Order;
 import com.book.store.Entity.OrderItem;
 import com.book.store.Mapper.OrderMapper;
 import com.book.store.Repository.BookRepository;
-import com.book.store.Repository.CustomerRepository;
+
 import com.book.store.Repository.OrderRepository;
+
+import com.book.store.Repository.UserRepository;
+import com.book.store.server.dto.OrderApiDto; // your OpenAPI DTO
+import com.book.store.Mapper.OrderMapper;
+
 import com.book.store.server.dto.OrderApiDto;
 import com.book.store.server.dto.OrderItemApiDto;
 import com.book.store.server.dto.UpdateOrderRequestApiDto;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +32,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
+
     private final CustomerRepository customerRepository;
     private final OrderMapper orderMapper;
 
