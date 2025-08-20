@@ -7,6 +7,7 @@ import com.book.store.Entity.OrderItem;
 import com.book.store.Mapper.OrderMapper;
 import com.book.store.Repository.BookRepository;
 
+import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.OrderRepository;
 
 import com.book.store.Repository.UserRepository;
@@ -17,6 +18,7 @@ import com.book.store.server.dto.OrderApiDto;
 import com.book.store.server.dto.OrderItemApiDto;
 import com.book.store.server.dto.UpdateOrderRequestApiDto;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -100,6 +102,9 @@ public class OrderService {
      * Delete an order and restore stock
      */
     public void deleteById(Long orderId) {
+        if (orderId == null) {
+            throw new IllegalArgumentException("id is null");
+        }
         Order order = findById(orderId);
 
         for (OrderItem item : order.getItems()) {
