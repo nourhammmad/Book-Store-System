@@ -77,7 +77,7 @@ public class CustomerController implements CustomersApi {
 
     @Override
     public ResponseEntity<CustomerApiDtoApiDto> customersIdGet(Long id) {
-        customerService.findCustomerById(id);
+      CustomerApiDto customerApiDto =  customerService.findCustomerById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
