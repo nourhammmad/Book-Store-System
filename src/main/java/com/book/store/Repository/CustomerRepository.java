@@ -22,6 +22,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Customer save(Customer customer);
     void deleteById(Long id);
     List<Customer> findAll();
-    Page<Customer> findByNameContaining(String name, Pageable pageable);
+    Page<Customer> findByUsernameContaining(String username, Pageable pageable);
 
 }
