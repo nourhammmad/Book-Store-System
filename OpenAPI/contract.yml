@@ -16,6 +16,9 @@ tags:
     description: Operations related to administrators
   - name: Books
     description: Operations related to books
+  - name: Auth
+    description: Authentication operations
+
 
 paths:
   # Orders endpoints
@@ -71,7 +74,7 @@ paths:
             example:
               customer:
                 id: 1
-                name: "John Doe"
+                username: "John Doe"
               items:
                 - book:
                     id: 1
@@ -501,6 +504,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomError'
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT token returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtResponse'
+        '401':
+          description: Unauthorized
+
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: User registered successfully
+        '400':
+          description: Bad request
+
+  /auth/whoami:
+    get:
+      tags:
+        - Auth
+      summary: Get current authenticated user
+      responses:
+        '200':
+          description: Returns username of authenticated user
+          content:
+            application/json:
+              schema:
+                type: string
+
 
 components:
   schemas:
@@ -556,7 +610,7 @@ components:
         id:
           type: integer
           format: int64
-        name:
+        username:
           type: string
 
     Customer:
@@ -567,7 +621,9 @@ components:
           format: int64
         email:
           type: string
-        name:
+        username:
+          type: string
+        password:
           type: string
         address:
           type: string
@@ -609,7 +665,7 @@ components:
         id:
           type: integer
           format: int64
-        name:
+        username:
           type: string
         email:
           type: string
@@ -640,6 +696,48 @@ components:
         message:
           type: string
 
+    AuthRequest:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          minLength: 5
+          maxLength: 50
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+
+    JwtResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
   examples:
     ordersExample:
       value:
@@ -650,7 +748,7 @@ components:
             status: PLACED
             customer:
               id: 1
-              name: "John Doe"
+              username: "John Doe"
             items:
               - id: 1
                 quantity: 2
@@ -680,14 +778,14 @@ components:
       value:
         id: 101
         email: "alice.smith@example.com"
-        name: "Alice Smith"
+        username: "Alice Smith"
         address: "123 Maple Street, Springfield"
         balance: 150.75
 
     adminExample:
       value:
         id: 1
-        name: "Admin User"
+        username: "Admin User"
         email: "admin@bookstore.com"
 
     bookFieldUpdateExample:

@@ -85,7 +85,7 @@ public class CustomerController implements CustomersApi {
     public ResponseEntity<Void> customersPost(CustomerApiDto customerApiDto) {
         // Convert API DTO to entity
         Customer customerEntity = customerMapper.toEntity(customerApiDto);
-        customerEntity.setUsername(customerApiDto.getName());
+        customerEntity.setUsername(customerApiDto.getUsername());
         customerEntity.setEmail(customerApiDto.getEmail());
         // Save the customer entity
         Customer savedCustomer = customerService.createCustomer(customerEntity);

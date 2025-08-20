@@ -54,7 +54,7 @@ public class AdminController implements AdminsApi {
     public ResponseEntity<Void> adminsPost(AdminApiDto adminApiDto) {
         // Convert API DTO to entity
         Admin adminEntity = adminMapper.toEntity(adminApiDto);
-        adminEntity.setUsername(adminApiDto.getName());
+        adminEntity.setUsername(adminApiDto.getUsername());
         adminEntity.setEmail(adminApiDto.getEmail());
         // Save the customer entity
         Admin savedAdmin = adminService.createAdmin(adminEntity);
