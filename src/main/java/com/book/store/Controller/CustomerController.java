@@ -12,7 +12,7 @@ import com.book.store.server.dto.CustomerApiDto;
 import com.book.store.Service.CustomerService;
 import com.book.store.Entity.Customer;
 import com.book.store.Mapper.CustomerMapper;
-import com.book.store.server.dto.CustomerApiDtoApiDto;
+import com.book.store.server.dto.CustomerApiDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +50,7 @@ public class CustomerController implements CustomersApi {
 
 
     @Override
-   public ResponseEntity<List<CustomerApiDtoApiDto>> customersGet(Integer page, Integer size) {
+   public ResponseEntity<List<CustomerApiDto>> customersGet(Integer page, Integer size) {
 //        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
 //        CustomerApiDtoApiDto response = (CustomerApiDtoApiDto) customerDtos;
 //
@@ -76,7 +76,7 @@ public class CustomerController implements CustomersApi {
     }
 
     @Override
-    public ResponseEntity<CustomerApiDtoApiDto> customersIdGet(Long id) {
+    public ResponseEntity<CustomerApiDto> customersIdGet(Long id) {
         customerService.findCustomerById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
