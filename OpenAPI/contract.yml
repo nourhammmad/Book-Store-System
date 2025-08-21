@@ -286,7 +286,7 @@ paths:
           description: Customer deleted
 
   # Admin endpoints
-  /admins:
+  /admin:
     get:
       summary: Get all admins (paginated)
       tags: ["Admins"]
@@ -324,7 +324,7 @@ paths:
         '201':
           description: Admin created
 
-  /admins/{id}:
+  /admin/{id}:
     get:
       summary: Get admin by ID
       tags: ["Admins"]
@@ -357,10 +357,19 @@ paths:
         '204':
           description: Admin deleted
 
-  /admins/update-book-field:
-    post:
+  /admin/{id}/update-book-field:
+    patch:
       summary: Log a book field update
       tags: ["Admins"]
+      operationId: logBookFieldUpdate
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the book
       requestBody:
         required: true
         content:
@@ -509,6 +518,7 @@ paths:
       tags:
         - Auth
       summary: Login user
+      operationId: login
       requestBody:
         required: true
         content:
@@ -530,6 +540,7 @@ paths:
       tags:
         - Auth
       summary: Register new user
+      operationId: register
       requestBody:
         required: true
         content:
@@ -541,19 +552,6 @@ paths:
           description: User registered successfully
         '400':
           description: Bad request
-
-  /auth/whoami:
-    get:
-      tags:
-        - Auth
-      summary: Get current authenticated user
-      responses:
-        '200':
-          description: Returns username of authenticated user
-          content:
-            application/json:
-              schema:
-                type: string
 
 
 components:
@@ -673,18 +671,12 @@ components:
     BookFieldUpdate:
       type: object
       properties:
-        entityId:
-          type: integer
-          format: int64
         field:
           type: string
         oldValue:
           type: string
         newValue:
           type: string
-        changedBy:
-          type: integer
-          format: int64
 
     # Error schema
     CustomError:
@@ -794,11 +786,9 @@ components:
 
     bookFieldUpdateExample:
       value:
-        entityId: 2
         field: "price"
         oldValue: "24.99"
         newValue: "19.99"
-        changedBy: 1
 
     errorNotFoundExample:
       value:

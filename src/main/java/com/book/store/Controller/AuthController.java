@@ -3,7 +3,9 @@ package com.book.store.Controller;
 import com.book.store.Service.AuthService;
 import com.book.store.Service.JwtService;
 import com.book.store.security.CustomUserDetails;
+import com.book.store.server.api.AuthApi;
 import com.book.store.server.dto.AuthRequestApiDto;
+import com.book.store.server.dto.JwtResponseApiDto;
 import com.book.store.server.dto.LoginRequestApiDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,42 +20,39 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements AuthApi {
 
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestApiDto request) {
+    @Override
+    public ResponseEntity<JwtResponseApiDto> login(@Valid @RequestBody LoginRequestApiDto request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
             if (authentication.isAuthenticated()) {
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                return ResponseEntity.ok(jwtService.generateToken(userDetails));
+                String jwtToken = jwtService.generateToken(userDetails);
+                JwtResponseApiDto jwtResponse = new JwtResponseApiDto();
+                jwtResponse.setToken(jwtToken);
+                return ResponseEntity.ok(jwtResponse);
             } else {
                 throw new UsernameNotFoundException("Invalid user request!");
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+            return ResponseEntity.status(401).build();
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody AuthRequestApiDto request) {
+    @Override
+    public ResponseEntity<Void> register(@Valid @RequestBody AuthRequestApiDto request) {
         try {
             authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getRole());
-            return ResponseEntity.ok().body("User registered successfully");
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
-    }
-
-    @GetMapping("/whoami")
-    public ResponseEntity<?> whoami(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok().body("Hello, " + userDetails.getUsername());
     }
 }

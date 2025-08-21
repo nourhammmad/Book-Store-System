@@ -3,19 +3,21 @@ package com.book.store.Controller;
 
 import com.book.store.Entity.Admin;
 import com.book.store.Mapper.AdminMapper;
-import com.book.store.Mapper.CustomerMapper;
-import com.book.store.Repository.AdminRepository;
 import com.book.store.Service.AdminService;
 import com.book.store.Service.BookService;
-import com.book.store.Service.CustomerService;
 
+import com.book.store.security.CustomUserDetails;
 import com.book.store.server.api.AdminsApi;
 import com.book.store.server.dto.AdminApiDto;
 import com.book.store.server.dto.BookFieldUpdateApiDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,7 +30,7 @@ public class AdminController implements AdminsApi {
     private final AdminMapper adminMapper;
 
     @Override
-    public ResponseEntity<List<AdminApiDto>> adminsGet(Integer page, Integer size) {
+    public ResponseEntity<List<AdminApiDto>> adminGet(Integer page, Integer size) {
 
         List<AdminApiDto> adminDtos = adminService.findAllAdmins(page, size);
 
@@ -39,20 +41,20 @@ public class AdminController implements AdminsApi {
     }
 
     @Override
-    public ResponseEntity<Void> adminsIdDelete(Long id) {
+    public ResponseEntity<Void> adminIdDelete(Long id) {
         adminService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<AdminApiDto> adminsIdGet(Long id) {
+    public ResponseEntity<AdminApiDto> adminIdGet(Long id) {
        Admin admin = adminService.findAdminById(id);
        AdminApiDto adminApiDto = adminMapper.toDTO(admin);
         return new ResponseEntity<>(adminApiDto,HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> adminsPost(AdminApiDto adminApiDto) {
+    public ResponseEntity<Void> adminPost(AdminApiDto adminApiDto) {
         // Convert API DTO to entity
         Admin adminEntity = adminMapper.toEntity(adminApiDto);
         adminEntity.setUsername(adminApiDto.getUsername());
@@ -68,15 +70,21 @@ public class AdminController implements AdminsApi {
     }
 
     @Override
-    public ResponseEntity<Void> adminsUpdateBookFieldPost(BookFieldUpdateApiDto bookFieldUpdateApiDto) {
+    public ResponseEntity<Void> logBookFieldUpdate(
+            @PathVariable("id") Long entityId,
+            @Valid @RequestBody BookFieldUpdateApiDto bookFieldUpdateApiDto
+    ) {
+        CustomUserDetails userDetails =
+                (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         String field = bookFieldUpdateApiDto.getField();
-        Long changer = bookFieldUpdateApiDto.getChangedBy();
+        Long changer = userDetails.getUser().getId();
         String oldValue = bookFieldUpdateApiDto.getOldValue();
         String newValue = bookFieldUpdateApiDto.getNewValue();
-        Long entityId = bookFieldUpdateApiDto.getEntityId();
-//        bookService.updateBook(bookFieldUpdateApiDto);
-        adminService.updateBookFields(entityId,field,oldValue,newValue,changer);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        adminService.updateBookFields(entityId, field, oldValue, newValue, changer);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }
