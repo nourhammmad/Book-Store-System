@@ -4,5 +4,6 @@ import com.book.store.Entity.User;
 
 public interface AuthService {
     void registerUser(String username, String password, String email);
+    void createUserWithRole(String username, String password, String email, String role);
     User authenticateUser(String identifier, String password);
 }

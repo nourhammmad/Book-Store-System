@@ -61,7 +61,10 @@ public class BookController implements BooksApi {
         return ResponseEntity.ok(bookMapper.toDto(book));
     }
 
-
+    @Override
+    public ResponseEntity<BookApiDto> findBookByIsbn(String isbn) {
+        Book book = bookService.getBookByIsbn(isbn);
+        BookApiDto responseDto = bookMapper.toDto(book);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }
-
-

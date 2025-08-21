@@ -1,18 +1,9 @@
 package com.book.store.Controller;
-
-import com.book.store.Entity.Admin;
-import com.book.store.Mapper.AdminMapper;
-import com.book.store.Service.AdminService;
 import com.book.store.server.api.CustomersApi;
-
-import com.book.store.server.dto.AdminApiDto;
-import com.book.store.server.dto.BookFieldUpdateApiDto;
 import com.book.store.server.dto.CustomerApiDto;
-
 import com.book.store.Service.CustomerService;
 import com.book.store.Entity.Customer;
 import com.book.store.Mapper.CustomerMapper;
-import com.book.store.server.dto.CustomerApiDtoApiDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,41 +24,14 @@ public class CustomerController implements CustomersApi {
         this.customerMapper = customerMapper;
 
     }
-
-//    @Override
-//    public ResponseEntity<CustomersApiDto> findAllCustomers(Integer page, Integer size) {
-//
-//    }
-
-//
-//    @Override
-//    public ResponseEntity<CustomerApiDto> findCustomerById(Integer id) {
-//        return null;
-//    }
-
-
-
-
-
     @Override
-   public ResponseEntity<List<CustomerApiDtoApiDto>> customersGet(Integer page, Integer size) {
-//        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
-//        CustomerApiDtoApiDto response = (CustomerApiDtoApiDto) customerDtos;
-//
-//        return new ResponseEntity<>( response,HttpStatus.OK);
+   public ResponseEntity<List<CustomerApiDto>> customersGet(Integer page, Integer size) {
+        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
 
-        return null;
+        return new ResponseEntity<>( customerDtos,HttpStatus.OK);
+
+
     }
-
-//    @Override
-//    public ResponseEntity<List<CustomerApiDto>> customersGet() {
-//        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
-//
-//        CustomersApiDto response = new CustomersApiDto();
-//        response.setCustomers(customerDtos);
-//
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
 
     @Override
     public ResponseEntity<Void> customersIdDelete(Long id) {
@@ -76,16 +40,18 @@ public class CustomerController implements CustomersApi {
     }
 
     @Override
-    public ResponseEntity<CustomerApiDtoApiDto> customersIdGet(Long id) {
-        customerService.findCustomerById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+    public ResponseEntity<CustomerApiDto> customersIdGet(Long id) {
+        CustomerApiDto customerApiDto = customerService.findCustomerById(id);
+
+        return new ResponseEntity<>(customerApiDto,HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Void> customersPost(CustomerApiDto customerApiDto) {
         // Convert API DTO to entity
         Customer customerEntity = customerMapper.toEntity(customerApiDto);
-        customerEntity.setUsername(customerApiDto.getName());
+        customerEntity.setUsername(customerApiDto.getUsername());
         customerEntity.setEmail(customerApiDto.getEmail());
         // Save the customer entity
         Customer savedCustomer = customerService.createCustomer(customerEntity);

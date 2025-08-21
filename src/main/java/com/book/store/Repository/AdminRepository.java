@@ -11,7 +11,8 @@ import java.util.List;
 
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long> {
-   // Page<Admin> findAll(Pageable pageable);
+    Page<Admin> findAll(Pageable pageable);
+
 
     void deleteById(Integer id);
 

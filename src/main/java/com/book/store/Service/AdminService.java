@@ -1,13 +1,11 @@
 package com.book.store.Service;
 
 import com.book.store.Entity.Admin;
-import com.book.store.Entity.Customer;
-import com.book.store.Entity.User;
 import com.book.store.Mapper.AdminMapper;
 import com.book.store.Repository.*;
 import com.book.store.server.dto.AdminApiDto;
-import com.book.store.server.dto.CustomerApiDto;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,18 +38,25 @@ public class AdminService {
     // Delete customer
     @Transactional
     public void deleteById(Long id) {
+        if (id == null) {
+            throw new ValidationException("id is null");
+        }
         adminRepository.deleteById(id);
     }
 
     public List<AdminApiDto> findAllAdmins(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return adminRepository.findAll(pageable).stream()
+        Pageable pageable = PageRequest.of(
+                page != null ? page : 0,
+                size != null ? size : 10
+        );
+        return adminRepository.findAll(pageable)
+                .stream()
                 .map(adminMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Admin findAdminById(Long id) {
-        return adminRepository.findById(id).get();
+        return adminRepository.findById(id).orElseThrow(() -> new IllegalArgumentException ("User with ID " + id + " not found"));
     }
 
     public void updateBookFields(Long entityId, String field, String oldValue, String newValue,Long changedBy){
@@ -67,7 +72,7 @@ public class AdminService {
 
                     return bookRepository.save(book);
                 })
-                .orElseThrow(() -> new RuntimeException("Book not found with id " + entityId));
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with id " + entityId));
 
         bookHistoryService.logChange( entityId,  field,  oldValue,  newValue, changedBy);
     }

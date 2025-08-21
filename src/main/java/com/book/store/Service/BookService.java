@@ -3,7 +3,10 @@ package com.book.store.Service;
 import com.book.store.Entity.Book;
 import com.book.store.Mapper.BookMapper;
 import com.book.store.Repository.BookRepository;
+import com.book.store.exception.response.ErrorDetails;
+import com.book.store.exception.response.ViolationErrors;
 import com.book.store.server.dto.BookApiDto;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
@@ -61,11 +64,25 @@ public class BookService {
     }
 
     public void deleteBook(Long id) {
+
+        if (id == null) {
+            throw new ValidationException("id is null");
+        }
         bookRepository.deleteById(id);
     }
 
     public String GetDescriptionById(Long id){
+        if (id == null) {
+            throw new ValidationException("id is null");
+        }
         return bookRepository.getDescriptionById(id);
     }
-}
 
+    public Book getBookByIsbn(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            throw new IllegalArgumentException("ISBN cannot be null or empty");
+        }
+        return bookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
+    }
+}

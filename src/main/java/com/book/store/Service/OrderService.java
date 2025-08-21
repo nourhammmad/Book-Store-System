@@ -12,6 +12,11 @@ import com.book.store.Repository.OrderRepository;
 
 import com.book.store.server.dto.OrderApiDto; // your OpenAPI DTO
 import com.book.store.server.dto.OrderItemApiDto;
+
+import com.book.store.server.dto.UpdateOrderRequestApiDto;
+
+import jakarta.validation.ValidationException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -95,6 +100,9 @@ public class OrderService {
      * Delete an order and restore stock
      */
     public void deleteById(Long orderId) {
+        if (orderId == null) {
+            throw new IllegalArgumentException("id is null");
+        }
         Order order = findById(orderId);
 
         for (OrderItem item : order.getItems()) {

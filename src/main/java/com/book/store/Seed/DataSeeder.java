@@ -1,19 +1,18 @@
 package com.book.store.Seed;
-
-import com.book.store.Mapper.BookMapper;
-import com.book.store.server.dto.BookApiDto;
-
+import com.book.store.Entity.Admin;
+import com.book.store.Repository.AdminRepository;
+import com.book.store.Repository.CustomerRepository;
+import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
 
 import com.book.store.Entity.Book;
 import com.book.store.Entity.Customer;
-import com.book.store.Entity.Order;
 import com.book.store.Mapper.CustomerMapper;
 import com.book.store.Service.BookService;
 import com.book.store.Service.CustomerService;
-import com.book.store.Service.OrderService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -24,16 +23,19 @@ import java.util.List;
 public class DataSeeder {
 
     private final BookService bookService;
-    private final BookMapper bookMapper;
-    private final OrderService orderService;
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+
 
     @PostConstruct
     public void seed() {
         // Create customer DTO
         CustomerApiDto customerApiDto = new CustomerApiDto();
-        customerApiDto.setName("Jane Doe");
+        customerApiDto.setUsername("Jane Doe");
+        customerApiDto.setPassword(passwordEncoder.encode("password"));
         customerApiDto.setEmail("test@test.com");
         customerApiDto.setAddress("123 Main St, Springfield");
         customerApiDto.setBalance(500.0f);
@@ -60,6 +62,13 @@ public class DataSeeder {
 //            Order order = orderService.placeOrder(savedCustomer.getId(), book.getId(), 1);
 //            System.out.println("🛒 Placed order for: " + savedBook.getTitle());
         }
+
+        Admin admin = new Admin();
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("password"));
+        admin.setEmail("admin@email.com");
+        userRepository.save(admin);
+        adminRepository.save(admin);
+        System.out.println("👤 Seeded admin user: " + admin.getUsername());
     }
 }
-
