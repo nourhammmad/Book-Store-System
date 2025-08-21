@@ -10,14 +10,10 @@ import com.book.store.security.CustomUserDetails;
 import com.book.store.server.api.AdminsApi;
 import com.book.store.server.dto.AdminApiDto;
 import com.book.store.server.dto.BookFieldUpdateApiDto;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -33,10 +29,6 @@ public class AdminController implements AdminsApi {
     public ResponseEntity<List<AdminApiDto>> adminGet(Integer page, Integer size) {
 
         List<AdminApiDto> adminDtos = adminService.findAllAdmins(page, size);
-
-        //  CustomerApiDtoApiDto response = new CustomerApiDtoApiDto();
-
-
         return new ResponseEntity<>(adminDtos, HttpStatus.OK);
     }
 
@@ -70,10 +62,7 @@ public class AdminController implements AdminsApi {
     }
 
     @Override
-    public ResponseEntity<Void> logBookFieldUpdate(
-            @PathVariable("id") Long entityId,
-            @Valid @RequestBody BookFieldUpdateApiDto bookFieldUpdateApiDto
-    ) {
+    public ResponseEntity<Void> logBookFieldUpdate(Long entityId, BookFieldUpdateApiDto bookFieldUpdateApiDto) {
         CustomUserDetails userDetails =
                 (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

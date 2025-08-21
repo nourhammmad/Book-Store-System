@@ -45,14 +45,14 @@ public class AdminService {
     }
 
     public List<AdminApiDto> findAllAdmins(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
-        //System.out.println(adminRepository.findAll(pageable).stream().map().collect(Collectors.joining(",")));
-        System.out.println("------------------------");
-        System.out.println(adminRepository.findAll().stream().map(adminMapper::toDTO)
-                .collect(Collectors.toList()));
-        return adminRepository.findAll().stream()
+        Pageable pageable = PageRequest.of(
+                page != null ? page : 0,
+                size != null ? size : 10
+        );
+        return adminRepository.findAll(pageable)
+                .stream()
                 .map(adminMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Admin findAdminById(Long id) {

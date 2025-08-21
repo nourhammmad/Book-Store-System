@@ -25,32 +25,25 @@ public class AuthController implements AuthApi {
     private final JwtService jwtService;
 
     @Override
-    public ResponseEntity<JwtResponseApiDto> login(@Valid @RequestBody LoginRequestApiDto request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
-            if (authentication.isAuthenticated()) {
-                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                String jwtToken = jwtService.generateToken(userDetails);
-                JwtResponseApiDto jwtResponse = new JwtResponseApiDto();
-                jwtResponse.setToken(jwtToken);
-                return ResponseEntity.ok(jwtResponse);
-            } else {
-                throw new UsernameNotFoundException("Invalid user request!");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(401).build();
+    public ResponseEntity<JwtResponseApiDto> login(LoginRequestApiDto request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String jwtToken = jwtService.generateToken(userDetails);
+            JwtResponseApiDto jwtResponse = new JwtResponseApiDto();
+            jwtResponse.setToken(jwtToken);
+            return ResponseEntity.ok(jwtResponse);
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
         }
     }
 
     @Override
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestApiDto request) {
-        try {
-            authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getRole());
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> register(RegisterRequestApiDto request) {
+        authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getRole());
+        return ResponseEntity.ok().build();
     }
+
 }
