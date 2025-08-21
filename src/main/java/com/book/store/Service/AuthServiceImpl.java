@@ -2,6 +2,7 @@ package com.book.store.Service;
 
 import com.book.store.Entity.Customer;
 import com.book.store.Entity.User;
+import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-
+    private final CustomerRepository customerRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void registerUser(String username, String password, String email) {
@@ -24,11 +25,16 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(password);
-        User user = new Customer();
+        Customer user = new Customer();
+
         user.setUsername(username);
         user.setPassword(encodedPassword);
         user.setEmail(email);
+        user.setBalance(100);
+
+
         userRepository.save(user);
+        customerRepository.save(user);
     }
 
     public User authenticateUser(String identifier, String password) {
