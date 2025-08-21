@@ -8,6 +8,7 @@ import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,9 @@ private final UserRepository userRepository;
     // Delete customer
     @Transactional
     public void deleteCustomer(Long id) {
+//        if (id == null) {
+//            throw new IllegalArgumentException("id is null");
+//        }
         customerRepository.deleteById(id);
     }
     // List all customers

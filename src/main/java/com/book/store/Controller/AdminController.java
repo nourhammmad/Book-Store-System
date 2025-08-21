@@ -46,8 +46,9 @@ public class AdminController implements AdminsApi {
 
     @Override
     public ResponseEntity<AdminApiDto> adminsIdGet(Long id) {
-        adminService.findAdminById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+       Admin admin = adminService.findAdminById(id);
+       AdminApiDto adminApiDto = adminMapper.toDTO(admin);
+        return new ResponseEntity<>(adminApiDto,HttpStatus.OK);
     }
 
     @Override
