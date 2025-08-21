@@ -20,21 +20,85 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 ---
 
+
 ## 📑 Table of Contents  
 
-1. [Features](#-features)  
-2. [Technology Stack](#-technology-stack)  
-3. [Getting Started](#-getting-started)  
-4. [API Endpoints](#-api-endpoints)  
-5. [Authentication Flow](#-authentication-flow)  
-6. [Testing](#-testing)  
-7. [Project Structure](#-project-structure)  
-8. [OpenAPI Contract & Usage](#-openapi-contract--usage)  
-9. [Authors](#-authors)  
+1. [ Architecture Overview](#️-architecture-overview)  
+2. [ Features](#-features)  
+3. [ Technology Stack](#️-technology-stack)  
+4. [ Getting Started](#-getting-started)  
+5. [ API Endpoints](#-api-endpoints)  
+6. [ Authentication Flow](#-authentication-flow)  
+7. [ Testing](#-testing)  
+8. [ Project Structure](#-project-structure)  
+9. [ OpenAPI Contract & Usage](#-openapi-contract--usage)  
+10. [ Authors](#-authors)  
 
+
+
+# 🏗️ Architecture Overview
+## 📘 Admin Updates Book (with History Tracking)
+
+When an Admin updates a book, the system first checks if the book exists. If found, it compares the old and new values, creates a BookHistory entry for audit purposes, saves it, and then updates the book record. If the book is not found, an exception is thrown.
+```mermaid
+sequenceDiagram
+    title Admin Updates Book (with History Tracking)
+
+    participant Admin
+    participant BookService
+    participant BookRepository
+    participant BookHistoryRepository
+    participant OrderService
+    participant OrderRepository
+    participant Customer
+
+    Admin ->> BookService: updateBook(bookId, updatedBookDto)
+    BookService ->> BookRepository: findById(bookId)
+    BookRepository -->> BookService: Book
+
+    alt Book found
+        BookService ->> Book: compare old vs new values
+        BookService ->> BookHistoryRepository: save(history)
+        BookService ->> BookRepository: save(updatedBook)
+        BookRepository -->> BookService: updatedBook
+        BookService -->> Admin: updatedBook
+    else Book not found
+        BookService -->> Admin: throw "Book not found"
+    end
+```
+## 📗 Customer Places Order
+When a Customer places an order, the system validates the customer, checks if the book is available in stock, reduces the quantity, creates an OrderItem, and saves the order. If the book is out of stock, the system throws an exception.
+```mermaid
+sequenceDiagram
+    title Customer Places Order
+
+    participant Customer
+    participant OrderService
+    participant CustomerRepository
+    participant BookRepository
+    participant OrderRepository
+    participant OrderItem
+
+    Customer ->> OrderService: placeOrder(customerId, bookId, quantity)
+    OrderService ->> CustomerRepository: findById(customerId)
+    CustomerRepository -->> OrderService: Customer
+    OrderService ->> BookRepository: findById(bookId)
+    BookRepository -->> OrderService: Book
+
+    alt Book in stock
+        OrderService ->> Book: reduce quantity
+        OrderService ->> OrderItem: create item with book, quantity, price
+        OrderService ->> OrderRepository: save(order)
+        OrderRepository -->> OrderService: Order
+        OrderService -->> Customer: order confirmation
+    else Out of stock
+        OrderService -->> Customer: throw "Insufficient stock"
+    end
+
+```
 ---
 
-##  Features
+# ✨ Features
 
 - **Authentication & Authorization**
   - JWT-based stateless authentication  
@@ -51,8 +115,7 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
   - Passwords hashed with BCrypt
 
 ---
-
-##  Technology Stack
+# 🛠️ Technology Stack
 
 | Layer               | Technology                                      |
 |--------------------|--------------------------------------------------|
@@ -64,15 +127,15 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 ---
 
-##  Getting Started
+# 🚀 Getting Started
 
-### Prerequisites
+## Prerequisites
 
 - Java 17 (or above)  
 - Maven
-## 📖 API Endpoints
+# 📖 API Endpoints
 
-### 🔑 Authentication
+## 🔑 Authentication
 | Method | Endpoint         | Description              | Access |
 |--------|------------------|--------------------------|--------|
 | POST   | `/auth/register` | Register a new customer | Public |
@@ -80,7 +143,7 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 ---
 
-### 📚 Books
+## 📚 Books
 | Method | Endpoint       | Description          | Access   |
 |--------|----------------|----------------------|----------|
 | GET    | `/books`       | Get all books        | Public   |
@@ -91,7 +154,7 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 ---
 
-### 👤 Customers
+## 👤 Customers
 | Method | Endpoint           | Description               | Access   |
 |--------|--------------------|---------------------------|----------|
 | GET    | `/customers`       | Get all customers         | Admin    |
@@ -101,7 +164,7 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 ---
 
-### 🛒 Orders
+## 🛒 Orders
 | Method | Endpoint           | Description               | Access   |
 |--------|--------------------|---------------------------|----------|
 | POST   | `/orders`          | Place a new order         | Customer |
@@ -115,11 +178,11 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 🔐 **Note:**  
 - All **protected endpoints** require a valid JWT token in the `Authorization` header:  
-## 5. 🔐 Authentication Flow
+# 🔐 Authentication Flow
 
 This project uses **Spring Security + JWT (JSON Web Token)** for authentication and authorization. The flow ensures that only authenticated users can access protected endpoints while keeping the system stateless.  
 
-### 🔄 Flow Overview
+## 🔄 Flow Overview
 1. **User Login**  
    - A client sends login credentials (`username`, `password`) to `/auth/login`.  
    - If valid, the server generates a **JWT token** and returns it to the client.  
@@ -146,7 +209,7 @@ This project uses **Spring Security + JWT (JSON Web Token)** for authentication 
 
 ---
 
-### ⚙️ Components Involved
+## ⚙️ Components Involved
 - **`SecurityConfig`** → Defines security rules, session policy, and JWT filter chain.  
 - **`JwtAuthenticationFilter`** → Intercepts requests, validates JWTs, and authenticates users.  
 - **`CustomUserDetails`** → Wraps `User` entity to integrate with Spring Security.  
@@ -157,7 +220,7 @@ This project uses **Spring Security + JWT (JSON Web Token)** for authentication 
 
 
 
-### 📊 Authentication Flow Diagram
+# 📊 Authentication Flow Diagram
 ```mermaid
 sequenceDiagram
     participant Client
@@ -178,12 +241,12 @@ sequenceDiagram
     JwtFilter-->>Client: Forward to protected endpoint (e.g., /books)
 
 ```
-## 🧪 Testing
+# 🧪 Testing
 
 This project uses **JUnit 5** with **Mockito** for unit testing.  
 The service layer is fully covered by tests to ensure correctness and reliability.
 
-### Test Coverage
+## Test Coverage
 
 - **BookServiceTest**
   - Get all books with pagination (valid, empty, invalid page/size)
@@ -206,7 +269,7 @@ The service layer is fully covered by tests to ensure correctness and reliabilit
   - Find orders (by ID, paginated, invalid page/size)
   - Error scenarios (missing customer, missing book, invalid quantities, DB failures)
 
-### Running Tests
+## Running Tests
 
 Run all tests with Maven:
 
@@ -219,7 +282,7 @@ mvn test
 git clone https://github.com/nourhammmad/Book-Store-System.git
 cd Book-Store-System
 ```
-### 📂 Project Structure
+# 📂 Project Structure
 
 ```
 📦 book-store-app
@@ -303,13 +366,13 @@ cd Book-Store-System
 ├── 📄 mvnw.cmd
 └── 📄 pom.xml
 ```
-## 📖 OpenAPI Contract & Usage
+# 📖 OpenAPI Contract & Usage
 
 This project follows a **contract-first** approach.  
 All API endpoints are defined in the OpenAPI specification:
 
 
-### Code Generation
+## Code Generation
 
 The project uses the [OpenAPI Generator Maven Plugin](https://openapi-generator.tech/docs/plugins/#maven) to generate API interfaces and DTOs automatically.
 
@@ -318,15 +381,15 @@ To generate code from the contract, run:
 ```bash
 mvn clean compile
 ```
-## 👥 Authors
+# 👥 Authors
 
-### Nour Hammad  
+## Nour Hammad  
 - GitHub: [@nourhammmad](https://github.com/nourhammmad)  
 ---
 
-### Shahd Ramzy  
+## Shahd Ramzy  
 - GitHub: [@ShahdRamzy](https://github.com/ShahdRamzy)  
 ---
 
-### Mohamed Karam  
+## Mohamed Karam  
 - GitHub: [@Levii22](https://github.com/Levii22)  
