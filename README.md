@@ -3,10 +3,13 @@
 The **Book Store Management System** is a backend application built with **Java** and **Spring Boot** that provides a secure and scalable way to manage a bookstore.  
 
 It covers the core workflows of a modern bookstore, including:
-- 🔑 **Authentication & Authorization** with JWT (Customers & Admins)  
-- 📚 **Book Management** – add, update, view, and delete books  
-- 👤 **Customer Management** – customer profiles & accounts  
-- 🛒 **Order & Order Items** – place orders, track items status, manage inventory  
+- 🔑 **Authentication & Authorization** with JWT  
+- 📖 **Book Management** (CRUD + history tracking)  
+- 🛒 **Order Management** (customers placing orders)  
+- 👥 **Customer Management**  
+- 📊 **OpenAPI 3.0.1** contract-first design  
+
+---
 
 This project is designed with **RESTful API principles**, **Spring Security**, and **JPA/Hibernate** for database interaction.  
 It supports **in-memory H2**.  
@@ -21,19 +24,51 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 ---
 
 
-## 📑 Table of Contents  
+# 📑 Table of Contents
+1. [✨ Features](#-features)  
+2. [🛠️ Tech Stack](#️-tech-stack)  
+3. [🏗️ Architecture Overview](#️-architecture-overview)  
+   - [📘 Admin Updates Book (with History Tracking)](#-admin-updates-book-with-history-tracking)  
+   - [📗 Customer Places Order](#-customer-places-order)  
+4. [🚀 Getting Started](#-getting-started)  
+   - [⚙️ Setup](#️-setup)  
+   - [📌 Prerequisites](#-prerequisites)  
+5. [🔗 API Endpoints](#-api-endpoints)  
+6. [🔐 Authentication Flow](#-authentication-flow)  
+7. [🧪 Testing](#-testing)  
+8. [📂 Project Structure](#-project-structure)  
+9. [📜 OpenAPI Contract](#-openapi-contract)  
+10. [👨‍💻 Authors](#-authors)  
 
-1. [ Architecture Overview](#️-architecture-overview)  
-2. [ Features](#-features)  
-3. [ Technology Stack](#️-technology-stack)  
-4. [ Getting Started](#-getting-started)  
-5. [ API Endpoints](#-api-endpoints)  
-6. [ Authentication Flow](#-authentication-flow)  
-7. [ Testing](#-testing)  
-8. [ Project Structure](#-project-structure)  
-9. [ OpenAPI Contract & Usage](#-openapi-contract--usage)  
-10. [ Authors](#-authors)  
 
+# ✨ Features
+
+- **Authentication & Authorization**
+  - JWT-based stateless authentication  
+  - Role-based access (Admin vs Customer)
+- **Book Management**
+  - CRUD operations: add, update, delete, list books
+- **Order Management**
+  - Place orders and manage order details
+- **User Management**
+  - Registration, login, profile management
+- **Documentation**
+  - Integrated Swagger UI for interactive API exploration
+- **Secure Password Storage**
+  - Passwords hashed with BCrypt
+
+---
+# 🛠️ Technology Stack
+
+| Layer               | Technology                                      |
+|--------------------|--------------------------------------------------|
+| Framework           | Spring Boot (REST API)                           |
+| Security            | Spring Security with JWT                         |
+| Persistence         | Spring Data JPA (H2 in-memory for development)   |
+| Build Tool          | Maven                                            |
+| API Documentation   | Swagger UI                                       |
+
+---
 
 
 # 🏗️ Architecture Overview
@@ -98,41 +133,19 @@ sequenceDiagram
 ```
 ---
 
-# ✨ Features
-
-- **Authentication & Authorization**
-  - JWT-based stateless authentication  
-  - Role-based access (Admin vs Customer)
-- **Book Management**
-  - CRUD operations: add, update, delete, list books
-- **Order Management**
-  - Place orders and manage order details
-- **User Management**
-  - Registration, login, profile management
-- **Documentation**
-  - Integrated Swagger UI for interactive API exploration
-- **Secure Password Storage**
-  - Passwords hashed with BCrypt
-
----
-# 🛠️ Technology Stack
-
-| Layer               | Technology                                      |
-|--------------------|--------------------------------------------------|
-| Framework           | Spring Boot (REST API)                           |
-| Security            | Spring Security with JWT                         |
-| Persistence         | Spring Data JPA (H2 in-memory for development)   |
-| Build Tool          | Maven                                            |
-| API Documentation   | Swagger UI                                       |
-
----
-
 # 🚀 Getting Started
 
 ## Prerequisites
 
 - Java 17 (or above)  
-- Maven
+- Maven  
+
+## ⚙️ Setup
+
+```bash
+git clone https://github.com/nourhammmad/Book-Store-System.git
+cd Book-Store-System
+```
 # 📖 API Endpoints
 
 ## 🔑 Authentication
@@ -275,12 +288,6 @@ Run all tests with Maven:
 
 ```bash
 mvn test
-```
-### Setup
-
-```bash
-git clone https://github.com/nourhammmad/Book-Store-System.git
-cd Book-Store-System
 ```
 # 📂 Project Structure
 
