@@ -31,7 +31,7 @@ public class AdminService {
     public Admin createAdmin(Admin admin) {
 
         admin.setEmail(admin.getEmail());
-        admin.setName(admin.getName());
+        admin.setUsername(admin.getUsername());
         return adminRepository.save(admin);
     }
 

@@ -66,7 +66,7 @@ class OrderServiceTest {
 
         customer = new Customer();
         customer.setId(1L);
-        customer.setName("John Doe");
+        customer.setUsername("John Doe");
         customer.setEmail("john@example.com");
 
         orderItem = new OrderItem();

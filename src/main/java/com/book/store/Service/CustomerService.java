@@ -7,7 +7,6 @@ import com.book.store.Mapper.CustomerMapper;
 import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
-import com.book.store.server.dto.CustomerApiDtoApiDto;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;

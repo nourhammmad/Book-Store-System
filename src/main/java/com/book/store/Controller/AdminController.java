@@ -12,6 +12,7 @@ import com.book.store.Service.CustomerService;
 import com.book.store.server.api.AdminsApi;
 import com.book.store.server.dto.AdminApiDto;
 import com.book.store.server.dto.BookFieldUpdateApiDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,19 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 @RestController
+@RequiredArgsConstructor
 public class AdminController implements AdminsApi {
 
     private final AdminService adminService;
     private final BookService bookService;
     private final AdminMapper adminMapper;
-
-
-
-    public AdminController(AdminService adminService, BookService bookService, AdminMapper adminMapper) {
-        this.adminService = adminService;
-        this.bookService = bookService;
-        this.adminMapper = adminMapper;
-    }
 
     @Override
     public ResponseEntity<List<AdminApiDto>> adminsGet(Integer page, Integer size) {
@@ -61,7 +55,7 @@ public class AdminController implements AdminsApi {
     public ResponseEntity<Void> adminsPost(AdminApiDto adminApiDto) {
         // Convert API DTO to entity
         Admin adminEntity = adminMapper.toEntity(adminApiDto);
-        adminEntity.setName(adminApiDto.getName());
+        adminEntity.setUsername(adminApiDto.getUsername());
         adminEntity.setEmail(adminApiDto.getEmail());
         // Save the customer entity
         Admin savedAdmin = adminService.createAdmin(adminEntity);

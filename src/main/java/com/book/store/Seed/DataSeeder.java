@@ -1,19 +1,14 @@
 package com.book.store.Seed;
-
-import com.book.store.Mapper.BookMapper;
-import com.book.store.server.dto.BookApiDto;
-
 import com.book.store.server.dto.CustomerApiDto;
 
 import com.book.store.Entity.Book;
 import com.book.store.Entity.Customer;
-import com.book.store.Entity.Order;
 import com.book.store.Mapper.CustomerMapper;
 import com.book.store.Service.BookService;
 import com.book.store.Service.CustomerService;
-import com.book.store.Service.OrderService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -24,16 +19,16 @@ import java.util.List;
 public class DataSeeder {
 
     private final BookService bookService;
-    private final BookMapper bookMapper;
-    private final OrderService orderService;
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void seed() {
         // Create customer DTO
         CustomerApiDto customerApiDto = new CustomerApiDto();
-        customerApiDto.setName("Jane Doe");
+        customerApiDto.setUsername("Jane Doe");
+        customerApiDto.setPassword(passwordEncoder.encode("password"));
         customerApiDto.setEmail("test@test.com");
         customerApiDto.setAddress("123 Main St, Springfield");
         customerApiDto.setBalance(500.0f);
@@ -62,4 +57,3 @@ public class DataSeeder {
         }
     }
 }
-

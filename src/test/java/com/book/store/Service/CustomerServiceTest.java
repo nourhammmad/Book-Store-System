@@ -40,14 +40,14 @@ class CustomerServiceTest {
     void setUp() {
         customer = new Customer();
         customer.setId(1L);
-        customer.setName("John Doe");
+        customer.setUsername("John Doe");
         customer.setEmail("john.doe@example.com");
         customer.setAddress("123 Main St");
         customer.setBalance(100.0f);
 
         customerApiDto = new CustomerApiDto();
         customerApiDto.setId(1L);
-        customerApiDto.setName("John Doe");
+        customerApiDto.setUsername("John Doe");
         customerApiDto.setEmail("john.doe@example.com");
         customerApiDto.setAddress("123 Main St");
         customerApiDto.setBalance(100.0f);
@@ -61,7 +61,7 @@ class CustomerServiceTest {
 
         assertNotNull(result);
         assertEquals(customer.getId(), result.getId());
-        assertEquals(customer.getName(), result.getName());
+        assertEquals(customer.getUsername(), result.getUsername());
         assertEquals(customer.getEmail(), result.getEmail());
         verify(customerRepository).save(customer);
     }
@@ -106,7 +106,7 @@ class CustomerServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("John Doe", result.get(0).getName());
+        assertEquals("John Doe", result.get(0).getUsername());
         assertEquals("john.doe@example.com", result.get(0).getEmail());
         verify(customerRepository).findAll(pageable);
         verify(customerMapper).toDTO(customer);
@@ -151,7 +151,7 @@ class CustomerServiceTest {
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
-        assertEquals("John Doe", result.getName());
+        assertEquals("John Doe", result.getUsername());
         assertEquals("john.doe@example.com", result.getEmail());
         verify(customerRepository).findById(1L);
         verify(customerMapper).toDTO(customer);
@@ -187,7 +187,7 @@ class CustomerServiceTest {
     @Test
     void createCustomerWithEmptyFields() {
         Customer emptyCustomer = new Customer();
-        emptyCustomer.setName("");
+        emptyCustomer.setUsername("");
         emptyCustomer.setEmail("");
 
         when(customerRepository.save(emptyCustomer)).thenReturn(emptyCustomer);
@@ -195,7 +195,7 @@ class CustomerServiceTest {
         Customer result = customerService.createCustomer(emptyCustomer);
 
         assertNotNull(result);
-        assertEquals("", result.getName());
+        assertEquals("", result.getUsername());
         assertEquals("", result.getEmail());
         verify(customerRepository).save(emptyCustomer);
     }
