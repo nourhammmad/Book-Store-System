@@ -702,6 +702,7 @@ components:
         - username
         - password
         - email
+        - role
       properties:
         username:
           type: string
@@ -716,6 +717,9 @@ components:
           format: email
           minLength: 5
           maxLength: 50
+        role:
+          type: string
+          description: Role of the user
 
     LoginRequest:
       type: object

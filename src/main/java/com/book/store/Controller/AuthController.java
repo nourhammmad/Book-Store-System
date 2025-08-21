@@ -45,7 +45,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody AuthRequestApiDto request) {
         try {
-            authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail());
+            authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getRole());
             return ResponseEntity.ok().body("User registered successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

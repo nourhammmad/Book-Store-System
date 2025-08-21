@@ -31,6 +31,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/admins/update-book-field",
+                                "/books",
+                                "/admins/{id}"
+                        ).hasAnyRole("ADMIN"));
+        http
                 // Disable CSRF (not needed for stateless JWT)
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(AbstractHttpConfigurer::disable)
@@ -51,6 +58,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     /*
      * Password encoder bean (uses BCrypt hashing)
