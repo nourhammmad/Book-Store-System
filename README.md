@@ -9,7 +9,7 @@ It covers the core workflows of a modern bookstore, including:
 - 🛒 **Order & Order Items** – place orders, track items status, manage inventory  
 
 This project is designed with **RESTful API principles**, **Spring Security**, and **JPA/Hibernate** for database interaction.  
-It supports **in-memory H2** .  
+It supports **in-memory H2**.  
 
 Whether you are a **customer** browsing and purchasing books or an **admin** managing inventory and users, this system provides a structured and secure backend for bookstore operations.
 
@@ -20,7 +20,7 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 ---
 
-##  Table of Contents
+## 📑 Table of Contents  
 
 1. [Features](#-features)  
 2. [Technology Stack](#-technology-stack)  
@@ -29,8 +29,8 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 5. [Authentication Flow](#-authentication-flow)  
 6. [Testing](#-testing)  
 7. [Project Structure](#-project-structure)  
-8. [Contributing](#-contributing)  
-9. [Author](#-author)  
+8. [OpenAPI Contract & Usage](#-openapi-contract--usage)  
+9. [Authors](#-authors)  
 
 ---
 
@@ -73,42 +73,44 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 ## 📖 API Endpoints
 
 ### 🔑 Authentication
-| Method | Endpoint         | Description              |
-|--------|------------------|--------------------------|
-| POST   | `/auth/register` | Register a new customer |
-| POST   | `/auth/login`    | Authenticate & get JWT  |
+| Method | Endpoint         | Description              | Access |
+|--------|------------------|--------------------------|--------|
+| POST   | `/auth/register` | Register a new customer | Public |
+| POST   | `/auth/login`    | Authenticate & get JWT  | Public |
 
 ---
 
 ### 📚 Books
-| Method | Endpoint       | Description          |
-|--------|----------------|----------------------|
-| GET    | `/books`       | Get all books        |
-| GET    | `/books/{id}`  | Get book by ID       |
-| POST   | `/books`       | Add a new book       |
-| PUT    | `/books/{id}`  | Update book details  |
-| DELETE | `/books/{id}`  | Delete a book        |
+| Method | Endpoint       | Description          | Access   |
+|--------|----------------|----------------------|----------|
+| GET    | `/books`       | Get all books        | Public   |
+| GET    | `/books/{id}`  | Get book by ID       | Public   |
+| POST   | `/books`       | Add a new book       | Admin    |
+| PUT    | `/books/{id}`  | Update book details  | Admin    |
+| DELETE | `/books/{id}`  | Delete a book        | Admin    |
 
 ---
 
 ### 👤 Customers
-| Method | Endpoint           | Description               |
-|--------|--------------------|---------------------------|
-| GET    | `/customers`       | Get all customers         |
-| GET    | `/customers/{id}`  | Get customer by ID        |
-| PUT    | `/customers/{id}`  | Update customer profile   |
-| DELETE | `/customers/{id}`  | Delete customer account   |
+| Method | Endpoint           | Description               | Access   |
+|--------|--------------------|---------------------------|----------|
+| GET    | `/customers`       | Get all customers         | Admin    |
+| GET    | `/customers/{id}`  | Get customer by ID        | Admin    |
+| PUT    | `/customers/{id}`  | Update customer profile   | Customer |
+| DELETE | `/customers/{id}`  | Delete customer account   | Admin    |
 
 ---
 
 ### 🛒 Orders
-| Method | Endpoint           | Description               |
-|--------|--------------------|---------------------------|
-| POST   | `/orders`          | Place a new order         |
-| GET    | `/orders`          | Get all orders            |
-| GET    | `/orders/{id}`     | Get order by ID           |
-| PUT    | `/orders/{id}`     | Update order status       |
-| DELETE | `/orders/{id}`     | Cancel an order           |
+| Method | Endpoint           | Description               | Access   |
+|--------|--------------------|---------------------------|----------|
+| POST   | `/orders`          | Place a new order         | Customer |
+| GET    | `/orders`          | Get all orders            | Admin    |
+| GET    | `/orders/{id}`     | Get order by ID           | Customer/Admin |
+| PUT    | `/orders/{id}`     | Update order status       | Admin    |
+| DELETE | `/orders/{id}`     | Cancel an order           | Customer |
+
+---
 
 
 🔐 **Note:**  
@@ -153,7 +155,63 @@ This project uses **Spring Security + JWT (JSON Web Token)** for authentication 
 
 ---
 
-### 📝 Example Request Flow
+
+
+### 📊 Authentication Flow Diagram
+```mermaid
+sequenceDiagram
+    participant Client
+    participant AuthController
+    participant JwtService
+    participant JwtFilter
+    participant SecurityContext
+
+    Client->>AuthController: POST /auth/login (username, password)
+    AuthController->>JwtService: Validate credentials & generate JWT
+    JwtService-->>AuthController: Return JWT token
+    AuthController-->>Client: Response { token }
+
+    Client->>JwtFilter: Request with "Authorization: Bearer <token>"
+    JwtFilter->>JwtService: Validate JWT
+    JwtService-->>JwtFilter: Valid -> extract username
+    JwtFilter->>SecurityContext: Set Authentication
+    JwtFilter-->>Client: Forward to protected endpoint (e.g., /books)
+
+```
+## 🧪 Testing
+
+This project uses **JUnit 5** with **Mockito** for unit testing.  
+The service layer is fully covered by tests to ensure correctness and reliability.
+
+### Test Coverage
+
+- **BookServiceTest**
+  - Get all books with pagination (valid, empty, invalid page/size)
+  - Get book by ID (found / not found)
+  - Create, update, and delete books
+  - Handle null, zero, or invalid fields gracefully
+  - Validate description retrieval logic
+
+- **CustomerServiceTest**
+  - Create customers (valid, null, empty fields, negative balance)
+  - Get all customers with pagination (valid, empty, invalid page/size)
+  - Find customer by ID (found, not found, null ID)
+  - Delete customers (valid, non-existent, repository errors)
+  - Mapper exception handling
+
+- **OrderServiceTest**
+  - Place orders from DTO (valid, multiple items, empty items, null items)
+  - Stock quantity updates and validations (insufficient stock, exact stock, large orders)
+  - Delete orders (restores stock, multiple items, repository errors)
+  - Find orders (by ID, paginated, invalid page/size)
+  - Error scenarios (missing customer, missing book, invalid quantities, DB failures)
+
+### Running Tests
+
+Run all tests with Maven:
+
+```bash
+mvn test
 
 ### Setup
 
@@ -245,3 +303,29 @@ cd Book-Store-System
 ├── 📄 mvnw.cmd
 └── 📄 pom.xml
 ```
+## 📖 OpenAPI Contract & Usage
+
+This project follows a **contract-first** approach.  
+All API endpoints are defined in the OpenAPI specification:
+
+
+### Code Generation
+
+The project uses the [OpenAPI Generator Maven Plugin](https://openapi-generator.tech/docs/plugins/#maven) to generate API interfaces and DTOs automatically.
+
+To generate code from the contract, run:
+
+```bash
+mvn clean compile
+## 👥 Authors
+
+### Nour Hammad  
+- GitHub: [@nourhammmad](https://github.com/nourhammmad)  
+---
+
+### Shahd Ramzy  
+- GitHub: [@ShahdRamzy](https://github.com/ShahdRamzy)  
+---
+
+### Mohamed Karam  
+- GitHub: [@Levii22](https://github.com/Levii22)  
