@@ -46,7 +46,11 @@ public class AdminService {
 
     public List<AdminApiDto> findAllAdmins(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return adminRepository.findAll(pageable).stream()
+        //System.out.println(adminRepository.findAll(pageable).stream().map().collect(Collectors.joining(",")));
+        System.out.println("------------------------");
+        System.out.println(adminRepository.findAll().stream().map(adminMapper::toDTO)
+                .collect(Collectors.toList()));
+        return adminRepository.findAll().stream()
                 .map(adminMapper::toDTO)
                 .collect(Collectors.toList());
     }

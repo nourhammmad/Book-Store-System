@@ -51,12 +51,11 @@ public class CustomerController implements CustomersApi {
 
     @Override
    public ResponseEntity<List<CustomerApiDto>> customersGet(Integer page, Integer size) {
-//        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
-//        CustomerApiDtoApiDto response = (CustomerApiDtoApiDto) customerDtos;
-//
-//        return new ResponseEntity<>( response,HttpStatus.OK);
+        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
 
-        return null;
+        return new ResponseEntity<>( customerDtos,HttpStatus.OK);
+
+
     }
 
 //    @Override
@@ -78,9 +77,9 @@ public class CustomerController implements CustomersApi {
     @Override
 
     public ResponseEntity<CustomerApiDto> customersIdGet(Long id) {
-        customerService.findCustomerById(id);
+        CustomerApiDto customerApiDto = customerService.findCustomerById(id);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(customerApiDto,HttpStatus.OK);
     }
 
     @Override
