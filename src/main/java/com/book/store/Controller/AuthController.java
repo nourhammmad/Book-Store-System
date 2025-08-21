@@ -42,7 +42,7 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseEntity<Void> register(RegisterRequestApiDto request) {
-        authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getRole());
+        authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail());
         return ResponseEntity.ok().build();
     }
 

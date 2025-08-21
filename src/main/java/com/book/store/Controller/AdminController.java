@@ -4,12 +4,14 @@ package com.book.store.Controller;
 import com.book.store.Entity.Admin;
 import com.book.store.Mapper.AdminMapper;
 import com.book.store.Service.AdminService;
+import com.book.store.Service.AuthService;
 import com.book.store.Service.BookService;
 
 import com.book.store.security.CustomUserDetails;
 import com.book.store.server.api.AdminsApi;
 import com.book.store.server.dto.AdminApiDto;
 import com.book.store.server.dto.BookFieldUpdateApiDto;
+import com.book.store.server.dto.CreateUserRequestApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.List;
 public class AdminController implements AdminsApi {
 
     private final AdminService adminService;
+    private final AuthService authService;
     private final BookService bookService;
     private final AdminMapper adminMapper;
 
@@ -58,7 +61,18 @@ public class AdminController implements AdminsApi {
         AdminApiDto responseDto = adminMapper.toDTO(savedAdmin);
 
         // Return response with CREATED status
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<Void> createUserWithRole(CreateUserRequestApiDto createUserRequestApiDto) {
+        authService.createUserWithRole(
+            createUserRequestApiDto.getUsername(),
+            createUserRequestApiDto.getPassword(),
+            createUserRequestApiDto.getEmail(),
+            createUserRequestApiDto.getRole().getValue()
+        );
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Override
