@@ -45,12 +45,10 @@ public class OrderService {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found with id " + customerId));
 
-        // Create order entity and set customer & date
         Order order = new Order();
         order.setCustomer(customer);
         order.setOrderDate(LocalDateTime.now());
 
-        // Process each order item if present
         if (orderApiDto.getItems() != null && !orderApiDto.getItems().isEmpty()) {
             for (OrderItemApiDto itemDto : orderApiDto.getItems()) {
                 Book book = bookRepository.findById(itemDto.getBook().getId())
@@ -60,17 +58,18 @@ public class OrderService {
                 if (book.getQuantity() < quantity) {
                     throw new IllegalStateException("Requested quantity exceeds available stock for book " + book.getId());
                 }
-
                 if (quantity <= 0) {
                     throw new IllegalArgumentException("Quantity must be greater than zero");
                 }
-                // Map DTO -> entity
+
+                // Calculate price for this item
+                float itemPrice = book.getPrice() * quantity;
+
                 OrderItem item = orderMapper.toEntity(itemDto);
                 item.setBook(book);
-                item.setPrice(book.getPrice() * quantity);
+                item.setPrice(itemPrice);
 
-                // Crucial: maintain bidirectional link
-                order.addItem(item); // sets item.setOrder(order)
+                order.addItem(item);
 
                 // Decrement stock
                 book.setQuantity(book.getQuantity() - quantity);
@@ -78,7 +77,16 @@ public class OrderService {
             }
         }
 
-        // Save order (cascade persists items)
+        // ✅ Balance check
+        if (customer.getBalance() < order.getTotalPrice()) {
+            throw new IllegalStateException("Insufficient balance. Required: " + order.getTotalPrice() + ", Available: " + customer.getBalance());
+        }
+
+        // Deduct balance
+        customer.setBalance(customer.getBalance() - order.getTotalPrice());
+        customerRepository.save(customer);
+
+
         return orderRepository.save(order);
     }
 
