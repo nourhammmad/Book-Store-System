@@ -2,18 +2,16 @@ package com.book.store.Controller;
 
 import com.book.store.Service.AuthService;
 import com.book.store.Service.JwtService;
-import com.book.store.security.CustomUserDetails;
 import com.book.store.server.api.AuthApi;
-import com.book.store.server.dto.AuthRequestApiDto;
 import com.book.store.server.dto.JwtResponseApiDto;
 import com.book.store.server.dto.LoginRequestApiDto;
+import com.book.store.server.dto.RegisterRequestApiDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +45,7 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<Void> register(@Valid @RequestBody AuthRequestApiDto request) {
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestApiDto request) {
         try {
             authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getRole());
             return ResponseEntity.ok().build();

@@ -6,6 +6,7 @@ import com.book.store.Entity.User;
 import com.book.store.Repository.AdminRepository;
 import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.UserRepository;
+import com.book.store.server.dto.RegisterRequestApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private final AdminRepository adminRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void registerUser(String username, String password, String email, String role) {
+    public void registerUser(String username, String password, String email, RegisterRequestApiDto.RoleEnum role) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -31,22 +32,23 @@ public class AuthServiceImpl implements AuthService {
 
         String encodedPassword = bCryptPasswordEncoder.encode(password);
 
-
-        if(Objects.equals(role, "CUSTOMER")){
-            Customer user = new Customer();
-            user.setUsername(username);
-            user.setPassword(encodedPassword);
-            user.setEmail(email);
-            user.setBalance(100);
-            userRepository.save(user);
-            customerRepository.save(user);
-        } else if(Objects.equals(role, "ADMIN")){
+        if (role == RegisterRequestApiDto.RoleEnum.CUSTOMER) {
+            Customer customer = new Customer();
+            customer.setUsername(username);
+            customer.setPassword(encodedPassword);
+            customer.setEmail(email);
+            customer.setBalance(100.0f);
+            userRepository.save(customer);
+            customerRepository.save(customer);
+        } else if (role == RegisterRequestApiDto.RoleEnum.ADMIN) {
             Admin admin = new Admin();
             admin.setUsername(username);
             admin.setPassword(encodedPassword);
             admin.setEmail(email);
             userRepository.save(admin);
             adminRepository.save(admin);
+        } else {
+            throw new IllegalArgumentException("Invalid role specified");
         }
 
 
