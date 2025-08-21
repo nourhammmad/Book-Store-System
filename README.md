@@ -110,20 +110,50 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 | PUT    | `/orders/{id}`     | Update order status       | Admin    |
 | DELETE | `/orders/{id}`     | Cancel an order           | Customer |
 
----
-
-### 🧾 Order Items
-| Method | Endpoint                | Description                   | Access   |
-|--------|-------------------------|-------------------------------|----------|
-| GET    | `/order-items/{id}`     | Get order item by ID          | Customer |
-| POST   | `/order-items`          | Add item to an order          | Customer |
-| PUT    | `/order-items/{id}`     | Update order item quantity    | Customer |
-| DELETE | `/order-items/{id}`     | Remove item from order        | Customer |
-
----
 
 🔐 **Note:**  
 - All **protected endpoints** require a valid JWT token in the `Authorization` header:  
+## 5. 🔐 Authentication Flow
+
+This project uses **Spring Security + JWT (JSON Web Token)** for authentication and authorization. The flow ensures that only authenticated users can access protected endpoints while keeping the system stateless.  
+
+### 🔄 Flow Overview
+1. **User Login**  
+   - A client sends login credentials (`username`, `password`) to `/auth/login`.  
+   - If valid, the server generates a **JWT token** and returns it to the client.  
+
+2. **Token Usage**  
+   - The client includes the JWT in the `Authorization` header for subsequent requests:  
+     ```
+     Authorization: Bearer <jwt_token>
+     ```
+
+3. **JWT Filter Validation** (`JwtAuthenticationFilter`)  
+   - Every request passes through a filter that:  
+     - Extracts the token from the header.  
+     - Validates it with `JwtService`.  
+     - Loads user details via `UserDetailsServiceImpl`.  
+     - Creates a `UsernamePasswordAuthenticationToken` and sets it in `SecurityContextHolder`.  
+
+4. **Authorization**  
+   - `SecurityConfig` defines which endpoints are **public** (`/auth/**`, `/swagger-ui/**`, `/h2-console/**`) and which require authentication.  
+   - For protected endpoints, Spring Security checks the `SecurityContext` for valid authentication.  
+
+5. **Password Security**  
+   - Passwords are stored securely using **BCrypt hashing** (`BCryptPasswordEncoder`).  
+
+---
+
+### ⚙️ Components Involved
+- **`SecurityConfig`** → Defines security rules, session policy, and JWT filter chain.  
+- **`JwtAuthenticationFilter`** → Intercepts requests, validates JWTs, and authenticates users.  
+- **`CustomUserDetails`** → Wraps `User` entity to integrate with Spring Security.  
+- **`UserDetailsServiceImpl`** → Loads user data from the database.  
+- **`JwtService`** → Generates and validates JWT tokens.  
+
+---
+
+### 📝 Example Request Flow
 
 ### Setup
 
