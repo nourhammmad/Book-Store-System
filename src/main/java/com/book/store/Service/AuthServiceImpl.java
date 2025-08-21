@@ -6,12 +6,9 @@ import com.book.store.Entity.User;
 import com.book.store.Repository.AdminRepository;
 import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.UserRepository;
-import com.book.store.server.dto.RegisterRequestApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
     private final AdminRepository adminRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void registerUser(String username, String password, String email, RegisterRequestApiDto.RoleEnum role) {
+    public void registerUser(String username, String password, String email) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -32,7 +29,27 @@ public class AuthServiceImpl implements AuthService {
 
         String encodedPassword = bCryptPasswordEncoder.encode(password);
 
-        if (role == RegisterRequestApiDto.RoleEnum.CUSTOMER) {
+        // Default to CUSTOMER role for regular registration
+        Customer customer = new Customer();
+        customer.setUsername(username);
+        customer.setPassword(encodedPassword);
+        customer.setEmail(email);
+        customer.setBalance(100.0f);
+        userRepository.save(customer);
+        customerRepository.save(customer);
+    }
+
+    public void createUserWithRole(String username, String password, String email, String role) {
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
+
+        if ("CUSTOMER".equals(role)) {
             Customer customer = new Customer();
             customer.setUsername(username);
             customer.setPassword(encodedPassword);
@@ -40,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
             customer.setBalance(100.0f);
             userRepository.save(customer);
             customerRepository.save(customer);
-        } else if (role == RegisterRequestApiDto.RoleEnum.ADMIN) {
+        } else if ("ADMIN".equals(role)) {
             Admin admin = new Admin();
             admin.setUsername(username);
             admin.setPassword(encodedPassword);
@@ -50,8 +67,6 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new IllegalArgumentException("Invalid role specified");
         }
-
-
     }
 
     public User authenticateUser(String identifier, String password) {

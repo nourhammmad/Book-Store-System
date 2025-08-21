@@ -357,6 +357,25 @@ paths:
         '204':
           description: Admin deleted
 
+  /admin/create-user:
+    post:
+      summary: Create a new user with role (Admin only)
+      tags: ["Admins"]
+      operationId: createUserWithRole
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Bad request
+        '403':
+          description: Forbidden - Admin access required
+
   /admin/{id}/update-book-field:
     patch:
       summary: Log a book field update
@@ -539,7 +558,7 @@ paths:
     post:
       tags:
         - Auth
-      summary: Register new user
+      summary: Register new customer
       operationId: register
       requestBody:
         required: true
@@ -549,7 +568,7 @@ paths:
               $ref: '#/components/schemas/RegisterRequest'
       responses:
         '200':
-          description: User registered successfully
+          description: Customer registered successfully
         '400':
           description: Bad request
 
@@ -694,7 +713,6 @@ components:
         - username
         - password
         - email
-        - role
       properties:
         username:
           type: string
@@ -709,10 +727,6 @@ components:
           format: email
           minLength: 5
           maxLength: 50
-        role:
-          type: string
-          description: Role of the user
-          enum: [CUSTOMER, ADMIN]
 
     LoginRequest:
       type: object
@@ -734,6 +748,32 @@ components:
       properties:
         token:
           type: string
+
+    CreateUserRequest:
+      type: object
+      required:
+        - username
+        - password
+        - email
+        - role
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          minLength: 5
+          maxLength: 50
+        role:
+          type: string
+          description: Role of the user
+          enum: [CUSTOMER, ADMIN]
 
   examples:
     ordersExample:
