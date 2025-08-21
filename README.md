@@ -275,7 +275,7 @@ Run all tests with Maven:
 
 ```bash
 mvn test
-
+```
 ### Setup
 
 ```bash
