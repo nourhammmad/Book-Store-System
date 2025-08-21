@@ -1,7 +1,6 @@
 package com.book.store.Seed;
 import com.book.store.Entity.Admin;
 import com.book.store.Repository.AdminRepository;
-import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
 
@@ -46,11 +45,11 @@ public class DataSeeder {
 
         // Books to seed
         List<Book> books = Arrays.asList(
-                new Book(null, "Author One", "Spring Boot in Action", "N/A", 1, 29f),
-                new Book(null, "Author Two", "Java Concurrency Mastery", "N/A", 2, 35f),
-                new Book(null, "Author Three", "Microservices with Spring Cloud", "N/A", 1, 40.4f),
-                new Book(null, "Author Four", "Clean Code", "N/A", 1, 25f),
-                new Book(null, "Author Five", "Effective Java", "N/A", 1, 33f)
+                new Book(null, "9781234567890", "Author One", "Spring Boot in Action", "N/A", 1, 29f),
+                new Book(null, "9781234567891", "Author Two", "Java Concurrency Mastery", "N/A", 2, 35f),
+                new Book(null, "9781234567892", "Author Three", "Microservices with Spring Cloud", "N/A", 1, 40.4f),
+                new Book(null, "9781234567893", "Author Four", "Clean Code", "N/A", 1, 25f),
+                new Book(null, "9781234567894", "Author Five", "Effective Java", "N/A", 1, 33f)
         );
 
         // Save books and place orders

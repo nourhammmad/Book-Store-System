@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-isbn-to-books
+      author: mohamed
+      changes:
+        - addColumn:
+            tableName: book
+            columns:
+              - column:
+                  name: isbn
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: book
+            columnNames: isbn
+            constraintName: uq_book_isbn

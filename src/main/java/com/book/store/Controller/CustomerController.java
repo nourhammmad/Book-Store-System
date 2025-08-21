@@ -25,7 +25,7 @@ public class CustomerController implements CustomersApi {
 
     }
     @Override
-   public ResponseEntity<List<CustomerApiDto>> customersGet(Integer page, Integer size) {
+   public ResponseEntity<List<CustomerApiDto>> customerGet(Integer page, Integer size) {
         List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
 
         return new ResponseEntity<>( customerDtos,HttpStatus.OK);
@@ -34,21 +34,21 @@ public class CustomerController implements CustomersApi {
     }
 
     @Override
-    public ResponseEntity<Void> customersIdDelete(Long id) {
+    public ResponseEntity<Void> customerIdDelete(Long id) {
          customerService.deleteCustomer(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
 
-    public ResponseEntity<CustomerApiDto> customersIdGet(Long id) {
+    public ResponseEntity<CustomerApiDto> customerIdGet(Long id) {
         CustomerApiDto customerApiDto = customerService.findCustomerById(id);
 
         return new ResponseEntity<>(customerApiDto,HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> customersPost(CustomerApiDto customerApiDto) {
+    public ResponseEntity<Void> customerPost(CustomerApiDto customerApiDto) {
         // Convert API DTO to entity
         Customer customerEntity = customerMapper.toEntity(customerApiDto);
         customerEntity.setUsername(customerApiDto.getUsername());
