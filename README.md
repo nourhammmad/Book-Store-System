@@ -73,42 +73,42 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 ## 📖 API Endpoints
 
 ### 🔑 Authentication
-| Method | Endpoint         | Description              | Access |
-|--------|------------------|--------------------------|--------|
-| POST   | `/auth/register` | Register a new customer | Public |
-| POST   | `/auth/login`    | Authenticate & get JWT  | Public |
+| Method | Endpoint         | Description              |
+|--------|------------------|--------------------------|
+| POST   | `/auth/register` | Register a new customer |
+| POST   | `/auth/login`    | Authenticate & get JWT  |
 
 ---
 
 ### 📚 Books
-| Method | Endpoint       | Description          | Access   |
-|--------|----------------|----------------------|----------|
-| GET    | `/books`       | Get all books        | Public   |
-| GET    | `/books/{id}`  | Get book by ID       | Public   |
-| POST   | `/books`       | Add a new book       | Admin    |
-| PUT    | `/books/{id}`  | Update book details  | Admin    |
-| DELETE | `/books/{id}`  | Delete a book        | Admin    |
+| Method | Endpoint       | Description          |
+|--------|----------------|----------------------|
+| GET    | `/books`       | Get all books        |
+| GET    | `/books/{id}`  | Get book by ID       |
+| POST   | `/books`       | Add a new book       |
+| PUT    | `/books/{id}`  | Update book details  |
+| DELETE | `/books/{id}`  | Delete a book        |
 
 ---
 
 ### 👤 Customers
-| Method | Endpoint           | Description               | Access   |
-|--------|--------------------|---------------------------|----------|
-| GET    | `/customers`       | Get all customers         | Admin    |
-| GET    | `/customers/{id}`  | Get customer by ID        | Admin    |
-| PUT    | `/customers/{id}`  | Update customer profile   | Customer |
-| DELETE | `/customers/{id}`  | Delete customer account   | Admin    |
+| Method | Endpoint           | Description               |
+|--------|--------------------|---------------------------|
+| GET    | `/customers`       | Get all customers         |
+| GET    | `/customers/{id}`  | Get customer by ID        |
+| PUT    | `/customers/{id}`  | Update customer profile   |
+| DELETE | `/customers/{id}`  | Delete customer account   |
 
 ---
 
 ### 🛒 Orders
-| Method | Endpoint           | Description               | Access   |
-|--------|--------------------|---------------------------|----------|
-| POST   | `/orders`          | Place a new order         | Customer |
-| GET    | `/orders`          | Get all orders            | Admin    |
-| GET    | `/orders/{id}`     | Get order by ID           | Customer/Admin |
-| PUT    | `/orders/{id}`     | Update order status       | Admin    |
-| DELETE | `/orders/{id}`     | Cancel an order           | Customer |
+| Method | Endpoint           | Description               |
+|--------|--------------------|---------------------------|
+| POST   | `/orders`          | Place a new order         |
+| GET    | `/orders`          | Get all orders            |
+| GET    | `/orders/{id}`     | Get order by ID           |
+| PUT    | `/orders/{id}`     | Update order status       |
+| DELETE | `/orders/{id}`     | Cancel an order           |
 
 
 🔐 **Note:**  
