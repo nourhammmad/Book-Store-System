@@ -317,6 +317,7 @@ To generate code from the contract, run:
 
 ```bash
 mvn clean compile
+```
 ## 👥 Authors
 
 ### Nour Hammad  
