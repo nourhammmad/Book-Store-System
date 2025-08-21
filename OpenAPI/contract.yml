@@ -532,6 +532,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomError'
+  /book/isbn/{isbn}:
+    get:
+      tags:
+        - Books
+      summary: Find book by ISBN
+      description: Retrieve a specific book by its ISBN
+      operationId: findBookByIsbn
+      parameters:
+        - in: path
+          name: isbn
+          required: true
+          schema:
+            type: string
+            pattern: '^(97[89])?[0-9]{9}[0-9X]$'
+          description: 'ISBN-10 or ISBN-13 of the book'
+          example: '9780134685991'
+      responses:
+        '200':
+          description: Successfully retrieved the book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/book'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+
   /auth/login:
     post:
       tags:
@@ -659,10 +689,19 @@ components:
 
     book:
       type: object
+      required:
+        - isbn
+        - title
+        - author
       properties:
         id:
           type: integer
           format: int64
+        isbn:
+          type: string
+          pattern: '^(97[89])?[0-9]{9}[0-9X]$'
+          description: 'International Standard Book Number (ISBN-10 or ISBN-13)'
+          example: '9780134685991'
         author:
           type: string
         title:
@@ -799,12 +838,14 @@ components:
       value:
         books:
           - id: 1
+            isbn: "9780451524935"
             author: "George Orwell"
             title: "1984"
             description: "Dystopian novel"
             quantity: 100
             price: 19.99
           - id: 2
+            isbn: "9780439708180"
             author: "J.K. Rowling"
             title: "Harry Potter and the Sorcerer's Stone"
             description: "Fantasy novel"

@@ -77,5 +77,12 @@ public class BookService {
         }
         return bookRepository.getDescriptionById(id);
     }
-}
 
+    public Book getBookByIsbn(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            throw new IllegalArgumentException("ISBN cannot be null or empty");
+        }
+        return bookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
+    }
+}
