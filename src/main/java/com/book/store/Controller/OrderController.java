@@ -1,18 +1,21 @@
 package com.book.store.Controller;
 
-import com.book.store.server.api.OrdersApi; // OpenAPI-generated interface
-import com.book.store.server.dto.OrderApiDto;
-import com.book.store.server.dto.OrdersApiDto;
+import com.book.store.server.api.OrdersApi; // Generated from OpenAPI
+import com.book.store.server.dto.OrderResponseApiDto;
+import com.book.store.server.dto.OrderRequestApiDto;
+
+
 import com.book.store.Service.OrderService;
 import com.book.store.Entity.Order;
 import com.book.store.Mapper.OrderMapper;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.book.store.server.dto.PaginatedOrderResponseApiDto;
 import com.book.store.server.dto.UpdateOrderRequestApiDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class OrderController implements OrdersApi {
@@ -25,46 +28,53 @@ public class OrderController implements OrdersApi {
         this.orderMapper = orderMapper;
     }
 
-    // DELETE /orders/{id}
-
+    // ✅ GET /order
     @Override
-    public ResponseEntity<Void> deleteOrderById(Long id) {
-        orderService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<PaginatedOrderResponseApiDto> findAllOrders(Integer page, Integer size) {
+        var orderPage = orderService.findAll(page, size);
+
+        PaginatedOrderResponseApiDto response = new PaginatedOrderResponseApiDto();
+        response.setContent(
+                orderPage.getContent()
+                        .stream()
+                        .map(orderMapper::toResponseDto)
+                        .collect(Collectors.toList())
+        );
+        response.setPage(page);
+        response.setSize(size);
+        response.setTotalElements((int) orderPage.getTotalElements());
+        response.setTotalPages(orderPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 
-    // GET /orders?page=0&size=10
+    // ✅ POST /order
     @Override
-    public ResponseEntity<OrdersApiDto> findAllOrders(Integer page, Integer size) {
-        List<Order> orders = orderService.findAll(page, size).getContent();
-        List<OrderApiDto> dtoList = orders.stream()
-                .map(orderMapper::toDTO)
-                .collect(Collectors.toList());
-
-        OrdersApiDto ordersApiDto = new OrdersApiDto();
-        ordersApiDto.setOrders(dtoList);
-
-        return new ResponseEntity<>(ordersApiDto, HttpStatus.OK);
+    public ResponseEntity<OrderResponseApiDto> placeOrder(OrderRequestApiDto orderRequestApiDto) {
+        var createdOrder = orderService.placeOrder(orderRequestApiDto);
+        return new ResponseEntity<>(orderMapper.toResponseDto(createdOrder), HttpStatus.CREATED);
     }
 
     // GET /orders/{id}
     @Override
-    public ResponseEntity<OrderApiDto> findOrderById(Long id) {
-        Order order = orderService.findById(id);
-        return new ResponseEntity<>(orderMapper.toDTO(order), HttpStatus.OK);
+    public ResponseEntity<OrderResponseApiDto> updateOrder(Long id, UpdateOrderRequestApiDto updateOrderRequestApiDto) {
+        return null;
     }
 
     @Override
-    public ResponseEntity<OrdersApiDto> findPreviousOrders() {
+    public ResponseEntity<List<OrderResponseApiDto>> findPreviousOrders() {
+        // Fetch previous orders from the service
         List<Order> orders = orderService.GetPreviousOrders();
-        List<OrderApiDto> dtoList = orders.stream()
-                .map(orderMapper::toDTO)
-                        .toList();
-        OrdersApiDto ordersApiDto = new OrdersApiDto();
-        ordersApiDto.setOrders(dtoList);
 
-        return new ResponseEntity<>(ordersApiDto, HttpStatus.OK);
+        // Map each Order entity to the new OrderResponseApiDto using the new mapper
+        List<OrderResponseApiDto> dtoList = orders.stream()
+                .map(orderMapper::toResponseDto)
+                .toList();
+
+        // Return the list directly in the response
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
     }
+
 
 //    @Override
 //    public ResponseEntity<List<OrderApiDto>> findPreviousOrders() {
@@ -85,17 +95,16 @@ public class OrderController implements OrdersApi {
     //  ]
     //}
     @Override
-    public ResponseEntity<OrderApiDto> placeOrder(OrderApiDto orderApiDto) {
-        Order createdOrder = orderService.placeOrder(orderApiDto);
-        return new ResponseEntity<>(orderMapper.toDTO(createdOrder), HttpStatus.CREATED);
+    public ResponseEntity<OrderResponseApiDto> findOrderById(Long id) {
+        var order = orderService.findById(id);
+        return ResponseEntity.ok(orderMapper.toResponseDto(order));
     }
 
-    // PUT /orders/{id}
+    // ✅ DELETE /order/{id}
     @Override
-    public ResponseEntity<OrderApiDto> updateOrder(Long id, UpdateOrderRequestApiDto updateOrderRequestApiDto) {
-//        Order updatedOrder = orderService.updateOrder(id.longValue(), updateOrderRequestApiDto);
-//        return new ResponseEntity<>(orderMapper.toDTO(updatedOrder), HttpStatus.OK);
-        return null;
+    public ResponseEntity<Void> deleteOrderById(Long id) {
+        orderService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 

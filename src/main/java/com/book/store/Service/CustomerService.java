@@ -8,7 +8,7 @@ import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.OrderRepository;
 import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
-import com.book.store.server.dto.OrderApiDto;
+import com.book.store.server.dto.CustomerReferenceApiDto;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +28,16 @@ public class CustomerService {
 private final UserRepository userRepository;
 
     private final CustomerRepository customerRepository;
-
     private final CustomerMapper customerMapper;
+    // Create customer from API DTO
+    public Customer createCustomer(Customer customer) {
 
+        if (customer == null) {
+            throw new NullPointerException("Customer must not be null");
+        }
 
+        return customerRepository.save(customer);
+    }
     // Delete customer
     @Transactional
     public void deleteCustomer(Long id) {
@@ -48,9 +54,9 @@ private final UserRepository userRepository;
                 .collect(Collectors.toList());
     }
     // Find by ID
-    public CustomerApiDto findCustomerById(Long id) {
+    public Customer findCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
-        return customerMapper.toDTO(customer);
+        return customer;
     }
 }

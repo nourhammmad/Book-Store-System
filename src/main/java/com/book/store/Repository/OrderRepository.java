@@ -1,7 +1,6 @@
 package com.book.store.Repository;
 
 import com.book.store.Entity.Order;
-import com.book.store.server.dto.OrderApiDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

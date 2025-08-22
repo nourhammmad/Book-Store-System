@@ -1,6 +1,7 @@
 package com.book.store.Controller;
 import com.book.store.server.api.CustomersApi;
 import com.book.store.server.dto.CustomerApiDto;
+import com.book.store.server.dto.CustomerReferenceApiDto;
 import com.book.store.Service.CustomerService;
 import com.book.store.Entity.Customer;
 import com.book.store.Mapper.CustomerMapper;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class CustomerController implements CustomersApi {
@@ -25,14 +27,10 @@ public class CustomerController implements CustomersApi {
 
     }
     @Override
-   public ResponseEntity<List<CustomerApiDto>> customerGet(Integer page, Integer size) {
-        List<CustomerApiDto> customerDtos = customerService.getAllCustomers(page, size);
-
-        return new ResponseEntity<>( customerDtos,HttpStatus.OK);
-
-
+    public ResponseEntity<List<CustomerApiDto>> customerGet(Integer page, Integer size) {
+        List<CustomerApiDto> referenceDtos = customerService.getAllCustomers(page, size);
+        return ResponseEntity.ok(referenceDtos);
     }
-
     @Override
     public ResponseEntity<Void> customerIdDelete(Long id) {
          customerService.deleteCustomer(id);
@@ -40,11 +38,10 @@ public class CustomerController implements CustomersApi {
     }
 
     @Override
-
     public ResponseEntity<CustomerApiDto> customerIdGet(Long id) {
-        CustomerApiDto customerApiDto = customerService.findCustomerById(id);
-
-        return new ResponseEntity<>(customerApiDto,HttpStatus.OK);
+        Customer customer = customerService.findCustomerById(id); // return entity
+        CustomerApiDto dto = customerMapper.toDTO(customer);           // map to API DTO
+        return ResponseEntity.ok(dto);
     }
 
 

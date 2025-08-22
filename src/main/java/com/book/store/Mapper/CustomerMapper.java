@@ -2,6 +2,7 @@ package com.book.store.Mapper;
 
 import com.book.store.server.dto.CustomerApiDto;
 import com.book.store.Entity.Customer;
+import com.book.store.server.dto.CustomerReferenceApiDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -18,8 +19,12 @@ public interface CustomerMapper {
     // Map DTO -> Entity
     Customer toEntity(CustomerApiDto dto);
 
+    // ✅ Entity -> Reference DTO (only minimal fields)
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "username", source = "username")
+    CustomerReferenceApiDto toReferenceDto(Customer customerApiDto);
+
     // Map Entity -> DTO, omit ID in response
-    @Mapping(target = "id", ignore = true)
     CustomerApiDto toDTO(Customer customer);
 
     // Partial update (ignore null fields)

@@ -7,9 +7,11 @@ import com.book.store.Repository.BookRepository;
 import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.OrderRepository;
 
+import com.book.store.server.dto.OrderRequestApiDto; // your OpenAPI DTO
+import com.book.store.server.dto.OrderItemRequestApiDto;
+import com.book.store.server.dto.OrderResponseApiDto; // your OpenAPI DTO
+import com.book.store.server.dto.OrderItemResponseApiDto;
 import com.book.store.Repository.UserRepository;
-import com.book.store.server.dto.OrderApiDto; // your OpenAPI DTO
-import com.book.store.server.dto.OrderItemApiDto;
 
 import com.book.store.server.dto.UpdateOrderRequestApiDto;
 
@@ -39,18 +41,20 @@ public class OrderService {
     /**
      * Place an order from DTO
      */
-    public Order placeOrder(OrderApiDto orderApiDto) {
+    public Order placeOrder(OrderRequestApiDto orderApiDto) {
         // Fetch customer
-        Long customerId = orderApiDto.getCustomer().getId();
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id " + customerId));
+        String username = authentication.getCurrentUserUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+        Customer customer = customerRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found for user: " + username));
 
         Order order = new Order();
         order.setCustomer(customer);
         order.setOrderDate(LocalDateTime.now());
 
         if (orderApiDto.getItems() != null && !orderApiDto.getItems().isEmpty()) {
-            for (OrderItemApiDto itemDto : orderApiDto.getItems()) {
+            for (OrderItemRequestApiDto itemDto : orderApiDto.getItems()) {
                 Book book = bookRepository.findById(itemDto.getBook().getId())
                         .orElseThrow(() -> new IllegalArgumentException("Book not found with id " + itemDto.getBook().getId()));
 

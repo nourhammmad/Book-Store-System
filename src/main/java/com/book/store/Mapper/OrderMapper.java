@@ -1,9 +1,11 @@
 package com.book.store.Mapper;
 
-import com.book.store.server.dto.OrderApiDto;
-import com.book.store.server.dto.OrderItemApiDto;
 import com.book.store.Entity.Order;
 import com.book.store.Entity.OrderItem;
+import com.book.store.server.dto.OrderRequestApiDto;
+import com.book.store.server.dto.OrderResponseApiDto;
+import com.book.store.server.dto.OrderItemRequestApiDto;
+import com.book.store.server.dto.OrderItemResponseApiDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,34 +23,35 @@ public interface OrderMapper {
 
     OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
 
-    // Map OrderApiDto -> Order entity including items
+    // === Order mappings ===
+
+    // Map OrderRequestApiDto -> Order entity (for create/update)
     @Mapping(target = "items", source = "items")
     @Mapping(target = "status", source = "status")
-    Order toEntity(OrderApiDto orderApiDto);
+    Order toEntity(OrderRequestApiDto orderRequestApiDto);
 
-    // Map Order entity -> OrderApiDto including items
+    // Map Order entity -> OrderResponseApiDto (for responses)
     @Mapping(target = "items", source = "items")
     @Mapping(target = "totalPrice", expression = "java(order.getTotalPrice())")
     @Mapping(target = "status", source = "status")
-    OrderApiDto toDTO(Order order);
+    OrderResponseApiDto toResponseDto(Order order);
 
     // Partial update (ignores null fields)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Order partialUpdate(OrderApiDto orderApiDto, @MappingTarget Order order);
+    Order partialUpdate(OrderRequestApiDto orderRequestApiDto, @MappingTarget Order order);
 
-    // Map OrderItemApiDto -> OrderItem
-    OrderItem toEntity(OrderItemApiDto orderItemApiDto);
+    // === OrderItem mappings ===
 
-    // Map OrderItem -> OrderItemApiDto
-    OrderItemApiDto toDTO(OrderItem orderItem);
+    OrderItem toEntity(OrderItemRequestApiDto orderItemRequestApiDto);
 
-    // Map list of OrderItem -> list of OrderItemApiDto
-    List<OrderItemApiDto> toDTO(List<OrderItem> items);
+    OrderItemResponseApiDto toResponseDto(OrderItem orderItem);
 
-    // Map list of OrderItemApiDto -> list of OrderItem
-    List<OrderItem> toEntity(List<OrderItemApiDto> items);
+    List<OrderItemResponseApiDto> toResponseDto(List<OrderItem> items);
 
-    // Conversion helpers for OffsetDateTime <-> LocalDateTime
+    List<OrderItem> toEntityFromRequest(List<OrderItemRequestApiDto> items);
+
+    // === Conversion helpers for OffsetDateTime <-> LocalDateTime ===
+
     default LocalDateTime map(OffsetDateTime value) {
         return value == null ? null : value.toLocalDateTime();
     }
@@ -58,7 +61,8 @@ public interface OrderMapper {
     }
 
     // === STATUS ENUM MAPPINGS ===
-    default Order.OrderStatus map(OrderApiDto.StatusEnum statusEnum) {
+
+    default Order.OrderStatus map(OrderRequestApiDto.StatusEnum statusEnum) {
         if (statusEnum == null) return null;
         switch (statusEnum) {
             case PLACED: return Order.OrderStatus.PLACED;
@@ -69,13 +73,13 @@ public interface OrderMapper {
         }
     }
 
-    default OrderApiDto.StatusEnum map(Order.OrderStatus status) {
+    default OrderResponseApiDto.StatusEnum map(Order.OrderStatus status) {
         if (status == null) return null;
         switch (status) {
-            case PLACED: return OrderApiDto.StatusEnum.PLACED;
-            case PROCESSING: return OrderApiDto.StatusEnum.PROCESSING;
-            case COMPLETED: return OrderApiDto.StatusEnum.COMPLETED;
-            case CANCELLED: return OrderApiDto.StatusEnum.CANCELLED;
+            case PLACED: return OrderResponseApiDto.StatusEnum.PLACED;
+            case PROCESSING: return OrderResponseApiDto.StatusEnum.PROCESSING;
+            case COMPLETED: return OrderResponseApiDto.StatusEnum.COMPLETED;
+            case CANCELLED: return OrderResponseApiDto.StatusEnum.CANCELLED;
             default: throw new IllegalArgumentException("Unknown status: " + status);
         }
     }
