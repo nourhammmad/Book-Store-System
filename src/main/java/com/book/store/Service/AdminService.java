@@ -28,12 +28,12 @@ public class AdminService {
     private final BookService bookService;
 
 
-    public Admin createAdmin(Admin admin) {
-
-        admin.setEmail(admin.getEmail());
-        admin.setUsername(admin.getUsername());
-        return adminRepository.save(admin);
-    }
+//    public Admin createAdmin(Admin admin) {
+//
+//        admin.setEmail(admin.getEmail());
+//        admin.setUsername(admin.getUsername());
+//        return adminRepository.save(admin);
+//    }
 
     // Delete customer
     @Transactional

@@ -136,6 +136,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
+  /order/customer:
+    get:
+      tags:
+        - Orders
+      summary: Find Previous orders For Logged In Customer
+      description: Retrieve a all orders by logged in customer id
+      operationId: findPreviousOrders
+
+      responses:
+        '200':
+          description: Successfully retrieved the order
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/orders'
+        '404':
+          description: Order not found
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/CustomError'
+
     delete:
       tags:
         - Orders
@@ -239,18 +261,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Customer'
 
-    post:
-      summary: Create a new customer
-      tags: ["Customers"]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Customer'
-      responses:
-        '201':
-          description: Customer created
+
+
+
 
   /customer/{id}:
     get:
@@ -311,18 +324,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Admin'
 
-    post:
-      summary: Create a new admin
-      tags: ["Admins"]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Admin'
-      responses:
-        '201':
-          description: Admin created
+
 
   /admin/{id}:
     get:
@@ -477,38 +479,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-    put:
-      tags:
-        - Books
-      summary: Update book by ID
-      description: Update all attributes of a specific book
-      operationId: updateBookById
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/book'
-      responses:
-        '200':
-          description: Successfully updated the book
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/book'
-        '404':
-          description: Book not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomError'
+
 
     delete:
       tags:

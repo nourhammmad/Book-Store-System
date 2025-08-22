@@ -2,7 +2,7 @@ package com.book.store.Seed;
 import com.book.store.Entity.Admin;
 import com.book.store.Repository.AdminRepository;
 import com.book.store.Repository.UserRepository;
-import com.book.store.server.dto.CustomerApiDto;
+
 
 import com.book.store.Entity.Book;
 import com.book.store.Entity.Customer;
@@ -32,15 +32,15 @@ public class DataSeeder {
     @PostConstruct
     public void seed() {
         // Create customer DTO
-        CustomerApiDto customerApiDto = new CustomerApiDto();
-        customerApiDto.setUsername("Jane Doe");
-        customerApiDto.setPassword(passwordEncoder.encode("password"));
-        customerApiDto.setEmail("test@test.com");
-        customerApiDto.setAddress("123 Main St, Springfield");
-        customerApiDto.setBalance(500.0f);
+//        CustomerApiDto customerApiDto = new CustomerApiDto();
+//        customerApiDto.setUsername("Jane Doe");
+//        customerApiDto.setPassword(passwordEncoder.encode("password"));
+//        customerApiDto.setEmail("test@test.com");
+//        customerApiDto.setAddress("123 Main St, Springfield");
+//        customerApiDto.setBalance(500.0f);
 
 // Convert API DTO → entity
-        Customer savedCustomer = customerService.createCustomer(customerMapper.toEntity(customerApiDto));
+       // Customer savedCustomer = customerService.createCustomer(customerMapper.toEntity(customerApiDto));
 
 
         // Books to seed

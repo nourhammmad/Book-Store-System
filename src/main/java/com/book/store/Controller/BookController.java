@@ -55,11 +55,11 @@ public class BookController implements BooksApi {
           return new ResponseEntity<>(BookMapper.INSTANCE.toDto(bookService.getBookById(id)), HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<BookApiDto> updateBookById(Long id, BookApiDto bookApiDto) {
-        Book book = bookService.updateBook(bookApiDto, id);
-        return ResponseEntity.ok(bookMapper.toDto(book));
-    }
+//    @Override
+//    public ResponseEntity<BookApiDto> updateBookById(Long id, BookApiDto bookApiDto) {
+//        Book book = bookService.updateBook(bookApiDto, id);
+//        return ResponseEntity.ok(bookMapper.toDto(book));
+//    }
 
     @Override
     public ResponseEntity<BookApiDto> findBookByIsbn(String isbn) {

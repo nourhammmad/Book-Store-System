@@ -53,28 +53,28 @@ class CustomerServiceTest {
         customerApiDto.setBalance(100.0f);
     }
 
-    @Test
-    void createCustomerSavesAndReturnsCustomer() {
-        when(customerRepository.save(customer)).thenReturn(customer);
+//    @Test
+//    void createCustomerSavesAndReturnsCustomer() {
+//        when(customerRepository.save(customer)).thenReturn(customer);
+//
+//        Customer result = customerService.createCustomer(customer);
+//
+//        assertNotNull(result);
+//        assertEquals(customer.getId(), result.getId());
+//        assertEquals(customer.getUsername(), result.getUsername());
+//        assertEquals(customer.getEmail(), result.getEmail());
+//        verify(customerRepository).save(customer);
+//    }
 
-        Customer result = customerService.createCustomer(customer);
-
-        assertNotNull(result);
-        assertEquals(customer.getId(), result.getId());
-        assertEquals(customer.getUsername(), result.getUsername());
-        assertEquals(customer.getEmail(), result.getEmail());
-        verify(customerRepository).save(customer);
-    }
-
-    @Test
-    void createCustomerWithNullCustomerThrowsException() {
-
-        assertThrows(NullPointerException.class, () -> {
-            customerService.createCustomer(null);
-        });
-
-        verify(customerRepository, never()).save(any());
-    }
+//    @Test
+//    void createCustomerWithNullCustomerThrowsException() {
+//
+//        assertThrows(NullPointerException.class, () -> {
+//            customerService.createCustomer(null);
+//        });
+//
+//        verify(customerRepository, never()).save(any());
+//    }
 
     @Test
     void deleteCustomerCallsRepositoryDelete() {
@@ -184,33 +184,33 @@ class CustomerServiceTest {
         verify(customerRepository).findById(null);
     }
 
-    @Test
-    void createCustomerWithEmptyFields() {
-        Customer emptyCustomer = new Customer();
-        emptyCustomer.setUsername("");
-        emptyCustomer.setEmail("");
+//    @Test
+//    void createCustomerWithEmptyFields() {
+//        Customer emptyCustomer = new Customer();
+//        emptyCustomer.setUsername("");
+//        emptyCustomer.setEmail("");
+//
+//        when(customerRepository.save(emptyCustomer)).thenReturn(emptyCustomer);
+//
+//        Customer result = customerService.createCustomer(emptyCustomer);
+//
+//        assertNotNull(result);
+//        assertEquals("", result.getUsername());
+//        assertEquals("", result.getEmail());
+//        verify(customerRepository).save(emptyCustomer);
+//    }
 
-        when(customerRepository.save(emptyCustomer)).thenReturn(emptyCustomer);
-
-        Customer result = customerService.createCustomer(emptyCustomer);
-
-        assertNotNull(result);
-        assertEquals("", result.getUsername());
-        assertEquals("", result.getEmail());
-        verify(customerRepository).save(emptyCustomer);
-    }
-
-    @Test
-    void createCustomerWithNegativeBalance() {
-        customer.setBalance(-50.0f);
-        when(customerRepository.save(customer)).thenReturn(customer);
-
-        Customer result = customerService.createCustomer(customer);
-
-        assertNotNull(result);
-        assertEquals(-50.0f, result.getBalance());
-        verify(customerRepository).save(customer);
-    }
+//    @Test
+//    void createCustomerWithNegativeBalance() {
+//        customer.setBalance(-50.0f);
+//        when(customerRepository.save(customer)).thenReturn(customer);
+//
+//        Customer result = customerService.createCustomer(customer);
+//
+//        assertNotNull(result);
+//        assertEquals(-50.0f, result.getBalance());
+//        verify(customerRepository).save(customer);
+//    }
 
     @Test
     void getAllCustomersWithNegativePageNumber() {

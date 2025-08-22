@@ -48,21 +48,21 @@ public class AdminController implements AdminsApi {
         return new ResponseEntity<>(adminApiDto,HttpStatus.OK);
     }
 
-    @Override
-    public ResponseEntity<Void> adminPost(AdminApiDto adminApiDto) {
-        // Convert API DTO to entity
-        Admin adminEntity = adminMapper.toEntity(adminApiDto);
-        adminEntity.setUsername(adminApiDto.getUsername());
-        adminEntity.setEmail(adminApiDto.getEmail());
-        // Save the customer entity
-        Admin savedAdmin = adminService.createAdmin(adminEntity);
-
-        // Convert saved entity back to API DTO
-        AdminApiDto responseDto = adminMapper.toDTO(savedAdmin);
-
-        // Return response with CREATED status
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
+//    @Override
+//    public ResponseEntity<Void> adminPost(AdminApiDto adminApiDto) {
+//        // Convert API DTO to entity
+//        Admin adminEntity = adminMapper.toEntity(adminApiDto);
+//        adminEntity.setUsername(adminApiDto.getUsername());
+//        adminEntity.setEmail(adminApiDto.getEmail());
+//        // Save the customer entity
+//        Admin savedAdmin = adminService.createAdmin(adminEntity);
+//
+//        // Convert saved entity back to API DTO
+//        AdminApiDto responseDto = adminMapper.toDTO(savedAdmin);
+//
+//        // Return response with CREATED status
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
 
     @Override
     public ResponseEntity<Void> createUserWithRole(CreateUserRequestApiDto createUserRequestApiDto) {
