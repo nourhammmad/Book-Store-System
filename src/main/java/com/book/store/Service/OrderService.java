@@ -13,7 +13,6 @@ import com.book.store.server.dto.OrderResponseApiDto; // your OpenAPI DTO
 import com.book.store.server.dto.OrderItemResponseApiDto;
 import com.book.store.Repository.UserRepository;
 
-import com.book.store.server.dto.UpdateOrderRequestApiDto;
 
 import jakarta.validation.ValidationException;
 
@@ -135,49 +134,5 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    /**
-     * Update order: status and items
-     */
-//    public Order updateOrder(Long orderId, UpdateOrderRequestApiDto updateDto) {
-//        Order order = findById(orderId);
-//
-//        // Update status
-//        if (updateDto.getStatus() != null) {
-//            order.setStatus(orderMapper.map(updateDto.getStatus()));
-//        }
-//
-//        // Update items if provided
-//        if (updateDto.getItems() != null && !updateDto.getItems().isEmpty()) {
-//            // Restore previous stock first
-//            for (OrderItem item : order.getItems()) {
-//                Book book = item.getBook();
-//                book.setQuantity(book.getQuantity() + item.getQuantity());
-//                bookRepository.save(book);
-//            }
-//
-//            // Clear old items
-//            order.getItems().clear();
-//
-//            // Add new items
-//            for (OrderItemApiDto itemDto : updateDto.getItems()) {
-//                Book book = bookRepository.findById(itemDto.getBook().getId())
-//                        .orElseThrow(() -> new IllegalArgumentException("Book not found with id " + itemDto.getBook().getId()));
-//
-//                int quantity = itemDto.getQuantity();
-//                if (book.getQuantity() < quantity) {
-//                    throw new IllegalStateException("Requested quantity exceeds available stock for book " + book.getId());
-//                }
-//
-//                OrderItem newItem = orderMapper.toEntity(itemDto);
-//                newItem.setBook(book);
-//                newItem.setPrice(book.getPrice() * quantity);
-//                order.addItem(newItem);
-//
-//                book.setQuantity(book.getQuantity() - quantity);
-//                bookRepository.save(book);
-//            }
-//        }
-//
-//        return orderRepository.save(order);
-//    }
+
 }

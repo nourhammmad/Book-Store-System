@@ -43,22 +43,4 @@ public class CustomerController implements CustomersApi {
         CustomerApiDto dto = customerMapper.toDTO(customer);           // map to API DTO
         return ResponseEntity.ok(dto);
     }
-
-
-
-//    @Override
-//    public ResponseEntity<Void> customerPost(CustomerApiDto customerApiDto) {
-//        // Convert API DTO to entity
-//        Customer customerEntity = customerMapper.toEntity(customerApiDto);
-//        customerEntity.setUsername(customerApiDto.getUsername());
-//        customerEntity.setEmail(customerApiDto.getEmail());
-//        // Save the customer entity
-//        Customer savedCustomer = customerService.createCustomer(customerEntity);
-//
-//        // Convert saved entity back to API DTO
-//        CustomerApiDto responseDto = customerMapper.toDTO(savedCustomer);
-//
-//        // Return response with CREATED status
-//        return new ResponseEntity<Void>(HttpStatus.CREATED);
-//    }
 }

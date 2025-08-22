@@ -185,59 +185,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-    patch:
-      tags:
-        - Orders
-      summary: Update an order
-      description: Update specific fields of an order (e.g., status, items)
-      operationId: updateOrder
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json;charset=utf-8:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: string
-                  enum: [PLACED, PROCESSING, COMPLETED, CANCELLED]
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/orderItemRequest'
-      responses:
-        '200':
-          description: Successfully updated the order
-          content:
-            application/json;charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/orderResponse'
-        '400':
-          description: Invalid update request
-          content:
-            application/json;charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/CustomError'
-        '404':
-          description: Order not found
-          content:
-            application/json;charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/CustomError'
-        '409':
-          description: Update conflict (e.g., changing to invalid status)
-          content:
-            application/json;charset=utf-8:
-              schema:
-                $ref: '#/components/schemas/CustomError'
-
   # Customer endpoints
   /customer:
     get:

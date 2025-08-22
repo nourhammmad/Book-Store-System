@@ -9,7 +9,6 @@ import com.book.store.Service.OrderService;
 import com.book.store.Entity.Order;
 import com.book.store.Mapper.OrderMapper;
 import com.book.store.server.dto.PaginatedOrderResponseApiDto;
-import com.book.store.server.dto.UpdateOrderRequestApiDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,12 +54,6 @@ public class OrderController implements OrdersApi {
         return new ResponseEntity<>(orderMapper.toResponseDto(createdOrder), HttpStatus.CREATED);
     }
 
-    // GET /orders/{id}
-    @Override
-    public ResponseEntity<OrderResponseApiDto> updateOrder(Long id, UpdateOrderRequestApiDto updateOrderRequestApiDto) {
-        return null;
-    }
-
     @Override
     public ResponseEntity<List<OrderResponseApiDto>> findPreviousOrders() {
         // Fetch previous orders from the service
@@ -76,24 +69,9 @@ public class OrderController implements OrdersApi {
     }
 
 
-//    @Override
-//    public ResponseEntity<List<OrderApiDto>> findPreviousOrders() {
-//
-//    }
-
     // POST /orders
     //http://localhost:8080/orders
-    //{
-    //  "customer": {
-    //    "id": 1
-    //  },
-    //  "items": [
-    //    {
-    //      "book": { "id": 2 },
-    //      "quantity": 1
-    //    }
-    //  ]
-    //}
+
     @Override
     public ResponseEntity<OrderResponseApiDto> findOrderById(Long id) {
         var order = orderService.findById(id);
