@@ -54,6 +54,23 @@ public class OrderController implements OrdersApi {
         return new ResponseEntity<>(orderMapper.toDTO(order), HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<OrdersApiDto> findPreviousOrders() {
+        List<Order> orders = orderService.GetPreviousOrders();
+        List<OrderApiDto> dtoList = orders.stream()
+                .map(orderMapper::toDTO)
+                        .toList();
+        OrdersApiDto ordersApiDto = new OrdersApiDto();
+        ordersApiDto.setOrders(dtoList);
+
+        return new ResponseEntity<>(ordersApiDto, HttpStatus.OK);
+    }
+
+//    @Override
+//    public ResponseEntity<List<OrderApiDto>> findPreviousOrders() {
+//
+//    }
+
     // POST /orders
     //http://localhost:8080/orders
     //{

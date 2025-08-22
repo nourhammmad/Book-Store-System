@@ -5,8 +5,10 @@ import com.book.store.Entity.User;
 import com.book.store.Mapper.CustomerMapper;
 
 import com.book.store.Repository.CustomerRepository;
+import com.book.store.Repository.OrderRepository;
 import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.CustomerApiDto;
+import com.book.store.server.dto.OrderApiDto;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,16 +28,10 @@ public class CustomerService {
 private final UserRepository userRepository;
 
     private final CustomerRepository customerRepository;
+
     private final CustomerMapper customerMapper;
-    // Create customer from API DTO
-    public Customer createCustomer(Customer customer) {
 
-        if (customer == null) {
-            throw new NullPointerException("Customer must not be null");
-        }
 
-        return customerRepository.save(customer);
-    }
     // Delete customer
     @Transactional
     public void deleteCustomer(Long id) {

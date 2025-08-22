@@ -1,15 +1,13 @@
 package com.book.store.Service;
 
-import com.book.store.Entity.Book;
-import com.book.store.Entity.Customer;
-import com.book.store.Entity.Order;
-import com.book.store.Entity.OrderItem;
+import com.book.store.Entity.*;
 import com.book.store.Mapper.OrderMapper;
 import com.book.store.Repository.BookRepository;
 
 import com.book.store.Repository.CustomerRepository;
 import com.book.store.Repository.OrderRepository;
 
+import com.book.store.Repository.UserRepository;
 import com.book.store.server.dto.OrderApiDto; // your OpenAPI DTO
 import com.book.store.server.dto.OrderItemApiDto;
 
@@ -25,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,7 +31,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
-
+    private final AuthServiceImpl authentication;
+    private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final OrderMapper orderMapper;
 
@@ -89,6 +89,15 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
+
+    public List<Order> GetPreviousOrders() {
+        String username = authentication.getCurrentUserUsername();
+        Optional<User> user = userRepository.findByUsername(username);
+        Long userId = user.map(User::getId).orElse(null);
+
+        return  orderRepository.findAllByCustomerId(userId);
+    }
+
 
     public Order findById(Long id) {
         return orderRepository.findById(id)
