@@ -4,6 +4,7 @@ import com.book.store.entity.Customer;
 import com.book.store.mapper.CustomerMapper;
 import com.book.store.repository.CustomerRepository;
 import com.book.store.server.dto.CustomerApiDto;
+import com.book.store.server.dto.PaginatedCustomerResponseApiDto;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class CustomerService {
     }
 
     // List all customers
-    public List<CustomerApiDto> getAllCustomers(int page, int size) {
+    public PaginatedCustomerResponseApiDto getAllCustomers(int page, int size) {
         if (page < 0) {
             throw new IllegalArgumentException("Page number must be non-negative");
         }
@@ -51,9 +52,24 @@ public class CustomerService {
             throw new IllegalArgumentException("Size must be positive");
         }
         Pageable pageable = PageRequest.of(page, size);
-        return customerRepository.findAll(pageable).stream()
+        var customerPage = customerRepository.findAll(pageable);
+        List<CustomerApiDto> content = customerPage.stream()
                 .map(customerMapper::toDTO)
                 .collect(Collectors.toList());
+        int totalPages = customerPage.getTotalPages();
+        long totalElements = customerPage.getTotalElements();
+
+        PaginatedCustomerResponseApiDto response = new PaginatedCustomerResponseApiDto(
+                content,
+                page,
+                size,
+                totalElements,
+                totalPages
+        );
+        response.setFirst(page == 0);
+        response.setLast(page == totalPages - 1);
+
+        return response;
     }
 
     // Find by ID

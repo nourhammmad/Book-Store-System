@@ -1,7 +1,7 @@
-package com.book.store.Mapper;
+package com.book.store.mapper;
 
-import com.book.store.Entity.Order;
-import com.book.store.Entity.OrderItem;
+import com.book.store.entity.Order;
+import com.book.store.entity.OrderItem;
 import com.book.store.server.dto.OrderRequestApiDto;
 import com.book.store.server.dto.OrderResponseApiDto;
 import com.book.store.server.dto.OrderItemRequestApiDto;
@@ -12,7 +12,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -20,14 +19,8 @@ import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface OrderMapper {
-
-    OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
-
-    // === Order mappings ===
-
     // Map OrderRequestApiDto -> Order entity (for create/update)
     @Mapping(target = "items", source = "items")
-    @Mapping(target = "status", source = "status")
     Order toEntity(OrderRequestApiDto orderRequestApiDto);
 
     // Map Order entity -> OrderResponseApiDto (for responses)
@@ -41,7 +34,6 @@ public interface OrderMapper {
     Order partialUpdate(OrderRequestApiDto orderRequestApiDto, @MappingTarget Order order);
 
     // === OrderItem mappings ===
-
     OrderItem toEntity(OrderItemRequestApiDto orderItemRequestApiDto);
 
     OrderItemResponseApiDto toResponseDto(OrderItem orderItem);
@@ -62,25 +54,14 @@ public interface OrderMapper {
 
     // === STATUS ENUM MAPPINGS ===
 
-    default Order.OrderStatus map(OrderRequestApiDto.StatusEnum statusEnum) {
-        if (statusEnum == null) return null;
-        switch (statusEnum) {
-            case PLACED: return Order.OrderStatus.PLACED;
-            case PROCESSING: return Order.OrderStatus.PROCESSING;
-            case COMPLETED: return Order.OrderStatus.COMPLETED;
-            case CANCELLED: return Order.OrderStatus.CANCELLED;
-            default: throw new IllegalArgumentException("Unknown status: " + statusEnum);
-        }
-    }
-
     default OrderResponseApiDto.StatusEnum map(Order.OrderStatus status) {
         if (status == null) return null;
-        switch (status) {
-            case PLACED: return OrderResponseApiDto.StatusEnum.PLACED;
-            case PROCESSING: return OrderResponseApiDto.StatusEnum.PROCESSING;
-            case COMPLETED: return OrderResponseApiDto.StatusEnum.COMPLETED;
-            case CANCELLED: return OrderResponseApiDto.StatusEnum.CANCELLED;
-            default: throw new IllegalArgumentException("Unknown status: " + status);
-        }
+        return switch (status) {
+            case PLACED -> OrderResponseApiDto.StatusEnum.PLACED;
+            case PROCESSING -> OrderResponseApiDto.StatusEnum.PROCESSING;
+            case COMPLETED -> OrderResponseApiDto.StatusEnum.COMPLETED;
+            case CANCELLED -> OrderResponseApiDto.StatusEnum.CANCELLED;
+            default -> throw new IllegalArgumentException("Unknown status: " + status);
+        };
     }
 }

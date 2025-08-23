@@ -2,6 +2,7 @@ package com.book.store.mapper;
 
 import com.book.store.entity.Book;
 import com.book.store.server.dto.BookApiDto;
+import com.book.store.server.dto.BookCreateRequestApiDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -11,7 +12,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface BookMapper {
     // Map DTO -> Entity
-    Book toEntity(BookApiDto dto);
+    Book toEntity(BookCreateRequestApiDto dto);
 
     // Map Entity -> DTO, omit ID in response
     BookApiDto toDto(Book book);

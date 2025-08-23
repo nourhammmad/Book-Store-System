@@ -1,9 +1,9 @@
-package com.book.store.Entity;
+package com.book.store.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import com.book.store.Entity.User;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

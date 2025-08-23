@@ -4,6 +4,7 @@ import com.book.store.entity.Book;
 import com.book.store.mapper.BookMapper;
 import com.book.store.repository.BookRepository;
 import com.book.store.server.dto.BookApiDto;
+import com.book.store.server.dto.PaginatedBookResponseApiDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +20,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
 
-    public List<BookApiDto> getAllBooks(Integer page, Integer size) {
+    public PaginatedBookResponseApiDto getAllBooks(Integer page, Integer size) {
         if (page == null || page < 0) {
             throw new IllegalArgumentException("Page number must be non-negative");
         }
@@ -27,9 +28,24 @@ public class BookService {
             throw new IllegalArgumentException("Size must be positive");
         }
         Pageable pageable = PageRequest.of(page, size);
-        return bookRepository.findAll(pageable).stream()
+        var bookPage = bookRepository.findAll(pageable);
+        List<BookApiDto> content = bookPage.stream()
                 .map(bookMapper::toDto)
                 .collect(Collectors.toList());
+        int totalPages = bookPage.getTotalPages();
+        long totalElements = bookPage.getTotalElements();
+
+        PaginatedBookResponseApiDto response = new PaginatedBookResponseApiDto(
+                content,
+                page,
+                size,
+                totalElements,
+                totalPages
+        );
+        response.setFirst(page == 0);
+        response.setLast(page == totalPages - 1);
+
+        return response;
     }
 
     public Book getBookById(Long id) {

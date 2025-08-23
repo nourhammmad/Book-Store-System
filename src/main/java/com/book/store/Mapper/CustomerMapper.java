@@ -20,6 +20,14 @@ public interface CustomerMapper {
     @Mapping(target = "username", source = "username")
     CustomerReferenceApiDto toReferenceDto(Customer customerApiDto);
 
+    @org.mapstruct.ObjectFactory
+    default CustomerReferenceApiDto createCustomerReferenceApiDto(Customer customer) {
+        if (customer == null) {
+            return null;
+        }
+        return new CustomerReferenceApiDto(customer.getId(), customer.getUsername());
+    }
+
     // Map Entity -> DTO, omit ID in response
     CustomerApiDto toDTO(Customer customer);
 

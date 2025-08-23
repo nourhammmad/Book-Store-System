@@ -1,20 +1,18 @@
-package com.book.store.Controller;
+package com.book.store.controller;
 
-import com.book.store.Service.AuthService;
-import com.book.store.Service.JwtService;
+import com.book.store.service.AuthService;
+import com.book.store.service.JwtService;
 import com.book.store.server.api.AuthApi;
 import com.book.store.server.dto.JwtResponseApiDto;
 import com.book.store.server.dto.LoginRequestApiDto;
 import com.book.store.server.dto.RegisterRequestApiDto;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,18 +30,18 @@ public class AuthController implements AuthApi {
         if (authentication.isAuthenticated()) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String jwtToken = jwtService.generateToken(userDetails);
-            JwtResponseApiDto jwtResponse = new JwtResponseApiDto();
-            jwtResponse.setToken(jwtToken);
+            String authority = userDetails.getAuthorities().iterator().next().getAuthority(); // e.g., "ROLE_ADMIN"
+            JwtResponseApiDto.RoleEnum roleEnum = JwtResponseApiDto.RoleEnum.valueOf(authority.replace("ROLE_", ""));
+            JwtResponseApiDto jwtResponse = new JwtResponseApiDto(jwtToken, userDetails.getUsername(), roleEnum);
             return ResponseEntity.ok(jwtResponse);
         } else {
-            throw new UsernameNotFoundException("Invalid user request!");
+            return ResponseEntity.status(401).build();
         }
     }
 
     @Override
     public ResponseEntity<Void> register(RegisterRequestApiDto request) {
         authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
-
 }

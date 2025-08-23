@@ -24,7 +24,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
-    private final AuthServiceImpl authentication;
+    private final AuthService authService;
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final OrderMapper orderMapper;
@@ -41,7 +41,7 @@ public class OrderService {
         }
 
         // Fetch customer
-        String username = authentication.getCurrentUserUsername();
+        String username = authService.getCurrentUserUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
         Customer customer = customerRepository.findById(user.getId())
@@ -93,7 +93,7 @@ public class OrderService {
     }
 
     public List<Order> getPreviousOrders() {
-        String username = authentication.getCurrentUserUsername();
+        String username = authService.getCurrentUserUsername();
         Optional<User> user = userRepository.findByUsername(username);
         Long userId = user.map(User::getId).orElse(null);
 
