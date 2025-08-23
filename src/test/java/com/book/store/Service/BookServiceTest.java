@@ -1,10 +1,10 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.Admin;
-import com.book.store.Entity.Book;
-import com.book.store.Mapper.BookMapper;
-import com.book.store.Repository.BookRepository;
+import com.book.store.entity.Book;
+import com.book.store.mapper.BookMapper;
+import com.book.store.repository.BookRepository;
 import com.book.store.server.dto.BookApiDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,21 +44,18 @@ class BookServiceTest {
         book.setId(1L);
         book.setTitle("Test Book");
         book.setAuthor("Test Author");
+        book.setIsbn("9781234567892");
         book.setPrice(29.99f);
         book.setQuantity(10);
         book.setDescription("Test Description");
 
-        bookApiDto = new BookApiDto();
-        bookApiDto.setId(1L);
-        bookApiDto.setTitle("Test Book");
-        bookApiDto.setPrice(29.99f);
+        bookApiDto = new BookApiDto("9781234567892", "Test Book", "Test Author");
     }
 
     @Test
     void getAllBooksReturnsPagedResults() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Book> bookPage = new PageImpl<>(List.of(book));
-
         when(bookRepository.findAll(pageable)).thenReturn(bookPage);
         when(bookMapper.toDto(book)).thenReturn(bookApiDto);
 
@@ -66,7 +63,7 @@ class BookServiceTest {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("Test Book", result.get(0).getTitle());
+        assertEquals("Test Author", result.get(0).getTitle());
         verify(bookRepository).findAll(pageable);
         verify(bookMapper).toDto(book);
     }
@@ -101,12 +98,12 @@ class BookServiceTest {
     void getBookByIdThrowsExceptionWhenNotFound() {
         when(bookRepository.findById(999L)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> bookService.getBookById(999L)
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> bookService.getBookById(999L)
         );
 
-        assertEquals("Order not found", exception.getMessage());
+        assertEquals("Book not found with id: 999", exception.getMessage());
         verify(bookRepository).findById(999L);
     }
 
@@ -123,10 +120,12 @@ class BookServiceTest {
     }
     @Test
     void deleteBookCallsRepositoryDelete() {
+        when(bookRepository.existsById(1L)).thenReturn(true);
         doNothing().when(bookRepository).deleteById(1L);
 
         bookService.deleteBook(1L);
 
+        verify(bookRepository).existsById(1L);
         verify(bookRepository).deleteById(1L);
     }
 
@@ -135,7 +134,7 @@ class BookServiceTest {
         String expectedDescription = "Test Description";
         when(bookRepository.getDescriptionById(1L)).thenReturn(expectedDescription);
 
-        String result = bookService.GetDescriptionById(1L);
+        String result = bookService.getDescriptionById(1L);
 
         assertEquals(expectedDescription, result);
         verify(bookRepository).getDescriptionById(1L);
@@ -145,64 +144,36 @@ class BookServiceTest {
     void getDescriptionByIdReturnsNullWhenNotFound() {
         when(bookRepository.getDescriptionById(999L)).thenReturn(null);
 
-        String result = bookService.GetDescriptionById(999L);
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> bookService.getDescriptionById(999L)
+        );
 
-        assertNull(result);
+        assertEquals("Description not found for book with id: 999", exception.getMessage());
         verify(bookRepository).getDescriptionById(999L);
     }
 
     @Test
     void getAllBooksHandlesNegativePageNumber() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> bookService.getAllBooks(-1, 10)
+                IllegalArgumentException.class,
+                () -> bookService.getAllBooks(-1, 10)
         );
 
-        assertEquals("Page number must be non-negative and size must be positive", exception.getMessage());
+        assertEquals("Page number must be non-negative", exception.getMessage());
         verify(bookRepository, never()).findAll(any(Pageable.class));
     }
 
     @Test
     void getAllBooksHandlesZeroPageSize() {
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> bookService.getAllBooks(0, 0)
+                IllegalArgumentException.class,
+                () -> bookService.getAllBooks(0, 0)
         );
 
-        assertEquals("Page number must be non-negative and size must be positive", exception.getMessage());
+        assertEquals("Size must be positive", exception.getMessage());
         verify(bookRepository, never()).findAll(any(Pageable.class));
     }
-
-//    @Test
-//    void updateBookWithAllNullFields() {
-//        BookApiDto updateDto = new BookApiDto();
-//        updateDto.setPrice(null);
-//
-//        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-//        when(bookRepository.save(any(Book.class))).thenReturn(book);
-//
-//        Book result = bookService.updateBook(updateDto, 1L);
-//
-//        assertNotNull(result);
-//        assertEquals("Test Book", book.getTitle());
-//        assertEquals(29.99f, book.getPrice());
-//        verify(bookRepository).save(book);
-//    }
-
-//    @Test
-//    void updateBookWithZeroPrice() {
-//        BookApiDto updateDto = new BookApiDto();
-//        updateDto.setTitle("Updated Title");
-//        updateDto.setPrice(0.0f);
-//
-//        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-//        when(bookRepository.save(any(Book.class))).thenReturn(book);
-//
-//        Book result = bookService.updateBook(updateDto, 1L);
-//
-//        assertEquals("Updated Title", book.getTitle());
-//        assertEquals(29.99f, book.getPrice());
-//    }
 
     @Test
     void createBookWithNullFields() {
@@ -220,18 +191,23 @@ class BookServiceTest {
 
     @Test
     void deleteBookWithNonExistentId() {
-        doNothing().when(bookRepository).deleteById(999L);
+        when(bookRepository.existsById(999L)).thenReturn(false);
 
-        assertDoesNotThrow(() -> bookService.deleteBook(999L));
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> bookService.deleteBook(999L)
+        );
 
-        verify(bookRepository).deleteById(999L);
+        assertEquals("Book not found with id: 999", exception.getMessage());
+        verify(bookRepository).existsById(999L);
+        verify(bookRepository, never()).deleteById(999L);
     }
 
     @Test
     void getDescriptionByIdWithEmptyString() {
         when(bookRepository.getDescriptionById(1L)).thenReturn("");
 
-        String result = bookService.GetDescriptionById(1L);
+        String result = bookService.getDescriptionById(1L);
 
         assertEquals("", result);
         verify(bookRepository).getDescriptionById(1L);

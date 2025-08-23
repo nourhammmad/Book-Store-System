@@ -1,9 +1,10 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.Customer;
-import com.book.store.Mapper.CustomerMapper;
-import com.book.store.Repository.CustomerRepository;
+import com.book.store.entity.Customer;
+import com.book.store.mapper.CustomerMapper;
+import com.book.store.repository.CustomerRepository;
 import com.book.store.server.dto.CustomerApiDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,46 +53,27 @@ class CustomerServiceTest {
         customerApiDto.setBalance(100.0f);
     }
 
-
-//    @Test
-//    void createCustomerSavesAndReturnsCustomer() {
-//        when(customerRepository.save(customer)).thenReturn(customer);
-//
-//        Customer result = customerService.createCustomer(customer);
-//
-//        assertNotNull(result);
-//        assertEquals(customer.getId(), result.getId());
-//        assertEquals(customer.getUsername(), result.getUsername());
-//        assertEquals(customer.getEmail(), result.getEmail());
-//        verify(customerRepository).save(customer);
-//    }
-
-//    @Test
-//    void createCustomerWithNullCustomerThrowsException() {
-//
-//        assertThrows(NullPointerException.class, () -> {
-//            customerService.createCustomer(null);
-//        });
-//
-//        verify(customerRepository, never()).save(any());
-//    }
-
     @Test
     void deleteCustomerCallsRepositoryDelete() {
+        when(customerRepository.existsById(1L)).thenReturn(true);
         doNothing().when(customerRepository).deleteById(1L);
 
         customerService.deleteCustomer(1L);
 
+        verify(customerRepository).existsById(1L);
         verify(customerRepository).deleteById(1L);
     }
 
     @Test
-    void deleteCustomerWithNullIdHandledByRepository() {
-        doNothing().when(customerRepository).deleteById(null);
+    void deleteCustomerWithNullIdThrowsException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> customerService.deleteCustomer(null)
+        );
 
-        customerService.deleteCustomer(null);
-
-        verify(customerRepository).deleteById(null);
+        assertEquals("ID cannot be null", exception.getMessage());
+        verify(customerRepository, never()).deleteById(any());
+        verify(customerRepository, never()).existsById(any());
     }
 
     @Test
@@ -171,27 +153,24 @@ class CustomerServiceTest {
     void findCustomerByIdThrowsExceptionWhenNotFound() {
         when(customerRepository.findById(999L)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
             () -> customerService.findCustomerById(999L)
         );
 
-        assertEquals("Customer not found", exception.getMessage());
+        assertEquals("Customer not found with id: 999", exception.getMessage());
         verify(customerRepository).findById(999L);
         verify(customerMapper, never()).toDTO(any());
     }
 
     @Test
     void findCustomerByIdThrowsExceptionWhenIdIsNull() {
-        when(customerRepository.findById(null)).thenReturn(Optional.empty());
-
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> customerService.findCustomerById(null)
+                IllegalArgumentException.class,
+                () -> customerService.findCustomerById(null)
         );
 
-        assertEquals("Customer not found", exception.getMessage());
-        verify(customerRepository).findById(null);
+        assertEquals("ID cannot be null", exception.getMessage());
     }
 
 
@@ -202,7 +181,7 @@ class CustomerServiceTest {
             () -> customerService.getAllCustomers(-5, 10)
         );
 
-        assertEquals("Page index must not be less than zero", exception.getMessage());
+        assertEquals("Page number must be non-negative", exception.getMessage());
         verify(customerRepository, never()).findAll(any(Pageable.class));
     }
 
@@ -213,7 +192,7 @@ class CustomerServiceTest {
             () -> customerService.getAllCustomers(0, 0)
         );
 
-        assertEquals("Page size must not be less than one", exception.getMessage());
+        assertEquals("Size must be positive", exception.getMessage());
         verify(customerRepository, never()).findAll(any(Pageable.class));
     }
 
@@ -254,12 +233,14 @@ class CustomerServiceTest {
 
     @Test
     void deleteCustomerRepositoryThrowsException() {
+        when(customerRepository.existsById(1L)).thenReturn(true);
         doThrow(new RuntimeException("Database error")).when(customerRepository).deleteById(1L);
 
         assertThrows(RuntimeException.class, () -> {
             customerService.deleteCustomer(1L);
         });
 
+        verify(customerRepository).existsById(1L);
         verify(customerRepository).deleteById(1L);
     }
 }
