@@ -1,16 +1,26 @@
 package com.book.store.seed;
 import com.book.store.entity.Admin;
+import com.book.store.entity.Customer;
+import com.book.store.entity.Order;
 import com.book.store.repository.AdminRepository;
 import com.book.store.repository.UserRepository;
 
 import com.book.store.entity.Book;
-import com.book.store.mapper.CustomerMapper;
+import com.book.store.server.dto.CustomerReferenceApiDto;
+import com.book.store.server.dto.BookReferenceApiDto;
+import com.book.store.server.dto.OrderRequestApiDto;
+import com.book.store.server.dto.OrderItemRequestApiDto;
 import com.book.store.service.BookService;
 import com.book.store.service.CustomerService;
+import com.book.store.service.OrderService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,25 +31,37 @@ public class DataSeeder {
 
     private final BookService bookService;
     private final CustomerService customerService;
-    private final CustomerMapper customerMapper;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
+    private final OrderService orderService;
 
 
     @PostConstruct
     public void seed() {
         // Create customer DTO
-//        CustomerApiDto customerApiDto = new CustomerApiDto();
-//        customerApiDto.setUsername("Jane Doe");
-//        customerApiDto.setPassword(passwordEncoder.encode("password"));
-//        customerApiDto.setEmail("test@test.com");
-//        customerApiDto.setAddress("123 Main St, Springfield");
-//        customerApiDto.setBalance(500.0f);
-//
-//// Convert API DTO → entity
-//        Customer savedCustomer = customerService.createCustomer(customerMapper.toEntity(customerApiDto));
+        Customer customer = new Customer();
+        customer.setUsername("John Doe");
+        customer.setEmail("john@email.com");
+        customer.setAddress("123 Main St, Anytown, USA");
+        customer.setBalance(500f);
+        customer.setPassword(passwordEncoder.encode("password"));
+        Customer savedCustomer = customerService.createCustomer(customer);
+        System.out.println("👤 Seeded customer: " + savedCustomer.getUsername());
 
+        // Set up authentication context for the seeded customer
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+            savedCustomer.getUsername(),
+            savedCustomer.getPassword(),
+            List.of()
+        );
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            List.of()
+        );
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
         // Books to seed
         List<Book> books = Arrays.asList(
@@ -54,10 +76,11 @@ public class DataSeeder {
         for (Book book : books) {
             Book savedBook = bookService.createBook(book);
             System.out.println("📚 Seeded book: " + savedBook.getTitle());
-//
-//            // Order 1 copy of each
-//            Order order = orderService.placeOrder(savedCustomer.getId(), book.getId(), 1);
-//            System.out.println("🛒 Placed order for: " + savedBook.getTitle());
+
+            OrderRequestApiDto orderRequest = getOrderRequestApiDto(savedCustomer, savedBook);
+
+            Order order = orderService.placeOrder(orderRequest);
+            System.out.println("🛒 Placed order for: " + book.getTitle() + " | Order ID: " + order.getId());
         }
 
         Admin admin = new Admin();
@@ -67,5 +90,22 @@ public class DataSeeder {
         userRepository.save(admin);
         adminRepository.save(admin);
         System.out.println("👤 Seeded admin user: " + admin.getUsername());
+
+    }
+
+    private static OrderRequestApiDto getOrderRequestApiDto(Customer savedCustomer, Book savedBook) {
+        CustomerReferenceApiDto customerRef = new CustomerReferenceApiDto(
+            savedCustomer.getId(),
+            savedCustomer.getUsername()
+        );
+
+        BookReferenceApiDto bookRef = new BookReferenceApiDto(savedBook.getId());
+
+        OrderItemRequestApiDto orderItem = new OrderItemRequestApiDto(bookRef, 1);
+
+        return new OrderRequestApiDto(
+            customerRef,
+                List.of(orderItem)
+        );
     }
 }
