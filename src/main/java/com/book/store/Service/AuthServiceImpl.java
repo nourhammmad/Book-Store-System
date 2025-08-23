@@ -23,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final AdminRepository adminRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Override
     public void registerUser(String username, String password, String email) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
@@ -42,6 +43,8 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(customer);
         customerRepository.save(customer);
     }
+
+    @Override
     public User createUserWithRole(String username, String password, String email, String role) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
@@ -73,6 +76,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("Invalid role specified");
     }
 
+    @Override
     public User authenticateUser(String identifier, String password) {
         User user = userRepository.findByUsername(identifier)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username/email or password"));
@@ -84,6 +88,7 @@ public class AuthServiceImpl implements AuthService {
         return user;
     }
 
+    @Override
     public String getCurrentUserUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
