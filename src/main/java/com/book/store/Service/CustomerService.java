@@ -1,62 +1,67 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.Customer;
-import com.book.store.Entity.User;
-import com.book.store.Mapper.CustomerMapper;
-
-import com.book.store.Repository.CustomerRepository;
-import com.book.store.Repository.OrderRepository;
-import com.book.store.Repository.UserRepository;
+import com.book.store.entity.Customer;
+import com.book.store.mapper.CustomerMapper;
+import com.book.store.repository.CustomerRepository;
 import com.book.store.server.dto.CustomerApiDto;
-import com.book.store.server.dto.CustomerReferenceApiDto;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
 
-private final UserRepository userRepository;
-
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+
     // Create customer from API DTO
     public Customer createCustomer(Customer customer) {
-
         if (customer == null) {
-            throw new NullPointerException("Customer must not be null");
+            throw new IllegalArgumentException("Customer cannot be null");
         }
-
+        // Optionally, add more field-level validation here
         return customerRepository.save(customer);
     }
+
     // Delete customer
     @Transactional
     public void deleteCustomer(Long id) {
-//        if (id == null) {
-//            throw new IllegalArgumentException("id is null");
-//        }
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        if (!customerRepository.existsById(id)) {
+            throw new EntityNotFoundException("Customer not found with id: " + id);
+        }
         customerRepository.deleteById(id);
     }
+
     // List all customers
     public List<CustomerApiDto> getAllCustomers(int page, int size) {
+        if (page < 0) {
+            throw new IllegalArgumentException("Page number must be non-negative");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Size must be positive");
+        }
         Pageable pageable = PageRequest.of(page, size);
         return customerRepository.findAll(pageable).stream()
                 .map(customerMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
     // Find by ID
     public Customer findCustomerById(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
-        return customer;
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
     }
 }

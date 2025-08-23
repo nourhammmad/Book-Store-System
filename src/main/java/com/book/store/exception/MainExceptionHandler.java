@@ -6,8 +6,8 @@ import com.book.store.exception.response.ViolationErrors;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.access.AccessDeniedException;
-//import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,17 +22,17 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class MainExceptionHandler {
 
-//    @ExceptionHandler(AuthenticationException.class)
-//    public ResponseEntity<Object> authenticationExceptionHandling(AuthenticationException exception, WebRequest request) {
-//        return new ResponseEntity<>(new ErrorDetails(LocalDateTime.now(), exception.getMessage(),
-//                request.getDescription(false), HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
-//    }
-//
-//    @ExceptionHandler(AccessDeniedException.class)
-//    public ResponseEntity<Object> accessDeniedExceptionHandling(AccessDeniedException exception, WebRequest request) {
-//        return new ResponseEntity<>(new ErrorDetails(LocalDateTime.now(), exception.getMessage(),
-//                request.getDescription(false), HttpStatus.FORBIDDEN), HttpStatus.FORBIDDEN);
-//    }
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> authenticationExceptionHandling(AuthenticationException exception, WebRequest request) {
+        return new ResponseEntity<>(new ErrorDetails(LocalDateTime.now(), exception.getMessage(),
+                request.getDescription(false), HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> accessDeniedExceptionHandling(AccessDeniedException exception, WebRequest request) {
+        return new ResponseEntity<>(new ErrorDetails(LocalDateTime.now(), exception.getMessage(),
+                request.getDescription(false), HttpStatus.FORBIDDEN), HttpStatus.FORBIDDEN);
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> illegalArgumentExceptionHandling(IllegalArgumentException exception, WebRequest request) {
@@ -68,6 +68,12 @@ public class MainExceptionHandler {
                         request.getDescription(false), HttpStatus.NOT_FOUND),
                 HttpStatus.NOT_FOUND
         );
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Object> handleIllegalStateException(IllegalStateException exception, WebRequest request) {
+        return new ResponseEntity<>(new ErrorDetails(LocalDateTime.now(), exception.getMessage(),
+                request.getDescription(false), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

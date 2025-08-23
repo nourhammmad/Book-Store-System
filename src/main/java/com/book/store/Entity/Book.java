@@ -1,4 +1,4 @@
-package com.book.store.Entity;
+package com.book.store.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

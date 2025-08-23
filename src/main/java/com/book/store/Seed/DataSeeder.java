@@ -1,14 +1,12 @@
-package com.book.store.Seed;
-import com.book.store.Entity.Admin;
-import com.book.store.Repository.AdminRepository;
-import com.book.store.Repository.UserRepository;
-import com.book.store.server.dto.CustomerApiDto;
+package com.book.store.seed;
+import com.book.store.entity.Admin;
+import com.book.store.repository.AdminRepository;
+import com.book.store.repository.UserRepository;
 
-import com.book.store.Entity.Book;
-import com.book.store.Entity.Customer;
-import com.book.store.Mapper.CustomerMapper;
-import com.book.store.Service.BookService;
-import com.book.store.Service.CustomerService;
+import com.book.store.entity.Book;
+import com.book.store.mapper.CustomerMapper;
+import com.book.store.service.BookService;
+import com.book.store.service.CustomerService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,7 +1,7 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.User;
-import com.book.store.Repository.UserRepository;
+import com.book.store.entity.User;
+import com.book.store.repository.UserRepository;
 import com.book.store.security.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

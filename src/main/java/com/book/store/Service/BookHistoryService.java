@@ -1,8 +1,8 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.BookHistory;
-import com.book.store.Repository.BookHistoryRepository;
-import com.book.store.Repository.BookRepository;
+import com.book.store.entity.BookHistory;
+import com.book.store.repository.BookHistoryRepository;
+import com.book.store.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

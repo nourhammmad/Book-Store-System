@@ -1,13 +1,10 @@
-package com.book.store.Repository;
+package com.book.store.repository;
 
-import com.book.store.Entity.Admin;
-import com.book.store.Entity.Customer;
+import com.book.store.entity.Admin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long> {

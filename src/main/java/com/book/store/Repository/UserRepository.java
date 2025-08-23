@@ -1,6 +1,6 @@
-package com.book.store.Repository;
+package com.book.store.repository;
 
-import com.book.store.Entity.User;
+import com.book.store.entity.User;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

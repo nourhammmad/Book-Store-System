@@ -1,8 +1,8 @@
 package com.book.store.security;
 
-import com.book.store.Entity.Admin;
-import com.book.store.Entity.Customer;
-import com.book.store.Entity.User;
+import com.book.store.entity.Admin;
+import com.book.store.entity.Customer;
+import com.book.store.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

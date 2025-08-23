@@ -1,21 +1,14 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.*;
-import com.book.store.Mapper.OrderMapper;
-import com.book.store.Repository.BookRepository;
-
-import com.book.store.Repository.CustomerRepository;
-import com.book.store.Repository.OrderRepository;
-
-import com.book.store.server.dto.OrderRequestApiDto; // your OpenAPI DTO
+import com.book.store.entity.*;
+import com.book.store.mapper.OrderMapper;
+import com.book.store.repository.BookRepository;
+import com.book.store.repository.CustomerRepository;
+import com.book.store.repository.OrderRepository;
+import com.book.store.repository.UserRepository;
+import com.book.store.server.dto.OrderRequestApiDto;
 import com.book.store.server.dto.OrderItemRequestApiDto;
-import com.book.store.server.dto.OrderResponseApiDto; // your OpenAPI DTO
-import com.book.store.server.dto.OrderItemResponseApiDto;
-import com.book.store.Repository.UserRepository;
-
-
-import jakarta.validation.ValidationException;
-
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,8 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -41,12 +33,19 @@ public class OrderService {
      * Place an order from DTO
      */
     public Order placeOrder(OrderRequestApiDto orderApiDto) {
+        if (orderApiDto == null) {
+            throw new IllegalArgumentException("Order request cannot be null");
+        }
+        if (orderApiDto.getItems() == null || orderApiDto.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Order must contain at least one item");
+        }
+
         // Fetch customer
         String username = authentication.getCurrentUserUsername();
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
         Customer customer = customerRepository.findById(user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found for user: " + username));
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found for user: " + username));
 
         Order order = new Order();
         order.setCustomer(customer);
@@ -93,14 +92,13 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public List<Order> GetPreviousOrders() {
+    public List<Order> getPreviousOrders() {
         String username = authentication.getCurrentUserUsername();
         Optional<User> user = userRepository.findByUsername(username);
         Long userId = user.map(User::getId).orElse(null);
 
-        return  orderRepository.findAllByCustomerId(userId);
+        return orderRepository.findAllByCustomerId(userId);
     }
-
 
     public Order findById(Long id) {
         return orderRepository.findById(id)
@@ -121,7 +119,7 @@ public class OrderService {
      */
     public void deleteById(Long orderId) {
         if (orderId == null) {
-            throw new IllegalArgumentException("id is null");
+            throw new IllegalArgumentException("Order ID cannot be null");
         }
         Order order = findById(orderId);
 
@@ -133,6 +131,4 @@ public class OrderService {
 
         orderRepository.delete(order);
     }
-
-
 }

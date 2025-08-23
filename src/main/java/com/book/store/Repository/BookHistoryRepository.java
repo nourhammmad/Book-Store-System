@@ -1,6 +1,6 @@
-package com.book.store.Repository;
+package com.book.store.repository;
 
-import com.book.store.Entity.BookHistory;
+import com.book.store.entity.BookHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

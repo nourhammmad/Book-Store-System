@@ -1,20 +1,15 @@
-package com.book.store.Mapper;
+package com.book.store.mapper;
 
-import com.book.store.Entity.Book;
+import com.book.store.entity.Book;
 import com.book.store.server.dto.BookApiDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface BookMapper {
-
-    BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
-
     // Map DTO -> Entity
     Book toEntity(BookApiDto dto);
 

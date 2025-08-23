@@ -1,9 +1,9 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.User;
+import com.book.store.entity.User;
 
 public interface AuthService {
     void registerUser(String username, String password, String email);
-    void createUserWithRole(String username, String password, String email, String role);
+    User createUserWithRole(String username, String password, String email, String role);
     User authenticateUser(String identifier, String password);
 }

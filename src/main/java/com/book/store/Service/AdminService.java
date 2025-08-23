@@ -1,81 +1,118 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.Admin;
-import com.book.store.Mapper.AdminMapper;
-import com.book.store.Repository.*;
+import com.book.store.entity.Admin;
+import com.book.store.mapper.AdminMapper;
+import com.book.store.repository.*;
 import com.book.store.server.dto.AdminApiDto;
+import com.book.store.server.dto.PaginatedAdminResponseApiDto;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AdminService {
     private final AdminRepository adminRepository;
-    private final BookHistoryRepository bokHistoryRepository;
     private final BookHistoryService bookHistoryService;
     private final AdminMapper adminMapper;
-    private final UserRepository userRepository;
     private final BookRepository bookRepository;
-    private final BookService bookService;
 
-
-//    public Admin createAdmin(Admin admin) {
-//
-//        admin.setEmail(admin.getEmail());
-//        admin.setUsername(admin.getUsername());
-//        return adminRepository.save(admin);
-//    }
-
-    // Delete customer
     @Transactional
     public void deleteById(Long id) {
         if (id == null) {
-            throw new ValidationException("id is null");
+            throw new IllegalArgumentException("id is null");
+        }
+        if (!adminRepository.existsById(id)) {
+            throw new EntityNotFoundException("Admin with ID " + id + " not found");
         }
         adminRepository.deleteById(id);
     }
 
-    public List<AdminApiDto> findAllAdmins(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(
-                page != null ? page : 0,
-                size != null ? size : 10
-        );
-        return adminRepository.findAll(pageable)
-                .stream()
+    public PaginatedAdminResponseApiDto findAllAdmins(Integer page, Integer size) {
+        int pageNum = (page != null && page >= 0) ? page : 0;
+        int pageSize = (size != null && size > 0) ? size : 10;
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+
+        var adminPage = adminRepository.findAll(pageable);
+        List<AdminApiDto> content = adminPage.stream()
                 .map(adminMapper::toDTO)
                 .toList();
+
+        return new PaginatedAdminResponseApiDto(
+                content,
+                adminPage.getNumber(),
+                adminPage.getSize(),
+                adminPage.getTotalElements(),
+                adminPage.getTotalPages()
+        )
+                .first(adminPage.isFirst())
+                .last(adminPage.isLast());
     }
 
     public Admin findAdminById(Long id) {
-        return adminRepository.findById(id).orElseThrow(() -> new IllegalArgumentException ("User with ID " + id + " not found"));
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        return adminRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Admin with ID " + id + " not found"));
     }
 
-    public void updateBookFields(Long entityId, String field, String oldValue, String newValue,Long changedBy){
-         bookRepository.findById(entityId)
-                .map(book -> {
-                    if (Objects.equals(field.toLowerCase(), "title")) book.setTitle(newValue);
-                    if(Objects.equals(field.toLowerCase(), "price")) book.setPrice(Float.parseFloat(newValue));
-                    if (Objects.equals(field.toLowerCase(), "author")) {
-                        book.setAuthor(newValue);
-                       }
-                    if (Objects.equals(field.toLowerCase(), "quantity")) book.setQuantity(Integer.parseInt(newValue));
-                    if (Objects.equals(field.toLowerCase(), "description")) book.setDescription(newValue);
+    public void updateBookFields(Long entityId, String field, String oldValue, String newValue, Long changedBy) {
+        if (entityId == null) {
+            throw new IllegalArgumentException("entityId is null");
+        }
+        if (field == null || field.isBlank()) {
+            throw new IllegalArgumentException("field is null or empty");
+        }
+        if (newValue == null) {
+            throw new IllegalArgumentException("newValue is null");
+        }
+        if (changedBy == null) {
+            throw new IllegalArgumentException("changedBy is null");
+        }
 
+        String normalizedField = field.trim().toLowerCase();
+        switch (normalizedField) {
+            case "title":
+            case "author":
+            case "description":
+                break;
+            case "price":
+                try {
+                    Float.parseFloat(newValue);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid value for price: " + newValue);
+                }
+                break;
+            case "quantity":
+                try {
+                    Integer.parseInt(newValue);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid value for quantity: " + newValue);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Field '" + field + "' cannot be updated");
+        }
+
+        bookRepository.findById(entityId)
+                .map(book -> {
+                    switch (normalizedField) {
+                        case "title" -> book.setTitle(newValue);
+                        case "price" -> book.setPrice(Float.parseFloat(newValue));
+                        case "author" -> book.setAuthor(newValue);
+                        case "quantity" -> book.setQuantity(Integer.parseInt(newValue));
+                        case "description" -> book.setDescription(newValue);
+                    }
                     return bookRepository.save(book);
                 })
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id " + entityId));
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with id " + entityId));
 
-        bookHistoryService.logChange( entityId,  field,  oldValue,  newValue, changedBy);
+        bookHistoryService.logChange(entityId, field, oldValue, newValue, changedBy);
     }
-
-
 }

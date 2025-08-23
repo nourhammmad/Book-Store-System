@@ -1,12 +1,11 @@
-package com.book.store.Service;
+package com.book.store.service;
 
-import com.book.store.Entity.Admin;
-import com.book.store.Entity.Customer;
-import com.book.store.Entity.User;
-import com.book.store.Repository.AdminRepository;
-import com.book.store.Repository.CustomerRepository;
-import com.book.store.Repository.UserRepository;
-import com.sun.security.auth.UserPrincipal;
+import com.book.store.entity.Admin;
+import com.book.store.entity.Customer;
+import com.book.store.entity.User;
+import com.book.store.repository.AdminRepository;
+import com.book.store.repository.CustomerRepository;
+import com.book.store.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -43,8 +42,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(customer);
         customerRepository.save(customer);
     }
-
-    public void createUserWithRole(String username, String password, String email, String role) {
+    public User createUserWithRole(String username, String password, String email, String role) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -62,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
             customer.setBalance(100.0f);
             userRepository.save(customer);
             customerRepository.save(customer);
+            return customer;
         } else if ("ADMIN".equals(role)) {
             Admin admin = new Admin();
             admin.setUsername(username);
@@ -69,9 +68,9 @@ public class AuthServiceImpl implements AuthService {
             admin.setEmail(email);
             userRepository.save(admin);
             adminRepository.save(admin);
-        } else {
+            return admin;
+        } else
             throw new IllegalArgumentException("Invalid role specified");
-        }
     }
 
     public User authenticateUser(String identifier, String password) {

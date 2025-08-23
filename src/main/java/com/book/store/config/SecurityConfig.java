@@ -1,6 +1,6 @@
 package com.book.store.config;
 
-import com.book.store.Service.UserDetailsServiceImpl;
+import com.book.store.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

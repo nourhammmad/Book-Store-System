@@ -1,9 +1,7 @@
-package com.book.store.Repository;
+package com.book.store.repository;
 
-import com.book.store.Entity.Book;
-import jakarta.persistence.LockModeType;
+import com.book.store.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

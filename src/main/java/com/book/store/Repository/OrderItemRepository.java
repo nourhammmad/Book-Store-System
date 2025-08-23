@@ -1,6 +1,6 @@
-package com.book.store.Repository;
+package com.book.store.repository;
 
-import com.book.store.Entity.OrderItem;
+import com.book.store.entity.OrderItem;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
