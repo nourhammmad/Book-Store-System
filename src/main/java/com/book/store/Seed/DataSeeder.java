@@ -90,6 +90,7 @@ public class DataSeeder {
         userRepository.save(admin);
         adminRepository.save(admin);
         System.out.println("👤 Seeded admin user: " + admin.getUsername());
+        SecurityContextHolder.clearContext();
 
     }
 
