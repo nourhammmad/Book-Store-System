@@ -10,8 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +25,8 @@ import java.util.stream.Collectors;
 public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+
+    private static final String UPLOAD_DIR = "uploads/book-covers/";
 
     public PaginatedBookResponseApiDto getAllBooks(Integer page, Integer size) {
         if (page == null || page < 0) {
@@ -100,7 +108,7 @@ public class BookService {
         }
         String description = bookRepository.getDescriptionById(id);
         if (description == null) {
-            throw new EntityNotFoundException("Description not found for book with id: " + id);
+            throw new EntityNotFoundException("Book not found with id: " + id);
         }
         return description;
     }
@@ -111,5 +119,25 @@ public class BookService {
         }
         return bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with ISBN: " + isbn));
+    }
+
+
+    // File upload functionality for book covers
+    public String uploadBookCover(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty");
+        }
+
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath);
+
+        return "/files/" + fileName;
     }
 }

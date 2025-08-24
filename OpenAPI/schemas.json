@@ -157,7 +157,7 @@
       },
       "status": {
         "type": "string",
-        "enum": ["PLACED", "PROCESSING", "COMPLETED", "CANCELLED"]
+        "enum": ["PLACED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"]
       },
       "customer": {
         "$ref": "#/CustomerReference"
@@ -277,6 +277,10 @@
         "type": "number",
         "format": "float",
         "minimum": 0
+      },
+      "coverImageUrl": {
+          "type": "string",
+          "description": "URL of the book's cover"
       }
     },
     "required": ["id", "isbn", "title", "author", "price"]
@@ -578,5 +582,37 @@
       }
     },
     "required": ["id", "username", "email", "role", "message"]
+  },
+  "UpdateOrderStatusRequest": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["PLACED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"]
+      }
+    },
+    "required": ["status"]
+  },
+  "CancelOrderRequest": {
+    "type": "object",
+    "properties": {
+      "reason": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255
+      }
+    },
+    "required": ["reason"]
+  },
+  "FileUploadRequest": {
+    "type": "object",
+    "properties": {
+      "file": {
+        "type": "string",
+        "format": "binary",
+        "description": "The image file to upload"
+      }
+    },
+    "required": ["file"]
   }
 }

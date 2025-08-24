@@ -18,6 +18,8 @@ tags:
     description: Operations related to books
   - name: Auth
     description: Authentication operations
+  - name: Files
+    description: Operations related to files
 
 paths:
   # Orders endpoints
@@ -116,6 +118,48 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas.json#/CustomError'
+  /order/{id}/cancel:
+    post:
+      tags:
+        - Orders
+      summary: Cancel an order
+      description: Cancel a specific order by its ID
+      operationId: cancelOrder
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the order to cancel
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas.json#/CancelOrderRequest'
+            example:
+              reason: "Item no longer needed"
+      responses:
+        '200':
+          description: Successfully canceled the order
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.json#/orderResponse'
+        '400':
+          description: Invalid request (e.g., order already shipped)
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.json#/CustomError'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.json#/CustomError'
 
   /admin/order/{id}:
     get:
@@ -164,6 +208,60 @@ paths:
           description: Successfully deleted the order
         '404':
           description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.json#/CustomError'
+    put:
+      tags:
+        - Orders
+      summary: Update order status
+      description: Update the status of a specific order by its ID
+      operationId: updateOrderStatus
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the order to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas.json#/UpdateOrderStatusRequest'
+            example:
+              status: "SHIPPED"
+      responses:
+        '200':
+          description: Successfully updated the order status
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.json#/orderResponse'
+        '400':
+          description: Invalid request body (missing fields, invalid format)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: 'schemas.json#/CustomError'
+                  - $ref: 'schemas.json#/ValidationError'
+              examples:
+                badRequestExample:
+                  $ref: 'examples.json#/errorBadRequestExample'
+                validationExample:
+                  $ref: 'examples.json#/errorValidationExample'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.json#/CustomError'
+        '409':
+          description: Invalid status transition
           content:
             application/json:
               schema:
@@ -517,6 +615,41 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas.json#/CustomError'
+  /book/{id}/cover:
+    post:
+      tags:
+        - Books
+      summary: Upload a cover image for a book
+      description: Uploads a cover image file for the specified book and updates its cover image URL
+      operationId: uploadBookCover
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the book
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: 'schemas.json#/FileUploadRequest'
+      responses:
+        '200':
+          description: Successfully uploaded the cover image
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: URL of the uploaded cover image
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas.json#/CustomError'
 
   /book/isbn/{isbn}:
     get:
@@ -608,3 +741,43 @@ paths:
               examples:
                 conflictExample:
                   $ref: 'examples.json#/errorConflictExample'
+  /files/{filename}:
+    get:
+      tags:
+        - Files
+      summary: Serve a book cover file
+      description: Returns the requested book cover image file by filename
+      operationId: serveFile
+      parameters:
+        - in: path
+          name: filename
+          required: true
+          schema:
+            type: string
+          description: Name of the file to retrieve (e.g., cover.jpg)
+      responses:
+        '200':
+          description: The requested file
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found

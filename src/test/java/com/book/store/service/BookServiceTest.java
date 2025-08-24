@@ -4,6 +4,7 @@ import com.book.store.entity.Book;
 import com.book.store.mapper.BookMapper;
 import com.book.store.repository.BookRepository;
 import com.book.store.server.dto.BookApiDto;
+import com.book.store.server.dto.PaginatedBookResponseApiDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ class BookServiceTest {
         book.setQuantity(10);
         book.setDescription("Test Description");
 
-        bookApiDto = new BookApiDto("9781234567892", "Test Book", "Test Author");
+        bookApiDto = new BookApiDto(1L, "9781234567892", "Test Book", "Test Author", 29.99f);
     }
 
     @Test
@@ -59,11 +60,11 @@ class BookServiceTest {
         when(bookRepository.findAll(pageable)).thenReturn(bookPage);
         when(bookMapper.toDto(book)).thenReturn(bookApiDto);
 
-        List<BookApiDto> result = bookService.getAllBooks(0, 10);
+        PaginatedBookResponseApiDto result = bookService.getAllBooks(0, 10);
 
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Test Author", result.get(0).getTitle());
+        assertEquals(1, result.getContent().size());
+        assertEquals("Test Author", result.getContent().get(0).getTitle());
         verify(bookRepository).findAll(pageable);
         verify(bookMapper).toDto(book);
     }
@@ -75,10 +76,10 @@ class BookServiceTest {
 
         when(bookRepository.findAll(pageable)).thenReturn(emptyPage);
 
-        List<BookApiDto> result = bookService.getAllBooks(0, 10);
+        PaginatedBookResponseApiDto result = bookService.getAllBooks(0, 10);
 
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertTrue(result.getContent().isEmpty());
         verify(bookRepository).findAll(pageable);
     }
 
@@ -149,7 +150,7 @@ class BookServiceTest {
                 () -> bookService.getDescriptionById(999L)
         );
 
-        assertEquals("Description not found for book with id: 999", exception.getMessage());
+        assertEquals("Book not found with id: 999", exception.getMessage());
         verify(bookRepository).getDescriptionById(999L);
     }
 

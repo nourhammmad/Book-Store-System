@@ -65,11 +65,11 @@ public class DataSeeder {
 
         // Books to seed
         List<Book> books = Arrays.asList(
-                new Book(null, "9781234567890", "Author One", "Spring Boot in Action", "N/A", 1, 29f),
-                new Book(null, "9781234567891", "Author Two", "Java Concurrency Mastery", "N/A", 2, 35f),
-                new Book(null, "9781234567892", "Author Three", "Microservices with Spring Cloud", "N/A", 1, 40.4f),
-                new Book(null, "9781234567893", "Author Four", "Clean Code", "N/A", 1, 25f),
-                new Book(null, "9781234567894", "Author Five", "Effective Java", "N/A", 1, 33f)
+                createBook("9781234567890", "Author One", "Spring Boot in Action", "N/A", 1, 29f, ""),
+                createBook("9781234567891", "Author Two", "Java Concurrency Mastery", "N/A", 2, 35f, ""),
+                createBook("9781234567892", "Author Three", "Microservices with Spring Cloud", "N/A", 1, 40.4f, ""),
+                createBook("9781234567893", "Author Four", "Clean Code", "N/A", 1, 25f, ""),
+                createBook("9781234567894", "Author Five", "Effective Java", "N/A", 1, 33f, "")
         );
 
         // Save books and place orders
@@ -108,5 +108,17 @@ public class DataSeeder {
             customerRef,
                 List.of(orderItem)
         );
+    }
+    
+    private static Book createBook(String isbn, String author, String title, String description, int quantity, float price, String coverImageUrl) {
+        Book book = new Book();
+        book.setIsbn(isbn);
+        book.setAuthor(author);
+        book.setTitle(title);
+        book.setDescription(description);
+        book.setQuantity(quantity);
+        book.setPrice(price);
+        book.setCoverImageUrl(coverImageUrl);
+        return book;
     }
 }

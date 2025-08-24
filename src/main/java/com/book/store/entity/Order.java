@@ -18,8 +18,9 @@ public class Order {
     public Order(Customer customer) {
         this.customer = customer;
     }
+
     public enum OrderStatus {
-        PLACED, PROCESSING, COMPLETED, CANCELLED
+        PLACED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
     }
 
     @Id
@@ -30,10 +31,16 @@ public class Order {
     @Column(updatable = false, nullable = false)
     private LocalDateTime orderDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status = OrderStatus.PLACED;
+
+    private LocalDateTime cancelledAt;
+    private String cancellationReason;
+    private LocalDateTime deliveredAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -60,7 +67,17 @@ public class Order {
                 .mapToDouble(i -> i.getPrice() * i.getQuantity())
                 .sum();
     }
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.PLACED;
 
+    public boolean canBeCancelled() {
+        return status == OrderStatus.PLACED || status == OrderStatus.PROCESSING;
+    }
+
+    public void cancel(String reason) {
+        if (!canBeCancelled()) {
+            throw new IllegalStateException("Order cannot be cancelled in current status: " + status);
+        }
+        this.status = OrderStatus.CANCELLED;
+        this.cancelledAt = LocalDateTime.now();
+        this.cancellationReason = reason;
+    }
 }

@@ -4,6 +4,8 @@ import com.book.store.entity.Customer;
 import com.book.store.mapper.CustomerMapper;
 import com.book.store.repository.CustomerRepository;
 import com.book.store.server.dto.CustomerApiDto;
+import com.book.store.server.dto.PaginatedBookResponseApiDto;
+import com.book.store.server.dto.PaginatedCustomerResponseApiDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,14 +86,14 @@ class CustomerServiceTest {
         when(customerRepository.findAll(pageable)).thenReturn(customerPage);
         when(customerMapper.toDTO(customer)).thenReturn(customerApiDto);
 
-        List<CustomerApiDto> result = customerService.getAllCustomers(0, 10);
+        PaginatedCustomerResponseApiDto result = customerService.getAllCustomers(0, 10);
 
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("John Doe", result.get(0).getUsername());
-        assertEquals("john.doe@example.com", result.get(0).getEmail());
-        assertEquals("123 Main St", result.get(0).getAddress());
-        assertEquals(100.0f, result.get(0).getBalance());
+        assertEquals(1, result.getContent().size());
+        assertEquals("John Doe", result.getContent().get(0).getUsername());
+        assertEquals("john.doe@example.com", result.getContent().get(0).getEmail());
+        assertEquals("123 Main St", result.getContent().get(0).getAddress());
+        assertEquals(100.0f, result.getContent().get(0).getBalance());
         verify(customerRepository).findAll(pageable);
         verify(customerMapper).toDTO(customer);
     }
@@ -104,10 +106,10 @@ class CustomerServiceTest {
 
         when(customerRepository.findAll(pageable)).thenReturn(emptyPage);
 
-        List<CustomerApiDto> result = customerService.getAllCustomers(0, 10);
+        PaginatedCustomerResponseApiDto result = customerService.getAllCustomers(0, 10);
 
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertTrue(result.getContent().isEmpty());
         verify(customerRepository).findAll(pageable);
         verify(customerMapper, never()).toDTO(any());
     }
@@ -120,10 +122,10 @@ class CustomerServiceTest {
         when(customerRepository.findAll(pageable)).thenReturn(customerPage);
         when(customerMapper.toDTO(customer)).thenReturn(customerApiDto);
 
-        List<CustomerApiDto> result = customerService.getAllCustomers(0, 1000);
+        PaginatedCustomerResponseApiDto result = customerService.getAllCustomers(0, 1000);
 
         assertNotNull(result);
-        assertEquals(1, result.size());
+        assertEquals(1, result.getContent().size());
         verify(customerRepository).findAll(pageable);
     }
 

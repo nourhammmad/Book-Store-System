@@ -59,7 +59,8 @@ public interface OrderMapper {
         return switch (status) {
             case PLACED -> OrderResponseApiDto.StatusEnum.PLACED;
             case PROCESSING -> OrderResponseApiDto.StatusEnum.PROCESSING;
-            case COMPLETED -> OrderResponseApiDto.StatusEnum.COMPLETED;
+            case SHIPPED -> OrderResponseApiDto.StatusEnum.SHIPPED;
+            case DELIVERED -> OrderResponseApiDto.StatusEnum.DELIVERED;
             case CANCELLED -> OrderResponseApiDto.StatusEnum.CANCELLED;
             default -> throw new IllegalArgumentException("Unknown status: " + status);
         };

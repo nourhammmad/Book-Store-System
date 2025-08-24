@@ -90,7 +90,7 @@ class OrderServiceTest {
         order.setOrderDate(LocalDateTime.now());
         order.addItem(orderItem);
 
-        BookRequestDtoApiDto bookApiDto = new BookRequestDtoApiDto();
+        BookReferenceApiDto bookApiDto = new BookReferenceApiDto();
         bookApiDto.setId(1L);
 
         OrderItemRequestApiDto orderItemRequestApiDto = new OrderItemRequestApiDto();
@@ -289,26 +289,25 @@ class OrderServiceTest {
     void deleteByIdDeletesOrderAndRestoresStock() {
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(bookRepository.save(any(Book.class))).thenReturn(book);
-        doNothing().when(orderRepository).delete(order);
 
         orderService.deleteById(1L);
 
         assertEquals(12, book.getQuantity()); // 10 + 2 = 12 (restored stock)
         verify(orderRepository).findById(1L);
         verify(bookRepository).save(book);
-        verify(orderRepository).delete(order);
+        verify(orderRepository).deleteById(1L);
     }
 
     @Test
     void deleteByIdThrowsExceptionWhenOrderNotFound() {
         when(orderRepository.findById(999L)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
                 () -> orderService.deleteById(999L)
         );
 
-        assertEquals("Order not found with id 999", exception.getMessage());
+        assertEquals("Order not found with id: 999", exception.getMessage());
         verify(orderRepository).findById(999L);
         verify(orderRepository, never()).delete(any());
     }
@@ -385,7 +384,6 @@ class OrderServiceTest {
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(bookRepository.save(any(Book.class))).thenReturn(book);
-        doNothing().when(orderRepository).delete(order);
 
         orderService.deleteById(1L);
 
@@ -393,7 +391,7 @@ class OrderServiceTest {
         assertEquals(18, book2.getQuantity()); // 15 + 3 = 18
         verify(orderRepository).findById(1L);
         verify(bookRepository, times(2)).save(any(Book.class));
-        verify(orderRepository).delete(order);
+        verify(orderRepository).deleteById(1L);
     }
 
     @Test
