@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-order-and-book-fields
+      author: Levii22
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: cancelled_at
+                  type: datetime
+              - column:
+                  name: cancellation_reason
+                  type: varchar(255)
+              - column:
+                  name: delivered_at
+                  type: datetime
+        - addColumn:
+            tableName: book
+            columns:
+              - column:
+                  name: cover_image_url
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP
