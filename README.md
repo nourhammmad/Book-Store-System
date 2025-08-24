@@ -296,19 +296,27 @@ mvn test
 ├── 📂 .mvn
 │   └── 📂 wrapper
 │       └── 📄 maven-wrapper.properties
+├── 📂 OpenAPI
+│   ├── 📄 contract.yml
+│   ├── 📄 examples.json
+│   └── 📄 schemas.json
 ├── 📂 src
 │   ├── 📂 main
 │   │   ├── 📂 java
 │   │   │   └── 📂 com
 │   │   │       └── 📂 book
 │   │   │           └── 📂 store
-│   │   │               ├── 📂 Controller
+│   │   │               ├── 📂 config
+│   │   │               │   ├── 📄 JwtAuthenticationFilter.java
+│   │   │               │   └── 📄 SecurityConfig.java
+│   │   │               ├── 📂 controller
 │   │   │               │   ├── 📄 AdminController.java
 │   │   │               │   ├── 📄 AuthController.java
 │   │   │               │   ├── 📄 BookController.java
 │   │   │               │   ├── 📄 CustomerController.java
+│   │   │               │   ├── 📄 FileController.java
 │   │   │               │   └── 📄 OrderController.java
-│   │   │               ├── 📂 Entity
+│   │   │               ├── 📂 entity
 │   │   │               │   ├── 📄 Admin.java
 │   │   │               │   ├── 📄 Book.java
 │   │   │               │   ├── 📄 BookHistory.java
@@ -316,12 +324,18 @@ mvn test
 │   │   │               │   ├── 📄 Order.java
 │   │   │               │   ├── 📄 OrderItem.java
 │   │   │               │   └── 📄 User.java
-│   │   │               ├── 📂 Mapper
+│   │   │               ├── 📂 exception
+│   │   │               │   ├── 📂 response
+│   │   │               │   │   ├── 📄 ErrorDetails.java
+│   │   │               │   │   ├── 📄 ValidationFailedResponse.java
+│   │   │               │   │   └── 📄 ViolationErrors.java
+│   │   │               │   └── 📄 MainExceptionHandler.java
+│   │   │               ├── 📂 mapper
 │   │   │               │   ├── 📄 AdminMapper.java
 │   │   │               │   ├── 📄 BookMapper.java
 │   │   │               │   ├── 📄 CustomerMapper.java
 │   │   │               │   └── 📄 OrderMapper.java
-│   │   │               ├── 📂 Repository
+│   │   │               ├── 📂 repository
 │   │   │               │   ├── 📄 AdminRepository.java
 │   │   │               │   ├── 📄 BookHistoryRepository.java
 │   │   │               │   ├── 📄 BookRepository.java
@@ -329,9 +343,11 @@ mvn test
 │   │   │               │   ├── 📄 OrderItemRepository.java
 │   │   │               │   ├── 📄 OrderRepository.java
 │   │   │               │   └── 📄 UserRepository.java
-│   │   │               ├── 📂 Seed
+│   │   │               ├── 📂 security
+│   │   │               │   └── 📄 CustomUserDetails.java
+│   │   │               ├── 📂 seed
 │   │   │               │   └── 📄 DataSeeder.java
-│   │   │               ├── 📂 Service
+│   │   │               ├── 📂 service
 │   │   │               │   ├── 📄 AdminService.java
 │   │   │               │   ├── 📄 AuthService.java
 │   │   │               │   ├── 📄 AuthServiceImpl.java
@@ -342,36 +358,32 @@ mvn test
 │   │   │               │   ├── 📄 JwtServiceImpl.java
 │   │   │               │   ├── 📄 OrderService.java
 │   │   │               │   └── 📄 UserDetailsServiceImpl.java
-│   │   │               ├── 📂 config
-│   │   │               │   ├── 📄 JwtAuthenticationFilter.java
-│   │   │               │   └── 📄 SecurityConfig.java
-│   │   │               ├── 📂 exception
-│   │   │               │   ├── 📂 response
-│   │   │               │   │   ├── 📄 ErrorDetails.java
-│   │   │               │   │   ├── 📄 ValidationFailedResponse.java
-│   │   │               │   │   └── 📄 ViolationErrors.java
-│   │   │               │   └── 📄 MainExceptionHandler.java
-│   │   │               ├── 📂 security
-│   │   │               │   └── 📄 CustomUserDetails.java
 │   │   │               └── 📄 BookStoreApplication.java
 │   │   └── 📂 resources
+│   │       ├── 📂 db
+│   │       │   └── 📂 changelog
+│   │       │       ├── 📄 001-create-tables.yaml
+│   │       │       ├── 📄 002-add-isbn.yaml
+│   │       │       ├── 📄 003-add-order-and-book-fields.yaml
+│   │       │       └── 📄 db.changelog-master.yaml
 │   │       └── 📄 application.properties
 │   └── 📂 test
 │       └── 📂 java
 │           └── 📂 com
 │               └── 📂 book
 │                   └── 📂 store
-│                       ├── 📂 Service
+│                       ├── 📂 service
 │                       │   ├── 📄 BookServiceTest.java
 │                       │   ├── 📄 CustomerServiceTest.java
 │                       │   └── 📄 OrderServiceTest.java
 │                       └── 📄 BookStoreApplicationTests.java
 ├── 📄 .gitattributes
 ├── 📄 .gitignore
-├── 📄 contract.yml
+├── 📄 README.md
 ├── 📄 mvnw
 ├── 📄 mvnw.cmd
 └── 📄 pom.xml
+
 ```
 # 📖 OpenAPI Contract & Usage
 
