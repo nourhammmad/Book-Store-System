@@ -68,8 +68,50 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 | Build Tool          | Maven                                            |
 | API Documentation   | Swagger UI                                       |
 
+
 ---
 
+## 📝 User Stories
+
+### 👤 Customer
+- As a customer, I want to **register**, so that I can create an account and start using the bookstore.
+- As a customer, I want to **log in**, so that I can securely access my account using JWT authentication.
+- As a customer, I want to **browse all available books**, so that I can decide what to purchase.
+- As a customer, I want to **search for a book by ISBN**, so that I can quickly find the book I want.
+- As a customer, I want to **place an order**, so that I can buy books from the store.
+- As a customer, I want the system to **validate stock when ordering**, so that I don’t purchase unavailable books.
+- As a customer, I want to **view my past orders**, so that I can track my purchases.
+- As a customer, I want to **cancel an order**, so that I can change my decision if needed.
+- As a customer, I want my **password stored securely**, so that my account remains safe.
+
+---
+
+### 👨‍💼 Admin
+- As an admin, I want to **add new books**, so that customers can purchase them.
+- As an admin, I want to **update book details (with history tracking)**, so that all changes are audited.
+- As an admin, I want to **delete books**, so that outdated or invalid books are removed.
+- As an admin, I want to **upload a cover image for a book**, so that books have visual representation.
+- As an admin, I want to **view all customers**, so that I can manage user accounts.
+- As an admin, I want to **delete a customer**, so that I can remove inactive or problematic users.
+- As an admin, I want to **view all orders**, so that I can track customer purchases.
+- As an admin, I want to **update order status**, so that order progress (e.g., shipped, delivered) is reflected.
+- As an admin, I want to **delete an order**, so that invalid orders are removed.
+- As an admin, I want to **create new users with roles (customer or admin)**, so that I can manage staff and customer accounts.
+- As an admin, I want to **log field updates of a book**, so that I can track who updated which detail.
+
+---
+
+### 🛡️ System (Technical/Non-Functional)
+- As a system, I want to **authenticate users with JWT**, so that access is secure and stateless.
+- As a system, I want to **enforce role-based access control**, so that customers and admins have different permissions.
+- As a system, I want to **hash passwords with BCrypt**, so that no plain-text passwords are stored.
+- As a system, I want to **provide API documentation via Swagger**, so that developers can easily test and integrate.
+- As a system, I want to **provide an in-memory H2 database for development**, so that developers can test without external dependencies.
+
+---
+
+
+---
 
 # 🏗️ Architecture Overview
 ## 📘 Admin Updates Book (with History Tracking)
