@@ -149,45 +149,63 @@ cd Book-Store-System
 # 📖 API Endpoints
 
 ## 🔑 Authentication
-| Method | Endpoint         | Description              | Access |
-|--------|------------------|--------------------------|--------|
+| Method | Endpoint         | Description             | Access |
+| ------ | ---------------- | ----------------------- | ------ |
 | POST   | `/auth/register` | Register a new customer | Public |
 | POST   | `/auth/login`    | Authenticate & get JWT  | Public |
 
 ---
 
 ## 📚 Books
-| Method | Endpoint       | Description          | Access   |
-|--------|----------------|----------------------|----------|
-| GET    | `/books`       | Get all books        | Public   |
-| GET    | `/books/{id}`  | Get book by ID       | Public   |
-| POST   | `/books`       | Add a new book       | Admin    |
-| PUT    | `/books/{id}`  | Update book details  | Admin    |
-| DELETE | `/books/{id}`  | Delete a book        | Admin    |
+| Method | Endpoint            | Description                     | Access |
+| ------ | ------------------- | ------------------------------- | ------ |
+| GET    | `/book`             | Get all books (paginated)       | Public |
+| GET    | `/book/{id}`        | Get book by ID                  | Public |
+| GET    | `/book/isbn/{isbn}` | Get book by ISBN                | Public |
+| POST   | `/book`             | Add a new book                  | Admin  |
+| DELETE | `/book/{id}`        | Delete a book                   | Admin  |
+| POST   | `/book/{id}/cover`  | Upload a cover image for a book | Admin  |
+
 
 ---
 
 ## 👤 Customers
-| Method | Endpoint           | Description               | Access   |
-|--------|--------------------|---------------------------|----------|
-| GET    | `/customers`       | Get all customers         | Admin    |
-| GET    | `/customers/{id}`  | Get customer by ID        | Admin    |
-| PUT    | `/customers/{id}`  | Update customer profile   | Customer |
-| DELETE | `/customers/{id}`  | Delete customer account   | Admin    |
+| Method | Endpoint         | Description                   | Access |
+| ------ | ---------------- | ----------------------------- | ------ |
+| GET    | `/customer`      | Get all customers (paginated) | Admin  |
+| GET    | `/customer/{id}` | Get customer by ID            | Admin  |
+| DELETE | `/customer/{id}` | Delete customer account       | Admin  |
 
 ---
 
 ## 🛒 Orders
-| Method | Endpoint           | Description               | Access   |
-|--------|--------------------|---------------------------|----------|
-| POST   | `/orders`          | Place a new order         | Customer |
-| GET    | `/orders`          | Get all orders            | Admin    |
-| GET    | `/orders/{id}`     | Get order by ID           | Customer/Admin |
-| PUT    | `/orders/{id}`     | Update order status       | Admin    |
-| DELETE | `/orders/{id}`     | Cancel an order           | Customer |
+| Method | Endpoint             | Description                           | Access   |
+| ------ | -------------------- | ------------------------------------- | -------- |
+| GET    | `/admin/order`       | Get all orders (paginated)            | Admin    |
+| GET    | `/admin/order/{id}`  | Get order by ID                       | Admin    |
+| PUT    | `/admin/order/{id}`  | Update order status                   | Admin    |
+| DELETE | `/admin/order/{id}`  | Delete order by ID                    | Admin    |
+| POST   | `/order`             | Place a new order                     | Customer |
+| POST   | `/order/{id}/cancel` | Cancel an order by ID                 | Customer |
+| GET    | `/order/customer`    | Get all orders for logged-in customer | Customer |
 
 ---
+## 👨‍💼 Admins
+| Method | Endpoint                        | Description                   | Access |
+| ------ | ------------------------------- | ----------------------------- | ------ |
+| GET    | `/admin`                        | Get all admins (paginated)    | Admin  |
+| GET    | `/admin/{id}`                   | Get admin by ID               | Admin  |
+| DELETE | `/admin/{id}`                   | Delete admin by ID            | Admin  |
+| POST   | `/admin/create-user`            | Create a new user with a role | Admin  |
+| PATCH  | `/admin/book/{id}/update-field` | Log a book field update       | Admin  |
 
+---
+## 📂 Files
+| Method | Endpoint            | Description                | Access |
+| ------ | ------------------- | -------------------------- | ------ |
+| GET    | `/files/{filename}` | Retrieve a book cover file | Public |
+
+---
 
 🔐 **Note:**  
 - All **protected endpoints** require a valid JWT token in the `Authorization` header:  
@@ -259,29 +277,37 @@ sequenceDiagram
 This project uses **JUnit 5** with **Mockito** for unit testing.  
 The service layer is fully covered by tests to ensure correctness and reliability.
 
-## Test Coverage
+## ✅ Test Coverage
 
 - **BookServiceTest**
-  - Get all books with pagination (valid, empty, invalid page/size)
-  - Get book by ID (found / not found)
-  - Create, update, and delete books
-  - Handle null, zero, or invalid fields gracefully
-  - Validate description retrieval logic
+  - Get all books with pagination (valid, empty, invalid page/size, zero size, negative page)
+  - Get book by ID (found, not found → EntityNotFoundException)
+  - Create book (valid, with null fields)
+  - Delete book (valid, non-existent → EntityNotFoundException)
+  - Description retrieval (valid, empty string, not found → EntityNotFoundException)
+  - Validation of arguments (illegal page number/size)
 
 - **CustomerServiceTest**
-  - Create customers (valid, null, empty fields, negative balance)
-  - Get all customers with pagination (valid, empty, invalid page/size)
-  - Find customer by ID (found, not found, null ID)
-  - Delete customers (valid, non-existent, repository errors)
-  - Mapper exception handling
+  - Get all customers with pagination (valid, empty, large size, invalid page/size)
+  - Find customer by ID (found, not found → EntityNotFoundException, null ID → IllegalArgumentException)
+  - Delete customer (valid, null ID, non-existent, repository error)
+  - Mapper behavior (successful mapping, mapper throwing RuntimeException)
 
 - **OrderServiceTest**
-  - Place orders from DTO (valid, multiple items, empty items, null items)
-  - Stock quantity updates and validations (insufficient stock, exact stock, large orders)
-  - Delete orders (restores stock, multiple items, repository errors)
-  - Find orders (by ID, paginated, invalid page/size)
-  - Error scenarios (missing customer, missing book, invalid quantities, DB failures)
-
+  - Find all orders with pagination (valid, empty, invalid page/size)
+  - Find order by ID (found, not found → IllegalArgumentException)
+  - Place order:
+    - Validates user existence (EntityNotFoundException)
+    - Validates customer existence (EntityNotFoundException)
+    - Validates book existence (IllegalArgumentException)
+    - Validates quantities (zero, negative, excessive stock → IllegalArgumentException / IllegalStateException)
+    - Validates balance (insufficient → IllegalStateException)
+    - Validates items list (null or empty → IllegalArgumentException)
+  - Delete order by ID:
+    - Restores stock (single and multiple items)
+    - Not found → EntityNotFoundException
+  - Get previous orders (valid, empty)
+  - Error scenarios (DB save not called when preconditions fail)
 ## Running Tests
 
 Run all tests with Maven:
