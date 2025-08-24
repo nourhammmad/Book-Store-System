@@ -1,18 +1,18 @@
 # 📚 Book Store Management System
 
-The **Book Store Management System** is a backend application built with **Java** and **Spring Boot** that provides a secure and scalable way to manage a bookstore.  
+The **Book Store Management System** is a backend application built with **Java** and **Spring Boot** that provides a secure and scalable way to manage a bookstore.
 
 It covers the core workflows of a modern bookstore, including:
-- 🔑 **Authentication & Authorization** with JWT  
-- 📖 **Book Management** (CRUD + history tracking)  
-- 🛒 **Order Management** (customers placing orders)  
-- 👥 **Customer Management**  
-- 📊 **OpenAPI 3.0.1** contract-first design  
+- 🔑 **Authentication & Authorization** with JWT
+- 📖 **Book Management** (CRUD + history tracking)
+- 🛒 **Order Management** (customers placing orders)
+- 👥 **Customer Management**
+- 📊 **OpenAPI 3.0.1** contract-first design
 
 ---
 
-This project is designed with **RESTful API principles**, **Spring Security**, and **JPA/Hibernate** for database interaction.  
-It supports **in-memory H2**.  
+This project is designed with **RESTful API principles**, **Spring Security**, and **JPA/Hibernate** for database interaction.
+It supports **in-memory H2** and uses **Liquibase** for database schema management.
 
 Whether you are a **customer** browsing and purchasing books or an **admin** managing inventory and users, this system provides a structured and secure backend for bookstore operations.
 
@@ -25,48 +25,55 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 
 
 # 📑 Table of Contents
-1. [✨ Features](#-features)  
-2. [🛠️ Tech Stack](#️-tech-stack)  
-3. [🏗️ Architecture Overview](#️-architecture-overview)  
-   - [📘 Admin Updates Book (with History Tracking)](#-admin-updates-book-with-history-tracking)  
-   - [📗 Customer Places Order](#-customer-places-order)  
-4. [🚀 Getting Started](#-getting-started)  
-   - [⚙️ Setup](#️-setup)  
-   - [📌 Prerequisites](#-prerequisites)  
-5. [🔗 API Endpoints](#-api-endpoints)  
-6. [🔐 Authentication Flow](#-authentication-flow)  
-7. [🧪 Testing](#-testing)  
-8. [📂 Project Structure](#-project-structure)  
-9. [📜 OpenAPI Contract](#-openapi-contract)  
-10. [👨‍💻 Authors](#-authors)  
+1. [✨ Features](#-features)
+2. [🛠️ Tech Stack](#️-tech-stack)
+3. [🏗️ Architecture Overview](#️-architecture-overview)
+    - [📘 Admin Updates Book (with History Tracking)](#-admin-updates-book-with-history-tracking)
+    - [📗 Customer Places Order](#-customer-places-order)
+4. [🚀 Getting Started](#-getting-started)
+    - [⚙️ Setup](#️-setup)
+    - [📌 Prerequisites](#-prerequisites)
+5. [🔗 API Endpoints](#-api-endpoints)
+6. [🔐 Authentication Flow](#-authentication-flow)
+7. [🧪 Testing](#-testing)
+8. [📂 Project Structure](#-project-structure)
+9. [📜 OpenAPI Contract](#-openapi-contract)
+10. [👥 Authors](#-authors)
 
+---
 
 # ✨ Features
 
 - **Authentication & Authorization**
-  - JWT-based stateless authentication  
-  - Role-based access (Admin vs Customer)
+    - JWT-based stateless authentication
+    - Role-based access (Admin vs Customer)
 - **Book Management**
-  - CRUD operations: add, update, delete, list books
+    - CRUD operations: add, update, delete, list books
 - **Order Management**
-  - Place orders and manage order details
+    - Place orders and manage order details
 - **User Management**
-  - Registration, login, profile management
+    - Registration, login, profile management
 - **Documentation**
-  - Integrated Swagger UI for interactive API exploration
+    - Integrated Swagger UI for interactive API exploration
 - **Secure Password Storage**
-  - Passwords hashed with BCrypt
+    - Passwords hashed with BCrypt
+- **Database Migrations**
+    - **Liquibase** for version-controlled database schema management
+- **Continuous Integration**
+    - **GitHub Actions** for automated CI tests on push and pull requests
 
 ---
 # 🛠️ Technology Stack
 
-| Layer               | Technology                                      |
-|--------------------|--------------------------------------------------|
-| Framework           | Spring Boot (REST API)                           |
-| Security            | Spring Security with JWT                         |
-| Persistence         | Spring Data JPA (H2 in-memory for development)   |
-| Build Tool          | Maven                                            |
-| API Documentation   | Swagger UI                                       |
+| Layer               | Technology                                     |
+|---------------------|------------------------------------------------|
+| Framework           | Spring Boot (REST API)                         |
+| Security            | Spring Security with JWT                       |
+| Persistence         | Spring Data JPA (H2 in-memory for development) |
+| Database Migrations | Liquibase                                      |
+| Build Tool          | Maven                                          |
+| CI/CD               | GitHub Actions                                 |
+| API Documentation   | Swagger UI                                     |
 
 
 ---
@@ -179,20 +186,20 @@ sequenceDiagram
 
 ## Prerequisites
 
-- Java 17 (or above)  
-- Maven  
+- Java 17 (or above)
+- Maven
 
 ## ⚙️ Setup
 
 ```bash
-git clone https://github.com/nourhammmad/Book-Store-System.git
+git clone [https://github.com/nourhammmad/Book-Store-System.git](https://github.com/nourhammmad/Book-Store-System.git)
 cd Book-Store-System
 ```
-# 📖 API Endpoints
+# 🔗 API Endpoints
 
 ## 🔑 Authentication
 | Method | Endpoint         | Description             | Access |
-| ------ | ---------------- | ----------------------- | ------ |
+|--------|------------------|-------------------------|--------|
 | POST   | `/auth/register` | Register a new customer | Public |
 | POST   | `/auth/login`    | Authenticate & get JWT  | Public |
 
@@ -200,7 +207,7 @@ cd Book-Store-System
 
 ## 📚 Books
 | Method | Endpoint            | Description                     | Access |
-| ------ | ------------------- | ------------------------------- | ------ |
+|--------|---------------------|---------------------------------|--------|
 | GET    | `/book`             | Get all books (paginated)       | Public |
 | GET    | `/book/{id}`        | Get book by ID                  | Public |
 | GET    | `/book/isbn/{isbn}` | Get book by ISBN                | Public |
@@ -213,7 +220,7 @@ cd Book-Store-System
 
 ## 👤 Customers
 | Method | Endpoint         | Description                   | Access |
-| ------ | ---------------- | ----------------------------- | ------ |
+|--------|------------------|-------------------------------|--------|
 | GET    | `/customer`      | Get all customers (paginated) | Admin  |
 | GET    | `/customer/{id}` | Get customer by ID            | Admin  |
 | DELETE | `/customer/{id}` | Delete customer account       | Admin  |
@@ -222,7 +229,7 @@ cd Book-Store-System
 
 ## 🛒 Orders
 | Method | Endpoint             | Description                           | Access   |
-| ------ | -------------------- | ------------------------------------- | -------- |
+|--------|----------------------|---------------------------------------|----------|
 | GET    | `/admin/order`       | Get all orders (paginated)            | Admin    |
 | GET    | `/admin/order/{id}`  | Get order by ID                       | Admin    |
 | PUT    | `/admin/order/{id}`  | Update order status                   | Admin    |
@@ -234,7 +241,7 @@ cd Book-Store-System
 ---
 ## 👨‍💼 Admins
 | Method | Endpoint                        | Description                   | Access |
-| ------ | ------------------------------- | ----------------------------- | ------ |
+|--------|---------------------------------|-------------------------------|--------|
 | GET    | `/admin`                        | Get all admins (paginated)    | Admin  |
 | GET    | `/admin/{id}`                   | Get admin by ID               | Admin  |
 | DELETE | `/admin/{id}`                   | Delete admin by ID            | Admin  |
@@ -244,7 +251,7 @@ cd Book-Store-System
 ---
 ## 📂 Files
 | Method | Endpoint            | Description                | Access |
-| ------ | ------------------- | -------------------------- | ------ |
+|--------|---------------------|----------------------------|--------|
 | GET    | `/files/{filename}` | Retrieve a book cover file | Public |
 
 ---
@@ -253,45 +260,43 @@ cd Book-Store-System
 - All **protected endpoints** require a valid JWT token in the `Authorization` header:  
 # 🔐 Authentication Flow
 
-This project uses **Spring Security + JWT (JSON Web Token)** for authentication and authorization. The flow ensures that only authenticated users can access protected endpoints while keeping the system stateless.  
+This project uses **Spring Security + JWT (JSON Web Token)** for authentication and authorization. The flow ensures that only authenticated users can access protected endpoints while keeping the system stateless.
 
 ## 🔄 Flow Overview
-1. **User Login**  
-   - A client sends login credentials (`username`, `password`) to `/auth/login`.  
-   - If valid, the server generates a **JWT token** and returns it to the client.  
+1. **User Login**
+    - A client sends login credentials (`username`, `password`) to `/auth/login`.
+    - If valid, the server generates a **JWT token** and returns it to the client.
 
-2. **Token Usage**  
-   - The client includes the JWT in the `Authorization` header for subsequent requests:  
-     ```
-     Authorization: Bearer <jwt_token>
-     ```
+2. **Token Usage**
+    - The client includes the JWT in the `Authorization` header for subsequent requests:
+      ```
+      Authorization: Bearer <jwt_token>
+      ```
 
-3. **JWT Filter Validation** (`JwtAuthenticationFilter`)  
-   - Every request passes through a filter that:  
-     - Extracts the token from the header.  
-     - Validates it with `JwtService`.  
-     - Loads user details via `UserDetailsServiceImpl`.  
-     - Creates a `UsernamePasswordAuthenticationToken` and sets it in `SecurityContextHolder`.  
+3. **JWT Filter Validation** (`JwtAuthenticationFilter`)
+    - Every request passes through a filter that:
+        - Extracts the token from the header.
+        - Validates it with `JwtService`.
+        - Loads user details via `UserDetailsServiceImpl`.
+        - Creates a `UsernamePasswordAuthenticationToken` and sets it in `SecurityContextHolder`.
 
-4. **Authorization**  
-   - `SecurityConfig` defines which endpoints are **public** (`/auth/**`, `/swagger-ui/**`, `/h2-console/**`) and which require authentication.  
-   - For protected endpoints, Spring Security checks the `SecurityContext` for valid authentication.  
+4. **Authorization**
+    - `SecurityConfig` defines which endpoints are **public** (`/auth/**`, `/swagger-ui/**`, `/h2-console/**`) and which require authentication.
+    - For protected endpoints, Spring Security checks the `SecurityContext` for valid authentication.
 
-5. **Password Security**  
-   - Passwords are stored securely using **BCrypt hashing** (`BCryptPasswordEncoder`).  
+5. **Password Security**
+    - Passwords are stored securely using **BCrypt hashing** (`BCryptPasswordEncoder`).
 
 ---
 
 ## ⚙️ Components Involved
-- **`SecurityConfig`** → Defines security rules, session policy, and JWT filter chain.  
-- **`JwtAuthenticationFilter`** → Intercepts requests, validates JWTs, and authenticates users.  
-- **`CustomUserDetails`** → Wraps `User` entity to integrate with Spring Security.  
-- **`UserDetailsServiceImpl`** → Loads user data from the database.  
-- **`JwtService`** → Generates and validates JWT tokens.  
+- **`SecurityConfig`** → Defines security rules, session policy, and JWT filter chain.
+- **`JwtAuthenticationFilter`** → Intercepts requests, validates JWTs, and authenticates users.
+- **`CustomUserDetails`** → Wraps `User` entity to integrate with Spring Security.
+- **`UserDetailsServiceImpl`** → Loads user data from the database.
+- **`JwtService`** → Generates and validates JWT tokens.
 
 ---
-
-
 
 # 📊 Authentication Flow Diagram
 ```mermaid
@@ -316,7 +321,7 @@ sequenceDiagram
 ```
 # 🧪 Testing
 
-This project uses **JUnit 5** with **Mockito** for unit testing.  
+This project uses **JUnit 5** with **Mockito** for unit testing.
 The service layer is fully covered by tests to ensure correctness and reliability.
 
 ## ✅ Test Coverage
@@ -455,7 +460,7 @@ mvn test
 ```
 # 📖 OpenAPI Contract & Usage
 
-This project follows a **contract-first** approach.  
+This project follows a **contract-first** approach.
 All API endpoints are defined in the OpenAPI specification:
 
 
@@ -470,13 +475,13 @@ mvn clean compile
 ```
 # 👥 Authors
 
-## Nour Hammad  
-- GitHub: [@nourhammmad](https://github.com/nourhammmad)  
+## Nour Hammad
+- GitHub: [@nourhammmad](https://github.com/nourhammmad)
 ---
 
-## Shahd Ramzy  
-- GitHub: [@ShahdRamzy](https://github.com/ShahdRamzy)  
+## Shahd Ramzy
+- GitHub: [@ShahdRamzy](https://github.com/ShahdRamzy)
 ---
 
-## Mohamed Karam  
-- GitHub: [@Levii22](https://github.com/Levii22)  
+## Mohamed Karam
+- GitHub: [@Levii22](https://github.com/Levii22)
