@@ -6,6 +6,7 @@ import com.book.store.repository.BookRepository;
 import com.book.store.repository.CustomerRepository;
 import com.book.store.repository.OrderRepository;
 import com.book.store.repository.UserRepository;
+import com.book.store.security.CustomUserDetails;
 import com.book.store.server.dto.OrderRequestApiDto;
 import com.book.store.server.dto.OrderItemRequestApiDto;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,11 +44,11 @@ public class OrderService {
         }
 
         // Fetch customer
-        String username = authService.getCurrentUserUsername();
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
-        Customer customer = customerRepository.findById(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found for user: " + username));
+        CustomUserDetails userDetails =
+                (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Customer customer = customerRepository.findById(userDetails.getUser().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found for user: " + userDetails.getUser().getId()));
 
         Order order = new Order();
         order.setCustomer(customer);
@@ -94,11 +96,11 @@ public class OrderService {
     }
 
     public List<Order> getPreviousOrders() {
-        String username = authService.getCurrentUserUsername();
-        Optional<User> user = userRepository.findByUsername(username);
-        Long userId = user.map(User::getId).orElse(null);
+        CustomUserDetails userDetails =
+                (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return orderRepository.findAllByCustomerId(userId);
+
+        return orderRepository.findAllByCustomerId(userDetails.getUser().getId());
     }
 
     public Order findById(Long id) {
