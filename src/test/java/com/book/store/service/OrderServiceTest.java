@@ -5,7 +5,7 @@ import com.book.store.mapper.OrderMapper;
 import com.book.store.repository.BookRepository;
 import com.book.store.repository.CustomerRepository;
 import com.book.store.repository.OrderRepository;
-import com.book.store.repository.UserRepository;
+import com.book.store.security.CustomUserDetails;
 import com.book.store.server.dto.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,13 +44,16 @@ class OrderServiceTest {
     private CustomerRepository customerRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private AuthServiceImpl authentication;
-
-    @Mock
     private OrderMapper orderMapper;
+
+    @Mock
+    private SecurityContext securityContext;
+
+    @Mock
+    private Authentication authentication;
+
+    @Mock
+    private CustomUserDetails customUserDetails;
 
     @InjectMocks
     private OrderService orderService;
@@ -55,7 +61,6 @@ class OrderServiceTest {
     private Order order;
     private Book book;
     private Customer customer;
-    private User user;
     private OrderRequestApiDto orderRequestApiDto;
     private OrderItem orderItem;
 
@@ -72,11 +77,6 @@ class OrderServiceTest {
         customer.setUsername("John Doe");
         customer.setEmail("john@example.com");
         customer.setBalance(100.0f);
-
-        user = new Customer();
-        user.setId(1L);
-        user.setUsername("johndoe");
-        user.setEmail("john@example.com");
 
         orderItem = new OrderItem();
         orderItem.setId(1L);
@@ -99,6 +99,13 @@ class OrderServiceTest {
 
         orderRequestApiDto = new OrderRequestApiDto();
         orderRequestApiDto.setItems(new ArrayList<>(List.of(orderItemRequestApiDto)));
+    }
+
+    private void setupSecurityContext() {
+        when(customUserDetails.getUser()).thenReturn(customer);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(customUserDetails);
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -132,42 +139,8 @@ class OrderServiceTest {
     }
 
     @Test
-    void placeOrderThrowsExceptionWhenUserNotFound() {
-        when(authentication.getCurrentUserUsername()).thenReturn("unknown");
-        when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
-                () -> orderService.placeOrder(orderRequestApiDto)
-        );
-
-        assertEquals("User not found: unknown", exception.getMessage());
-        verify(authentication).getCurrentUserUsername();
-        verify(userRepository).findByUsername("unknown");
-        verify(customerRepository, never()).findById(any());
-    }
-
-    @Test
-    void placeOrderThrowsExceptionWhenCustomerNotFound() {
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
-        when(customerRepository.findById(1L)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
-                () -> orderService.placeOrder(orderRequestApiDto)
-        );
-
-        assertEquals("Customer not found for user: johndoe", exception.getMessage());
-        verify(authentication).getCurrentUserUsername();
-        verify(userRepository).findByUsername("johndoe");
-        verify(customerRepository).findById(1L);
-    }
-
-    @Test
     void placeOrderThrowsExceptionWhenBookNotFound() {
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
+        setupSecurityContext();
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -186,8 +159,7 @@ class OrderServiceTest {
         book.setQuantity(1);
         orderRequestApiDto.getItems().get(0).setQuantity(5);
 
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
+        setupSecurityContext();
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
@@ -205,8 +177,7 @@ class OrderServiceTest {
     void placeOrderThrowsExceptionWhenInsufficientBalance() {
         customer.setBalance(10.0f); // Not enough for 50.0f order
 
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
+        setupSecurityContext();
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         when(orderMapper.toEntity(any(OrderItemRequestApiDto.class))).thenReturn(orderItem);
@@ -225,8 +196,7 @@ class OrderServiceTest {
     void placeOrderThrowsExceptionWhenZeroQuantity() {
         orderRequestApiDto.getItems().get(0).setQuantity(0);
 
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
+        setupSecurityContext();
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
@@ -244,8 +214,7 @@ class OrderServiceTest {
     void placeOrderThrowsExceptionWhenNegativeQuantity() {
         orderRequestApiDto.getItems().get(0).setQuantity(-5);
 
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
+        setupSecurityContext();
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
@@ -340,8 +309,7 @@ class OrderServiceTest {
 
     @Test
     void getPreviousOrdersReturnsUserOrders() {
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
+        setupSecurityContext();
         when(orderRepository.findAllByCustomerId(1L)).thenReturn(List.of(order));
 
         List<Order> result = orderService.getPreviousOrders();
@@ -349,23 +317,18 @@ class OrderServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(order.getId(), result.get(0).getId());
-        verify(authentication).getCurrentUserUsername();
-        verify(userRepository).findByUsername("johndoe");
         verify(orderRepository).findAllByCustomerId(1L);
     }
 
     @Test
     void getPreviousOrdersReturnsEmptyListWhenNoOrders() {
-        when(authentication.getCurrentUserUsername()).thenReturn("johndoe");
-        when(userRepository.findByUsername("johndoe")).thenReturn(Optional.of(user));
+        setupSecurityContext();
         when(orderRepository.findAllByCustomerId(1L)).thenReturn(List.of());
 
         List<Order> result = orderService.getPreviousOrders();
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(authentication).getCurrentUserUsername();
-        verify(userRepository).findByUsername("johndoe");
         verify(orderRepository).findAllByCustomerId(1L);
     }
 
