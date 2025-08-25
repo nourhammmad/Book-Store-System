@@ -49,16 +49,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/PaginatedOrderResponse'
+                $ref: '#/components/schemas/PaginatedOrderResponse'
               examples:
                 ordersExample:
-                  $ref: 'examples.json#/ordersExample'
+                  $ref: '#/components/examples/ordersExample'
         '400':
           description: Invalid pagination parameters
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   /order:
     post:
@@ -72,52 +72,46 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/orderRequest'
-            example:
-              customer:
-                id: 1
-                username: "John Doe"
-              items:
-                - book:
-                    id: 1
-                    title: "Spring Boot Guide"
-                    price: 29.99
-                  quantity: 2
+              $ref: '#/components/schemas/OrderRequest'
+            examples:
+              orderRequestExample:
+                $ref: '#/components/examples/orderRequestExample'
       responses:
         '201':
           description: Successfully created the order
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/orderResponse'
+                $ref: '#/components/schemas/OrderResponse'
         '400':
           description: Invalid request body (missing fields, invalid format)
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: 'schemas.json#/CustomError'
-                  - $ref: 'schemas.json#/ValidationError'
+                  - $ref: '#/components/schemas/CustomError'
+                  - $ref: '#/components/schemas/ValidationError'
               examples:
                 badRequestExample:
-                  $ref: 'examples.json#/errorBadRequestExample'
+                  $ref: '#/components/examples/errorBadRequestExample'
                 validationExample:
-                  $ref: 'examples.json#/errorValidationExample'
+                  $ref: '#/components/examples/errorValidationExample'
         '404':
           description: Customer or Book not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
               examples:
                 notFoundExample:
-                  $ref: 'examples.json#/errorNotFoundExample'
+                  $ref: '#/components/examples/errorNotFoundExample'
         '409':
           description: Requested quantity exceeds available stock
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
+
   /order/{id}/cancel:
     post:
       tags:
@@ -138,7 +132,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/CancelOrderRequest'
+              $ref: '#/components/schemas/CancelOrderRequest'
             example:
               reason: "Item no longer needed"
       responses:
@@ -147,19 +141,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/orderResponse'
+                $ref: '#/components/schemas/OrderResponse'
         '400':
           description: Invalid request (e.g., order already shipped)
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
         '404':
           description: Order not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   /admin/order/{id}:
     get:
@@ -182,13 +176,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/orderResponse'
+                $ref: '#/components/schemas/OrderResponse'
         '404':
           description: Order not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
     delete:
       tags:
         - Orders
@@ -211,7 +205,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
     put:
       tags:
         - Orders
@@ -231,7 +225,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/UpdateOrderStatusRequest'
+              $ref: '#/components/schemas/UpdateOrderStatusRequest'
             example:
               status: "SHIPPED"
       responses:
@@ -240,32 +234,32 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/orderResponse'
+                $ref: '#/components/schemas/OrderResponse'
         '400':
           description: Invalid request body (missing fields, invalid format)
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: 'schemas.json#/CustomError'
-                  - $ref: 'schemas.json#/ValidationError'
+                  - $ref: '#/components/schemas/CustomError'
+                  - $ref: '#/components/schemas/ValidationError'
               examples:
                 badRequestExample:
-                  $ref: 'examples.json#/errorBadRequestExample'
+                  $ref: '#/components/examples/errorBadRequestExample'
                 validationExample:
-                  $ref: 'examples.json#/errorValidationExample'
+                  $ref: '#/components/examples/errorValidationExample'
         '404':
           description: Order not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
         '409':
           description: Invalid status transition
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   /order/customer:
     get:
@@ -282,13 +276,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: 'schemas.json#/orderResponse'
+                  $ref: '#/components/schemas/OrderResponse'
         '404':
           description: Order not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   # Customer endpoints
   /customer:
@@ -315,7 +309,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/PaginatedCustomerResponse'
+                $ref: '#/components/schemas/PaginatedCustomerResponse'
+              examples:
+                customersExample:
+                  $ref: '#/components/examples/customersExample'
 
   /customer/{id}:
     get:
@@ -335,13 +332,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/Customer'
+                $ref: '#/components/schemas/Customer'
+              examples:
+                customerExample:
+                  $ref: '#/components/examples/customerExample'
         '404':
           description: Customer not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
     delete:
       summary: Delete customer by ID
@@ -362,7 +362,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   # Admin endpoints
   /admin:
@@ -389,7 +389,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/PaginatedAdminResponse'
+                $ref: '#/components/schemas/PaginatedAdminResponse'
+              examples:
+                adminsExample:
+                  $ref: '#/components/examples/adminsExample'
 
   /admin/{id}:
     get:
@@ -409,13 +412,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/Admin'
+                $ref: '#/components/schemas/Admin'
+              examples:
+                adminExample:
+                  $ref: '#/components/examples/adminExample'
         '404':
           description: Admin not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
     delete:
       summary: Delete admin by ID
@@ -436,7 +442,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   /admin/create-user:
     post:
@@ -449,33 +455,42 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/CreateUserRequest'
+              $ref: '#/components/schemas/CreateUserRequest'
+            examples:
+              createUserRequestExample:
+                $ref: '#/components/examples/createUserRequestExample'
       responses:
         '201':
           description: User created successfully
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/UserCreatedResponse'
+                $ref: '#/components/schemas/UserCreatedResponse'
+              examples:
+                userCreatedResponseExample:
+                  $ref: '#/components/examples/userCreatedResponseExample'
         '400':
           description: Bad request
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: 'schemas.json#/CustomError'
-                  - $ref: 'schemas.json#/ValidationError'
+                  - $ref: '#/components/schemas/CustomError'
+                  - $ref: '#/components/schemas/ValidationError'
               examples:
                 badRequestExample:
-                  $ref: 'examples.json#/errorBadRequestExample'
+                  $ref: '#/components/examples/errorBadRequestExample'
                 validationExample:
-                  $ref: 'examples.json#/errorValidationExample'
+                  $ref: '#/components/examples/errorValidationExample'
         '403':
           description: Forbidden - Admin access required
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
+              examples:
+                forbiddenExample:
+                  $ref: '#/components/examples/errorForbiddenExample'
 
   /admin/book/{id}/update-field:
     patch:
@@ -496,7 +511,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/BookFieldUpdate'
+              $ref: '#/components/schemas/BookFieldUpdate'
+            examples:
+              bookFieldUpdateExample:
+                $ref: '#/components/examples/bookFieldUpdateExample'
       responses:
         '200':
           description: Book field update logged
@@ -505,7 +523,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   # Books endpoints
   /book:
@@ -534,10 +552,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/PaginatedBookResponse'
+                $ref: '#/components/schemas/PaginatedBookResponse'
               examples:
                 booksExample:
-                  $ref: 'examples.json#/booksExample'
+                  $ref: '#/components/examples/booksExample'
 
     post:
       tags:
@@ -550,20 +568,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/BookCreateRequest'
+              $ref: '#/components/schemas/BookCreateRequest'
       responses:
         '201':
           description: Successfully created book
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/Book'
+                $ref: '#/components/schemas/Book'
+              examples:
+                bookExample:
+                  $ref: '#/components/examples/bookExample'
         '400':
           description: Invalid request body
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   /book/{id}:
     get:
@@ -585,13 +606,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/Book'
+                $ref: '#/components/schemas/Book'
+              examples:
+                bookExample:
+                  $ref: '#/components/examples/bookExample'
         '404':
           description: Book not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
     delete:
       tags:
@@ -614,7 +638,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
+
   /book/{id}/cover:
     post:
       tags:
@@ -635,7 +660,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: 'schemas.json#/FileUploadRequest'
+              $ref: '#/components/schemas/FileUploadRequest'
       responses:
         '200':
           description: Successfully uploaded the cover image
@@ -649,7 +674,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   /book/isbn/{isbn}:
     get:
@@ -673,13 +698,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/Book'
+                $ref: '#/components/schemas/Book'
+              examples:
+                bookExample:
+                  $ref: '#/components/examples/bookExample'
         '404':
           description: Book not found
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
 
   # Auth endpoints
   /auth/login:
@@ -693,23 +721,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/LoginRequest'
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              loginRequestExample:
+                $ref: '#/components/examples/loginRequestExample'
       responses:
         '200':
           description: JWT token returned
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/JwtResponse'
+                $ref: '#/components/schemas/JwtResponse'
+              examples:
+                jwtResponseExample:
+                  $ref: '#/components/examples/jwtResponseExample'
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
               examples:
                 unauthorizedExample:
-                  $ref: 'examples.json#/errorUnauthorizedExample'
+                  $ref: '#/components/examples/errorUnauthorizedExample'
 
   /auth/register:
     post:
@@ -722,25 +756,36 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'schemas.json#/RegisterRequest'
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              registerRequestExample:
+                $ref: '#/components/examples/registerRequestExample'
       responses:
         '201':
           description: Customer registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+              examples:
+                registerResponseExample:
+                  $ref: '#/components/examples/registerResponseExample'
         '400':
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
         '409':
           description: Username or email already exists
           content:
             application/json:
               schema:
-                $ref: 'schemas.json#/CustomError'
+                $ref: '#/components/schemas/CustomError'
               examples:
                 conflictExample:
-                  $ref: 'examples.json#/errorConflictExample'
+                  $ref: '#/components/examples/errorConflictExample'
+
   /files/{filename}:
     get:
       tags:
@@ -781,3 +826,862 @@ paths:
                 format: binary
         '404':
           description: File not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PaginatedOrderResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResponse'
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          example: 1
+        totalPages:
+          type: integer
+          example: 1
+        first:
+          type: boolean
+          example: true
+        last:
+          type: boolean
+          example: true
+      required: ["content", "page", "size", "totalElements", "totalPages"]
+
+    PaginatedBookResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          example: 2
+        totalPages:
+          type: integer
+          example: 1
+        first:
+          type: boolean
+          example: true
+        last:
+          type: boolean
+          example: true
+      required: ["content", "page", "size", "totalElements", "totalPages"]
+
+    PaginatedCustomerResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          example: 2
+        totalPages:
+          type: integer
+          example: 1
+        first:
+          type: boolean
+          example: true
+        last:
+          type: boolean
+          example: true
+      required: ["content", "page", "size", "totalElements", "totalPages"]
+
+    PaginatedAdminResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Admin'
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          example: 2
+        totalPages:
+          type: integer
+          example: 1
+        first:
+          type: boolean
+          example: true
+        last:
+          type: boolean
+          example: true
+      required: ["content", "page", "size", "totalElements", "totalPages"]
+
+    OrderRequest:
+      type: object
+      properties:
+        customer:
+          $ref: '#/components/schemas/CustomerReference'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+          minItems: 1
+      required: ["customer", "items"]
+
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        orderDate:
+          type: string
+          format: date-time
+          example: "2025-08-14T15:30:00Z"
+        totalPrice:
+          type: number
+          format: float
+          minimum: 0
+          example: 59.98
+        status:
+          type: string
+          enum: ["PLACED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"]
+          example: "PLACED"
+        customer:
+          $ref: '#/components/schemas/CustomerReference'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemResponse'
+      required: ["id", "orderDate", "totalPrice", "status", "customer", "items"]
+
+    OrderItemRequest:
+      type: object
+      properties:
+        book:
+          $ref: '#/components/schemas/BookReference'
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+      required: ["book", "quantity"]
+
+    OrderItemResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 59.98
+        book:
+          $ref: '#/components/schemas/BookResponse'
+      required: ["id", "quantity", "price", "book"]
+
+    CustomerReference:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        username:
+          type: string
+          example: "John Doe"
+      required: ["id", "username"]
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        email:
+          type: string
+          format: email
+          example: "alice.smith@example.com"
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          example: "alice_smith"
+        address:
+          type: string
+          example: "123 Maple Street, Springfield"
+        balance:
+          type: number
+          format: float
+          minimum: 0
+          example: 150.75
+      required: ["id", "email", "username"]
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        isbn:
+          type: string
+          pattern: '^(97[89])?[0-9]{9}[0-9X]$'
+          description: International Standard Book Number (ISBN-10 or ISBN-13)
+          example: "9780451524935"
+        author:
+          type: string
+          minLength: 1
+          example: "George Orwell"
+        title:
+          type: string
+          minLength: 1
+          example: "1984"
+        description:
+          type: string
+          example: "Dystopian novel about totalitarian surveillance"
+        quantity:
+          type: integer
+          minimum: 0
+          example: 100
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 19.99
+        coverImageUrl:
+          type: string
+          description: URL of the book's cover
+          example: "/files/book-1-cover.jpg"
+      required: ["id", "isbn", "title", "author", "price"]
+
+    BookCreateRequest:
+      type: object
+      properties:
+        isbn:
+          type: string
+          pattern: '^(97[89])?[0-9]{9}[0-9X]$'
+          description: International Standard Book Number (ISBN-10 or ISBN-13)
+          example: "9780451524935"
+        author:
+          type: string
+          minLength: 1
+          example: "George Orwell"
+        title:
+          type: string
+          minLength: 1
+          example: "1984"
+        description:
+          type: string
+          example: "Dystopian novel about totalitarian surveillance"
+        quantity:
+          type: integer
+          minimum: 0
+          default: 0
+          example: 100
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 19.99
+      required: ["isbn", "title", "author", "price"]
+
+    BookUpdateRequest:
+      type: object
+      properties:
+        author:
+          type: string
+          minLength: 1
+          example: "George Orwell"
+        title:
+          type: string
+          minLength: 1
+          example: "1984"
+        description:
+          type: string
+          example: "Dystopian novel about totalitarian surveillance"
+        quantity:
+          type: integer
+          minimum: 0
+          example: 100
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 19.99
+
+    BookResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        isbn:
+          type: string
+          pattern: '^(97[89])?[0-9]{9}[0-9X]$'
+          description: International Standard Book Number (ISBN-10 or ISBN-13)
+          example: "9780134685991"
+        author:
+          type: string
+          example: "John Smith"
+        title:
+          type: string
+          example: "Spring Boot Guide"
+        description:
+          type: string
+          example: "Comprehensive guide to Spring Boot development"
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 29.99
+      required: ["id", "isbn", "title", "author", "price"]
+
+    BookReference:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+      required: ["id"]
+
+    Admin:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          example: "admin_user"
+        email:
+          type: string
+          format: email
+          example: "admin@bookstore.com"
+      required: ["id", "username", "email"]
+
+    BookFieldUpdate:
+      type: object
+      properties:
+        field:
+          type: string
+          enum: ["title", "author", "description", "price", "quantity"]
+          example: "price"
+        oldValue:
+          type: string
+          example: "24.99"
+        newValue:
+          type: string
+          example: "19.99"
+      required: ["field", "oldValue", "newValue"]
+
+    CustomError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+          example: false
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-08-23T10:30:00"
+        message:
+          type: string
+          example: "Entity not found"
+        details:
+          type: string
+          example: "uri=/book/999"
+        httpStatus:
+          type: string
+          enum: ["BAD_REQUEST", "UNAUTHORIZED", "FORBIDDEN", "NOT_FOUND", "CONFLICT", "INTERNAL_SERVER_ERROR"]
+          example: "NOT_FOUND"
+      required: ["success", "timestamp", "message", "details", "httpStatus"]
+
+    ValidationError:
+      type: object
+      properties:
+        timeStamp:
+          type: string
+          format: date-time
+          example: "2025-08-23T10:30:00"
+        httpStatus:
+          type: string
+          enum: ["BAD_REQUEST"]
+          example: "BAD_REQUEST"
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ViolationError'
+      required: ["timeStamp", "httpStatus", "violations"]
+
+    ViolationError:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "email"
+        message:
+          type: string
+          example: "must be a well-formed email address"
+      required: ["field", "message"]
+
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          pattern: '^[a-zA-Z0-9_]+'
+          example: "new_user"
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+          example: "securePassword123"
+        email:
+          type: string
+          format: email
+          minLength: 5
+          maxLength: 50
+          example: "newuser@example.com"
+      required: ["username", "password", "email"]
+
+    RegisterResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 103
+        username:
+          type: string
+          example: "new_user"
+        email:
+          type: string
+          format: email
+          example: "newuser@example.com"
+        message:
+          type: string
+          example: "User registered successfully"
+      required: ["id", "username", "email", "message"]
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          example: "john_doe"
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+          example: "mypassword"
+      required: ["username", "password"]
+
+    JwtResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        type:
+          type: string
+          default: "Bearer"
+          example: "Bearer"
+        username:
+          type: string
+          example: "john_doe"
+        role:
+          type: string
+          enum: ["CUSTOMER", "ADMIN"]
+          example: "CUSTOMER"
+      required: ["token", "username", "role"]
+
+    CreateUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          pattern: '^[a-zA-Z0-9_]+'
+          example: "new_admin"
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+          example: "adminPassword123"
+        email:
+          type: string
+          format: email
+          minLength: 5
+          maxLength: 50
+          example: "newadmin@bookstore.com"
+        role:
+          type: string
+          description: Role of the user
+          enum: ["CUSTOMER", "ADMIN"]
+          example: "ADMIN"
+      required: ["username", "password", "email", "role"]
+
+    UserCreatedResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 3
+        username:
+          type: string
+          example: "new_admin"
+        email:
+          type: string
+          format: email
+          example: "newadmin@bookstore.com"
+        role:
+          type: string
+          enum: ["CUSTOMER", "ADMIN"]
+          example: "ADMIN"
+        message:
+          type: string
+          example: "Admin user created successfully"
+      required: ["id", "username", "email", "role", "message"]
+
+    UpdateOrderStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["PLACED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"]
+          example: "SHIPPED"
+      required: ["status"]
+
+    CancelOrderRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Item no longer needed"
+      required: ["reason"]
+
+    FileUploadRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: The image file to upload
+      required: ["file"]
+
+  examples:
+    ordersExample:
+      summary: Example orders response
+      description: A sample response showing paginated orders
+      value:
+        content:
+          - id: 1
+            orderDate: "2025-08-14T15:30:00Z"
+            totalPrice: 59.98
+            status: "PLACED"
+            customer:
+              id: 1
+              username: "John Doe"
+            items:
+              - id: 1
+                quantity: 2
+                price: 59.98
+                book:
+                  id: 1
+                  isbn: "9780134685991"
+                  title: "Spring Boot Guide"
+                  author: "John Smith"
+                  price: 29.99
+        page: 0
+        size: 10
+        totalElements: 1
+        totalPages: 1
+        first: true
+        last: true
+
+    booksExample:
+      summary: Example books response
+      description: A sample response showing paginated books
+      value:
+        content:
+          - id: 1
+            isbn: "9780451524935"
+            author: "George Orwell"
+            title: "1984"
+            description: "Dystopian novel about totalitarian surveillance"
+            quantity: 100
+            price: 19.99
+          - id: 2
+            isbn: "9780439708180"
+            author: "J.K. Rowling"
+            title: "Harry Potter and the Sorcerer's Stone"
+            description: "First book in the Harry Potter series"
+            quantity: 200
+            price: 24.99
+        page: 0
+        size: 10
+        totalElements: 2
+        totalPages: 1
+        first: true
+        last: true
+
+    customerExample:
+      summary: Single customer example
+      description: Example of a single customer response
+      value:
+        id: 101
+        email: "alice.smith@example.com"
+        username: "alice_smith"
+        address: "123 Maple Street, Springfield"
+        balance: 150.75
+
+    customersExample:
+      summary: Example customers response
+      description: A sample response showing paginated customers
+      value:
+        content:
+          - id: 101
+            email: "alice.smith@example.com"
+            username: "alice_smith"
+            address: "123 Maple Street, Springfield"
+            balance: 150.75
+          - id: 102
+            email: "bob.johnson@example.com"
+            username: "bob_johnson"
+            address: "456 Oak Avenue, Springfield"
+            balance: 85.50
+        page: 0
+        size: 10
+        totalElements: 2
+        totalPages: 1
+        first: true
+        last: true
+
+    adminExample:
+      summary: Single admin example
+      description: Example of a single admin response
+      value:
+        id: 1
+        username: "admin_user"
+        email: "admin@bookstore.com"
+
+    adminsExample:
+      summary: Example admins response
+      description: A sample response showing paginated admins
+      value:
+        content:
+          - id: 1
+            username: "admin_user"
+            email: "admin@bookstore.com"
+          - id: 2
+            username: "super_admin"
+            email: "superadmin@bookstore.com"
+        page: 0
+        size: 10
+        totalElements: 2
+        totalPages: 1
+        first: true
+        last: true
+
+    bookExample:
+      summary: Single book example
+      description: Example of a single book response
+      value:
+        id: 1
+        isbn: "9780451524935"
+        author: "George Orwell"
+        title: "1984"
+        description: "Dystopian novel about totalitarian surveillance"
+        quantity: 100
+        price: 19.99
+
+    bookFieldUpdateExample:
+      summary: Book field update example
+      description: Example of a book field update request
+      value:
+        field: "price"
+        oldValue: "24.99"
+        newValue: "19.99"
+
+    orderRequestExample:
+      summary: Order request example
+      description: Example of placing a new order
+      value:
+        customer:
+          id: 1
+          username: "john_doe"
+        items:
+          - book:
+              id: 1
+            quantity: 2
+          - book:
+              id: 2
+            quantity: 1
+
+    registerRequestExample:
+      summary: Register request example
+      description: Example of user registration request
+      value:
+        username: "new_user"
+        password: "securePassword123"
+        email: "newuser@example.com"
+
+    registerResponseExample:
+      summary: Register response example
+      description: Example of successful user registration response
+      value:
+        id: 103
+        username: "new_user"
+        email: "newuser@example.com"
+        message: "User registered successfully"
+
+    loginRequestExample:
+      summary: Login request example
+      description: Example of user login request
+      value:
+        username: "john_doe"
+        password: "mypassword"
+
+    jwtResponseExample:
+      summary: JWT response example
+      description: Example of successful login response with JWT token
+      value:
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        type: "Bearer"
+        username: "john_doe"
+        role: "CUSTOMER"
+
+    createUserRequestExample:
+      summary: Create user request example
+      description: Example of admin creating a new user
+      value:
+        username: "new_admin"
+        password: "adminPassword123"
+        email: "newadmin@bookstore.com"
+        role: "ADMIN"
+
+    userCreatedResponseExample:
+      summary: User created response example
+      description: Example of successful user creation response
+      value:
+        id: 3
+        username: "new_admin"
+        email: "newadmin@bookstore.com"
+        role: "ADMIN"
+        message: "Admin user created successfully"
+
+    errorNotFoundExample:
+      summary: Not found error example
+      description: Example of a 404 error response
+      value:
+        success: false
+        timestamp: "2025-08-23T10:30:00"
+        message: "Entity not found"
+        details: "uri=/book/999"
+        httpStatus: "NOT_FOUND"
+
+    errorValidationExample:
+      summary: Validation error example
+      description: Example of validation errors
+      value:
+        timeStamp: "2025-08-23T10:30:00"
+        httpStatus: "BAD_REQUEST"
+        violations:
+          - field: "email"
+            message: "must be a well-formed email address"
+          - field: "username"
+            message: "size must be between 3 and 20"
+
+    errorUnauthorizedExample:
+      summary: Unauthorized error example
+      description: Example of a 401 error response
+      value:
+        success: false
+        timestamp: "2025-08-23T10:30:00"
+        message: "Bad credentials"
+        details: "uri=/auth/login"
+        httpStatus: "UNAUTHORIZED"
+
+    errorForbiddenExample:
+      summary: Forbidden error example
+      description: Example of a 403 error response
+      value:
+        success: false
+        timestamp: "2025-08-23T10:30:00"
+        message: "Access is denied"
+        details: "uri=/admin/create-user"
+        httpStatus: "FORBIDDEN"
+
+    errorConflictExample:
+      summary: Conflict error example
+      description: Example of a 409 error response
+      value:
+        success: false
+        timestamp: "2025-08-23T10:30:00"
+        message: "Username already exists"
+        details: "uri=/auth/register"
+        httpStatus: "CONFLICT"
+
+    errorBadRequestExample:
+      summary: Bad request error example
+      description: Example of a 400 error response
+      value:
+        success: false
+        timestamp: "2025-08-23T10:30:00"
+        message: "Invalid request parameters"
+        details: "uri=/order"
+        httpStatus: "BAD_REQUEST"

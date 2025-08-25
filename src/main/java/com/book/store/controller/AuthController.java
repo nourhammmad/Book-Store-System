@@ -1,11 +1,13 @@
 package com.book.store.controller;
 
+import com.book.store.entity.User;
 import com.book.store.service.AuthService;
 import com.book.store.service.JwtService;
 import com.book.store.server.api.AuthApi;
 import com.book.store.server.dto.JwtResponseApiDto;
 import com.book.store.server.dto.LoginRequestApiDto;
 import com.book.store.server.dto.RegisterRequestApiDto;
+import com.book.store.server.dto.RegisterResponseApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,8 +42,16 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    public ResponseEntity<Void> register(RegisterRequestApiDto request) {
-        authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail());
-        return ResponseEntity.status(201).build();
+    public ResponseEntity<RegisterResponseApiDto> register(RegisterRequestApiDto request) {
+        User registeredUser = authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail());
+
+        RegisterResponseApiDto response = new RegisterResponseApiDto(
+                registeredUser.getId(),
+                registeredUser.getUsername(),
+                registeredUser.getEmail(),
+                "User registered successfully"
+        );
+
+        return ResponseEntity.status(201).body(response);
     }
 }
