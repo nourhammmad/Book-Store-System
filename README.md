@@ -226,6 +226,43 @@ erDiagram
 
 When an Admin updates a book, the system first checks if the book exists. If found, it compares the old and new values, creates a BookHistory entry for audit purposes, saves it, and then updates the book record. If the book is not found, an exception is thrown.
 ```mermaid
+%%{init:{'theme':'base','themeVariables':{'primaryColor':'#ffcccc',
+'edgeColor':'#cc0000','primaryTextColor':'#000000',
+'lineColor':'#cc0000'}}
+}%%
+sequenceDiagram
+    actor Admin
+    participant AdminController
+    participant AuthenticationContext
+    participant CustomUserDetails
+    participant AdminService
+    participant BookRepository
+    participant BookHistoryService
+
+    Admin->>AdminController: PATCH /admin/book/{id}/update-field
+    AdminController->>AuthenticationContext: get current user
+    AuthenticationContext->>CustomUserDetails: getUser()
+    CustomUserDetails-->>AuthenticationContext: Admin
+    AuthenticationContext-->>AdminController: Admin
+
+    AdminController->>AdminService: updateBookField(id, field, newValue, adminId)
+    AdminService->>BookRepository: findById(id)
+
+    alt Book found
+        BookRepository-->>AdminService: updatedBook
+        AdminService->>BookRepository: save(updatedBook)
+        AdminService->>BookHistoryService: logChange(id, field, newValue, adminId)
+        AdminService-->>AdminController: updatedBook
+        AdminController-->>Admin: success response
+    else Book not found
+        AdminService-->>AdminController: throw "Book not found"
+        AdminController-->>Admin: error response
+    end
+
+```
+## 📗 Customer Places Order Sequence Diagram
+When a Customer places an order, the system validates the customer, checks if the book is available in stock, reduces the quantity, creates an OrderItem, and saves the order. If the book is out of stock, the system throws an exception.
+```mermaid
 sequenceDiagram
     actor Customer
     participant OrderController
@@ -269,40 +306,6 @@ sequenceDiagram
 
         OrderService -->> OrderController: Created Order
         OrderController -->> Customer: 201 Created + OrderResponseApiDto
-    end
-```
-## 📗 Customer Places Order Sequence Diagram
-When a Customer places an order, the system validates the customer, checks if the book is available in stock, reduces the quantity, creates an OrderItem, and saves the order. If the book is out of stock, the system throws an exception.
-```mermaid
-sequenceDiagram
-    title Customer Places Order
-
-    participant Customer
-    participant OrderService
-    participant AuthenticationContext
-    participant CustomUserDetails
-    participant BookRepository
-    participant OrderRepository
-
-    Customer ->> OrderService: placeOrder(orderRequest)
-    OrderService ->> AuthenticationContext: get current user
-    AuthenticationContext -->> OrderService: Authentication
-    OrderService ->> CustomUserDetails: getCustomer()
-    CustomUserDetails -->> OrderService: Customer
-    OrderService ->> BookRepository: findById(bookId)
-    BookRepository -->> OrderService: Book
-    OrderService ->> OrderRepository: save(order)
-    OrderRepository -->> OrderService: Order
-    OrderService -->> Customer: order confirmation
-
-    alt Book in stock
-        OrderService ->> Book: reduce quantity
-        OrderService ->> OrderItem: create item with book, quantity, price
-        OrderService ->> OrderRepository: save(order)
-        OrderRepository -->> OrderService: Order
-        OrderService -->> Customer: order confirmation
-    else Out of stock
-        OrderService -->> Customer: throw "Insufficient stock"
     end
 ```
 ---
