@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class CustomUserDetails implements UserDetails {
 
@@ -64,5 +65,12 @@ public class CustomUserDetails implements UserDetails {
 
     public User getUser() {
         return user;
+    }
+
+    public Optional<Customer> getCustomer() {
+        if (user instanceof Customer customer) {
+            return Optional.of(customer);
+        }
+        return Optional.empty();
     }
 }

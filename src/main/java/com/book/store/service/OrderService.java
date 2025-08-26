@@ -47,8 +47,8 @@ public class OrderService {
         CustomUserDetails userDetails =
                 (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Customer customer = customerRepository.findById(userDetails.getUser().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found for user: " + userDetails.getUser().getId()));
+        Customer customer = userDetails.getCustomer()
+                .orElseThrow(() -> new EntityNotFoundException("Authenticated user is not a customer"));
 
         Order order = new Order();
         order.setCustomer(customer);
