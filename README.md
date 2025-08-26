@@ -314,39 +314,39 @@ cd Book-Store-System
 ---
 
 ## 📚 Books
-| Method | Endpoint            | Description                     | Access |
-|--------|---------------------|---------------------------------|--------|
-| GET    | `/book`             | Get all books (paginated)       | Public |
-| GET    | `/book/{id}`        | Get book by ID                  | Public |
-| GET    | `/book/isbn/{isbn}` | Get book by ISBN                | Public |
-| POST   | `/book`             | Add a new book                  | Admin  |
-| DELETE | `/book/{id}`        | Delete a book                   | Admin  |
-| POST   | `/book/{id}/cover`  | Upload a cover image for a book | Admin  |
-
+| Method | Endpoint                   | Description                        | Access   |
+|--------|----------------------------|------------------------------------|----------|
+| GET    | `/customer/book`           | Get all books (paginated)          | Customer |
+| GET    | `/customer/book/{id}`      | Get book by ID                     | Customer |
+| GET    | `/customer/book/isbn/{isbn}` | Get book by ISBN                  | Customer |
+| POST   | `/admin/book`              | Create a new book                  | Admin    |
+| DELETE | `/admin/book/{id}`         | Delete a book by ID                | Admin    |
+| POST   | `/admin/book/{id}/cover`   | Upload a cover image for a book    | Admin    |
 
 ---
 
 ## 👤 Customers
-| Method | Endpoint         | Description                   | Access |
-|--------|------------------|-------------------------------|--------|
-| GET    | `/customer`      | Get all customers (paginated) | Admin  |
-| GET    | `/customer/{id}` | Get customer by ID            | Admin  |
-| DELETE | `/customer/{id}` | Delete customer account       | Admin  |
+| Method | Endpoint              | Description                   | Access |
+|--------|-----------------------|-------------------------------|--------|
+| GET    | `/admin/customer`     | Get all customers (paginated) | Admin  |
+| GET    | `/admin/customer/{id}`| Get customer by ID            | Admin  |
+| DELETE | `/admin/customer/{id}`| Delete customer by ID         | Admin  |
 
 ---
 
 ## 🛒 Orders
-| Method | Endpoint             | Description                           | Access   |
-|--------|----------------------|---------------------------------------|----------|
-| GET    | `/admin/order`       | Get all orders (paginated)            | Admin    |
-| GET    | `/admin/order/{id}`  | Get order by ID                       | Admin    |
-| PUT    | `/admin/order/{id}`  | Update order status                   | Admin    |
-| DELETE | `/admin/order/{id}`  | Delete order by ID                    | Admin    |
-| POST   | `/order`             | Place a new order                     | Customer |
-| POST   | `/order/{id}/cancel` | Cancel an order by ID                 | Customer |
-| GET    | `/order/customer`    | Get all orders for logged-in customer | Customer |
+| Method | Endpoint                   | Description                           | Access   |
+|--------|----------------------------|---------------------------------------|----------|
+| GET    | `/admin/order`             | Get all orders (paginated)            | Admin    |
+| GET    | `/admin/order/{id}`        | Get order by ID                       | Admin    |
+| PATCH  | `/admin/order/{id}`        | Update order status                   | Admin    |
+| DELETE | `/admin/order/{id}`        | Delete order by ID                    | Admin    |
+| GET    | `/customer/order`          | Get all orders for logged-in customer | Customer |
+| POST   | `/customer/order`          | Place a new order                     | Customer |
+| PATCH  | `/customer/order/{id}`     | Cancel an order by ID                 | Customer |
 
 ---
+
 ## 👨‍💼 Admins
 | Method | Endpoint                        | Description                   | Access |
 |--------|---------------------------------|-------------------------------|--------|
@@ -357,11 +357,11 @@ cd Book-Store-System
 | PATCH  | `/admin/book/{id}/update-field` | Log a book field update       | Admin  |
 
 ---
+
 ## 📂 Files
 | Method | Endpoint            | Description                | Access |
 |--------|---------------------|----------------------------|--------|
-| GET    | `/files/{filename}` | Retrieve a book cover file | Public |
-
+| GET    | `/files/{filename}` | Retrieve a book cover file | Auth   |
 ---
 
 🔐 **Note:**  
