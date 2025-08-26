@@ -1,4 +1,4 @@
-<img width="1782" height="926" alt="mermaid-diagram-2025-08-27-003551" src="https://github.com/user-attachments/assets/bb958502-8a7d-4202-a84a-6fe2501b706c" /># 📚 Book Store Management System
+
 
 The **Book Store Management System** is a backend application built with **Java** and **Spring Boot** that provides a secure and scalable way to manage a bookstore.
 
