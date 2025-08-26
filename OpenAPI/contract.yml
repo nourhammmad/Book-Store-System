@@ -948,14 +948,12 @@ components:
     OrderRequest:
       type: object
       properties:
-        customer:
-          $ref: '#/components/schemas/CustomerReference'
         items:
           type: array
           items:
             $ref: '#/components/schemas/OrderItemRequest'
           minItems: 1
-      required: ["customer", "items"]
+      required: ["items"]
 
     OrderResponse:
       type: object
