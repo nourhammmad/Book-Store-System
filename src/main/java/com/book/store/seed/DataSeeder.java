@@ -6,6 +6,7 @@ import com.book.store.repository.AdminRepository;
 import com.book.store.repository.UserRepository;
 
 import com.book.store.entity.Book;
+import com.book.store.security.CustomUserDetails;
 import com.book.store.server.dto.CustomerReferenceApiDto;
 import com.book.store.server.dto.BookReferenceApiDto;
 import com.book.store.server.dto.OrderRequestApiDto;
@@ -50,11 +51,7 @@ public class DataSeeder {
         System.out.println("👤 Seeded customer: " + savedCustomer.getUsername());
 
         // Set up authentication context for the seeded customer
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-            savedCustomer.getUsername(),
-            savedCustomer.getPassword(),
-            List.of()
-        );
+        CustomUserDetails userDetails = new CustomUserDetails(savedCustomer);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(
             userDetails,
