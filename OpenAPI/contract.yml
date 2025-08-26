@@ -27,6 +27,8 @@ paths:
     get:
       tags:
         - Orders
+      security:
+        - bearerAuth: [ ]
       summary: Find all orders
       description: Retrieve a paginated list of orders
       operationId: findAllOrders
@@ -64,6 +66,8 @@ paths:
     get:
       tags:
         - Orders
+      security:
+        - bearerAuth: [ ]
       summary: Find Previous orders For Logged In Customer
       description: Retrieve all orders by logged-in customer id
       operationId: findPreviousOrders
@@ -85,6 +89,8 @@ paths:
     post:
       tags:
         - Orders
+      security:
+        - bearerAuth: [ ]
       summary: Place a new order
       description: Create a new order with customer, book, and items
       operationId: placeOrder
@@ -137,6 +143,8 @@ paths:
     patch:
       tags:
         - Orders
+      security:
+        - bearerAuth: [ ]
       summary: Cancel an order
       description: Cancel a specific order by its ID
       operationId: cancelOrder
@@ -180,6 +188,8 @@ paths:
     get:
       tags:
         - Orders
+      security:
+        - bearerAuth: [ ]
       summary: Find order by ID
       description: Retrieve a specific order by its ID
       operationId: findOrderById
@@ -207,6 +217,8 @@ paths:
     delete:
       tags:
         - Orders
+      security:
+        - bearerAuth: [ ]
       summary: Delete order by ID
       description: Delete a specific order by its ID
       operationId: deleteOrderById
@@ -230,6 +242,8 @@ paths:
     put:
       tags:
         - Orders
+      security:
+        - bearerAuth: [ ]
       summary: Update order status
       description: Update the status of a specific order by its ID
       operationId: updateOrderStatus
@@ -288,6 +302,8 @@ paths:
       summary: Get all customers (paginated)
       tags:
         - Customers
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: page
           in: query
@@ -317,6 +333,8 @@ paths:
       summary: Get customer by ID
       tags:
         - Customers
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -345,6 +363,8 @@ paths:
       summary: Delete customer by ID
       tags:
         - Customers
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -368,6 +388,8 @@ paths:
       summary: Get all admins (paginated)
       tags:
         - Admins
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: page
           in: query
@@ -397,6 +419,8 @@ paths:
       summary: Get admin by ID
       tags:
         - Admins
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -425,6 +449,8 @@ paths:
       summary: Delete admin by ID
       tags:
         - Admins
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -447,6 +473,8 @@ paths:
       summary: Create a new user with role (Admin only)
       tags:
         - Admins
+      security:
+        - bearerAuth: [ ]
       operationId: createUserWithRole
       requestBody:
         required: true
@@ -495,6 +523,8 @@ paths:
       summary: Log a book field update
       tags:
         - Admins
+      security:
+        - bearerAuth: [ ]
       operationId: logBookFieldUpdate
       parameters:
         - in: path
@@ -528,6 +558,8 @@ paths:
     get:
       tags:
         - Books
+      security:
+        - bearerAuth: [ ]
       summary: Find all books
       description: Retrieve a paginated list of books
       operationId: findAllBooks
@@ -558,6 +590,8 @@ paths:
     post:
       tags:
         - Books
+      security:
+        - bearerAuth: [ ]
       summary: Create a new book
       description: Add a new book to the system
       operationId: createBook
@@ -588,6 +622,8 @@ paths:
     get:
       tags:
         - Books
+      security:
+        - bearerAuth: [ ]
       summary: Find book by ID
       description: Retrieve a specific book by ID
       operationId: findBookById
@@ -618,6 +654,8 @@ paths:
     delete:
       tags:
         - Books
+      security:
+        - bearerAuth: [ ]
       summary: Delete book by ID
       description: Delete a specific book
       operationId: deleteBookById
@@ -642,6 +680,8 @@ paths:
     post:
       tags:
         - Books
+      security:
+        - bearerAuth: [ ]
       summary: Upload a cover image for a book
       description: Uploads a cover image file for the specified book and updates its cover image URL
       operationId: uploadBookCover
@@ -678,6 +718,8 @@ paths:
     get:
       tags:
         - Books
+      security:
+        - bearerAuth: [ ]
       summary: Find book by ISBN
       description: Retrieve a specific book by its ISBN
       operationId: findBookByIsbn
@@ -788,6 +830,8 @@ paths:
     get:
       tags:
         - Files
+      security:
+        - bearerAuth: [ ]
       summary: Serve a book cover file
       description: Returns the requested book cover image file by filename
       operationId: serveFile
