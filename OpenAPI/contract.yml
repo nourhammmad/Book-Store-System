@@ -1058,7 +1058,7 @@ components:
           minimum: 0
           example: 59.98
         book:
-          $ref: '#/components/schemas/Book'
+          $ref: '#/components/schemas/BookResponse'
       required: ["id", "quantity", "price", "book"]
 
     CustomerReference:
@@ -1191,6 +1191,34 @@ components:
           format: float
           minimum: 0
           example: 19.99
+
+    BookResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        isbn:
+          type: string
+          pattern: '^(97[89])?[0-9]{9}[0-9X]$'
+          description: International Standard Book Number (ISBN-10 or ISBN-13)
+          example: "9780134685991"
+        author:
+          type: string
+          example: "John Smith"
+        title:
+          type: string
+          example: "Spring Boot Guide"
+        description:
+          type: string
+          example: "Comprehensive guide to Spring Boot development"
+        price:
+          type: number
+          format: float
+          minimum: 0
+          example: 29.99
+      required: ["id", "isbn", "title", "author", "price"]
 
     BookReference:
       type: object
