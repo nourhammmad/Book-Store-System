@@ -102,6 +102,13 @@ class OrderServiceTest {
     }
 
     private void setupSecurityContext() {
+        when(customUserDetails.getCustomer()).thenReturn(Optional.of(customer));
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(customUserDetails);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
+    private void setupSecurityContextForPreviousOrders() {
         when(customUserDetails.getUser()).thenReturn(customer);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(customUserDetails);
@@ -141,7 +148,6 @@ class OrderServiceTest {
     @Test
     void placeOrderThrowsExceptionWhenBookNotFound() {
         setupSecurityContext();
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception = assertThrows(
@@ -160,7 +166,6 @@ class OrderServiceTest {
         orderRequestApiDto.getItems().get(0).setQuantity(5);
 
         setupSecurityContext();
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         IllegalStateException exception = assertThrows(
@@ -178,7 +183,6 @@ class OrderServiceTest {
         customer.setBalance(10.0f); // Not enough for 50.0f order
 
         setupSecurityContext();
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         when(orderMapper.toEntity(any(OrderItemRequestApiDto.class))).thenReturn(orderItem);
 
@@ -197,7 +201,6 @@ class OrderServiceTest {
         orderRequestApiDto.getItems().get(0).setQuantity(0);
 
         setupSecurityContext();
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         IllegalArgumentException exception = assertThrows(
@@ -215,7 +218,6 @@ class OrderServiceTest {
         orderRequestApiDto.getItems().get(0).setQuantity(-5);
 
         setupSecurityContext();
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         IllegalArgumentException exception = assertThrows(
@@ -309,7 +311,7 @@ class OrderServiceTest {
 
     @Test
     void getPreviousOrdersReturnsUserOrders() {
-        setupSecurityContext();
+        setupSecurityContextForPreviousOrders();
         when(orderRepository.findAllByCustomerId(1L)).thenReturn(List.of(order));
 
         List<Order> result = orderService.getPreviousOrders();
@@ -322,7 +324,7 @@ class OrderServiceTest {
 
     @Test
     void getPreviousOrdersReturnsEmptyListWhenNoOrders() {
-        setupSecurityContext();
+        setupSecurityContextForPreviousOrders();
         when(orderRepository.findAllByCustomerId(1L)).thenReturn(List.of());
 
         List<Order> result = orderService.getPreviousOrders();
