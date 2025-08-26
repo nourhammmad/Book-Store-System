@@ -126,28 +126,31 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 When an Admin updates a book, the system first checks if the book exists. If found, it compares the old and new values, creates a BookHistory entry for audit purposes, saves it, and then updates the book record. If the book is not found, an exception is thrown.
 ```mermaid
 sequenceDiagram
-    title Admin Updates Book (with History Tracking)
+    title Admin Updates Book Field (with History Tracking)
 
     participant Admin
-    participant BookService
+    participant AdminController
+    participant AuthenticationContext
+    participant CustomUserDetails
+    participant AdminService
     participant BookRepository
-    participant BookHistoryRepository
-    participant OrderService
-    participant OrderRepository
-    participant Customer
+    participant BookHistoryService
 
-    Admin ->> BookService: updateBook(bookId, updatedBookDto)
-    BookService ->> BookRepository: findById(bookId)
-    BookRepository -->> BookService: Book
-
+    Admin ->> AdminController: PATCH /admin/book/{id}/update-field
+    AdminController ->> AuthenticationContext: get current user
+    AuthenticationContext -->> AdminController: Authentication
+    AdminController ->> CustomUserDetails: getUser()
+    CustomUserDetails -->> AdminController: Admin
+    AdminController ->> AdminService: updateBookFields(id, field, oldValue, newValue, adminId)
+    AdminService ->> BookRepository: findById(id)
     alt Book found
-        BookService ->> Book: compare old vs new values
-        BookService ->> BookHistoryRepository: save(history)
-        BookService ->> BookRepository: save(updatedBook)
-        BookRepository -->> BookService: updatedBook
-        BookService -->> Admin: updatedBook
+        AdminService ->> BookRepository: save(updatedBook)
+        AdminService ->> BookHistoryService: logChange(id, field, oldValue, newValue, adminId)
+        AdminService -->> AdminController: updatedBook
+        AdminController -->> Admin: success response
     else Book not found
-        BookService -->> Admin: throw "Book not found"
+        AdminService -->> AdminController: throw "Book not found"
+        AdminController -->> Admin: error response
     end
 ```
 ## 📗 Customer Places Order
@@ -158,16 +161,21 @@ sequenceDiagram
 
     participant Customer
     participant OrderService
-    participant CustomerRepository
+    participant AuthenticationContext
+    participant CustomUserDetails
     participant BookRepository
     participant OrderRepository
-    participant OrderItem
 
-    Customer ->> OrderService: placeOrder(customerId, bookId, quantity)
-    OrderService ->> CustomerRepository: findById(customerId)
-    CustomerRepository -->> OrderService: Customer
+    Customer ->> OrderService: placeOrder(orderRequest)
+    OrderService ->> AuthenticationContext: get current user
+    AuthenticationContext -->> OrderService: Authentication
+    OrderService ->> CustomUserDetails: getCustomer()
+    CustomUserDetails -->> OrderService: Customer
     OrderService ->> BookRepository: findById(bookId)
     BookRepository -->> OrderService: Book
+    OrderService ->> OrderRepository: save(order)
+    OrderRepository -->> OrderService: Order
+    OrderService -->> Customer: order confirmation
 
     alt Book in stock
         OrderService ->> Book: reduce quantity
@@ -178,7 +186,6 @@ sequenceDiagram
     else Out of stock
         OrderService -->> Customer: throw "Insufficient stock"
     end
-
 ```
 ---
 
