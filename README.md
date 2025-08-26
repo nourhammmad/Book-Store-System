@@ -1,4 +1,4 @@
-# 📚 Book Store Management System
+<img width="1782" height="926" alt="mermaid-diagram-2025-08-27-003551" src="https://github.com/user-attachments/assets/bb958502-8a7d-4202-a84a-6fe2501b706c" /># 📚 Book Store Management System
 
 The **Book Store Management System** is a backend application built with **Java** and **Spring Boot** that provides a secure and scalable way to manage a bookstore.
 
@@ -227,31 +227,48 @@ erDiagram
 When an Admin updates a book, the system first checks if the book exists. If found, it compares the old and new values, creates a BookHistory entry for audit purposes, saves it, and then updates the book record. If the book is not found, an exception is thrown.
 ```mermaid
 sequenceDiagram
-    title Admin Updates Book Field (with History Tracking)
+    actor Customer
+    participant OrderController
+    participant OrderService
+    participant SecurityContext as SecurityContextHolder
+    participant CustomerRepo as CustomerRepository
+    participant BookRepo as BookRepository
+    participant OrderRepo as OrderRepository
 
-    participant Admin
-    participant AdminController
-    participant AuthenticationContext
-    participant CustomUserDetails
-    participant AdminService
-    participant BookRepository
-    participant BookHistoryService
+    Customer ->> OrderController: POST /orders (OrderRequestApiDto)
+    OrderController ->> OrderService: placeOrder(orderRequestApiDto)
 
-    Admin ->> AdminController: PATCH /admin/book/{id}/update-field
-    AdminController ->> AuthenticationContext: get current user
-    AuthenticationContext -->> AdminController: Authentication
-    AdminController ->> CustomUserDetails: getUser()
-    CustomUserDetails -->> AdminController: Admin
-    AdminController ->> AdminService: updateBookFields(id, field, oldValue, newValue, adminId)
-    AdminService ->> BookRepository: findById(id)
-    alt Book found
-        AdminService ->> BookRepository: save(updatedBook)
-        AdminService ->> BookHistoryService: logChange(id, field, oldValue, newValue, adminId)
-        AdminService -->> AdminController: updatedBook
-        AdminController -->> Admin: success response
-    else Book not found
-        AdminService -->> AdminController: throw "Book not found"
-        AdminController -->> Admin: error response
+    OrderService ->> SecurityContext: Get authenticated user
+    SecurityContext -->> OrderService: CustomUserDetails with Customer
+
+    OrderService ->> CustomerRepo: Fetch Customer
+    CustomerRepo -->> OrderService: Customer
+
+    loop For each item in order
+        OrderService ->> BookRepo: findById(bookId)
+        BookRepo -->> OrderService: Book
+
+        alt Book quantity insufficient
+            OrderService -->> OrderController: Throw IllegalStateException
+            OrderController -->> Customer: 400 Bad Request (Out of Stock)
+        else Book quantity sufficient
+            OrderService ->> BookRepo: save(updatedBook) (decrement stock)
+        end
+    end
+
+    alt Customer balance insufficient
+        OrderService -->> OrderController: Throw IllegalStateException
+        OrderController -->> Customer: 400 Bad Request (Insufficient Balance)
+    else Sufficient balance
+        OrderService ->> CustomerRepo: save(updatedCustomer) (deduct balance)
+        OrderService ->> OrderRepo: save(order)
+        OrderRepo -->> OrderService: Saved Order
+
+        OrderService ->> OrderRepo: Verify order persisted
+        OrderRepo -->> OrderService: Confirmation (exists)
+
+        OrderService -->> OrderController: Created Order
+        OrderController -->> Customer: 201 Created + OrderResponseApiDto
     end
 ```
 ## 📗 Customer Places Order Sequence Diagram
