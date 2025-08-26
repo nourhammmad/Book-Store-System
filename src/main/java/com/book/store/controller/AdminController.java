@@ -1,8 +1,10 @@
 package com.book.store.controller;
 
 import com.book.store.entity.Admin;
+import com.book.store.entity.Book;
 import com.book.store.entity.User;
 import com.book.store.mapper.AdminMapper;
+import com.book.store.mapper.BookMapper;
 import com.book.store.server.dto.*;
 import com.book.store.service.AdminService;
 import com.book.store.service.AuthService;
@@ -23,6 +25,7 @@ public class AdminController implements AdminsApi {
     private final AdminService adminService;
     private final AuthService authService;
     private final AdminMapper adminMapper;
+    private final BookMapper bookMapper;
 
     @Override
     public ResponseEntity<PaginatedAdminResponseApiDto> adminGet(Integer page, Integer size) {
@@ -59,18 +62,18 @@ public class AdminController implements AdminsApi {
     }
 
     @Override
-    public ResponseEntity<Void> logBookFieldUpdate(Long id, BookFieldUpdateApiDto bookFieldUpdateApiDto) {
+    public ResponseEntity<BookApiDto> logBookFieldUpdate(Long id, BookFieldUpdateApiDto bookFieldUpdateApiDto) {
         CustomUserDetails userDetails =
                 (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        adminService.updateBookFields(
+        Book updatedBook = adminService.updateBookFields(
                 id,
                 bookFieldUpdateApiDto.getField().getValue(),
                 bookFieldUpdateApiDto.getOldValue(),
                 bookFieldUpdateApiDto.getNewValue(),
                 userDetails.getUser().getId()
         );
-
-        return ResponseEntity.ok().build();
+        BookApiDto bookApiDto = bookMapper.toDto(updatedBook);
+        return ResponseEntity.ok(bookApiDto);
     }
 }

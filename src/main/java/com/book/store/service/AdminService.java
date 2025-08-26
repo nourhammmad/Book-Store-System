@@ -1,6 +1,7 @@
 package com.book.store.service;
 
 import com.book.store.entity.Admin;
+import com.book.store.entity.Book;
 import com.book.store.mapper.AdminMapper;
 import com.book.store.repository.*;
 import com.book.store.server.dto.AdminApiDto;
@@ -62,7 +63,7 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Admin with ID " + id + " not found"));
     }
 
-    public void updateBookFields(Long entityId, String field, String oldValue, String newValue, Long changedBy) {
+    public Book updateBookFields(Long entityId, String field, String oldValue, String newValue, Long changedBy) {
         if (entityId == null) {
             throw new IllegalArgumentException("entityId is null");
         }
@@ -80,6 +81,7 @@ public class AdminService {
         switch (normalizedField) {
             case "title":
             case "author":
+            case "isbn":
             case "description":
                 break;
             case "price":
@@ -100,10 +102,11 @@ public class AdminService {
                 throw new IllegalArgumentException("Field '" + field + "' cannot be updated");
         }
 
-        bookRepository.findById(entityId)
+        Book updatedBook = bookRepository.findById(entityId)
                 .map(book -> {
                     switch (normalizedField) {
                         case "title" -> book.setTitle(newValue);
+                        case "isbn" -> book.setIsbn(newValue);
                         case "price" -> book.setPrice(Float.parseFloat(newValue));
                         case "author" -> book.setAuthor(newValue);
                         case "quantity" -> book.setQuantity(Integer.parseInt(newValue));
@@ -114,5 +117,7 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id " + entityId));
 
         bookHistoryService.logChange(entityId, field, oldValue, newValue, changedBy);
+
+        return updatedBook;
     }
 }
