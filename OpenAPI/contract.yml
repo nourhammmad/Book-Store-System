@@ -133,8 +133,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-  /order/{id}/cancel:
-    post:
+  /order/{id}:
+    patch:
       tags:
         - Orders
       summary: Cancel an order
