@@ -3,6 +3,7 @@ package com.book.store.controller;
 import com.book.store.entity.Book;
 import com.book.store.mapper.BookMapper;
 import com.book.store.server.dto.BookCreateRequestApiDto;
+import com.book.store.server.dto.FileUploadResponseApiDto;
 import com.book.store.server.dto.PaginatedBookResponseApiDto;
 import com.book.store.service.BookService;
 import com.book.store.server.api.BooksApi;
@@ -58,7 +59,7 @@ public class BookController implements BooksApi {
     }
 
     @PostMapping(value = "/book/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadBookCover(
+    public ResponseEntity<FileUploadResponseApiDto> uploadBookCover(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
 
@@ -72,11 +73,12 @@ public class BookController implements BooksApi {
             Book book = bookService.getBookById(id);
             book.setCoverImageUrl(coverUrl);
             bookService.createBook(book); // This will update since ID exists
+            FileUploadResponseApiDto responseDto = new FileUploadResponseApiDto();
+            responseDto.setUrl(coverUrl);
 
-            return ResponseEntity.ok(coverUrl);
+            return ResponseEntity.ok(responseDto);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload file: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

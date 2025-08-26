@@ -105,7 +105,6 @@ public class DataSeeder {
         OrderItemRequestApiDto orderItem = new OrderItemRequestApiDto(bookRef, 1);
 
         return new OrderRequestApiDto(
-            customerRef,
                 List.of(orderItem)
         );
     }

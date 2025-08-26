@@ -703,10 +703,9 @@ paths:
         '200':
           description: Successfully uploaded the cover image
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                description: URL of the uploaded cover image
+                $ref: '#/components/schemas/FileUploadResponse'
         '404':
           description: Book not found
           content:
@@ -1462,6 +1461,13 @@ components:
           format: binary
           description: The image file to upload
       required: ["file"]
+
+    FileUploadResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          example: "/files/3f1e2d3c-4b5a-6789-0abc-def123456789_cover.jpg"
 
   examples:
     ordersExample:

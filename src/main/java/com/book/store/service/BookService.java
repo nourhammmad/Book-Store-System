@@ -128,7 +128,7 @@ public class BookService {
             throw new IllegalArgumentException("File is empty");
         }
 
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path uploadPath = Paths.get(UPLOAD_DIR);
 
         if (!Files.exists(uploadPath)) {
