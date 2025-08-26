@@ -28,17 +28,18 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 1. [✨ Features](#-features)
 2. [🛠️ Tech Stack](#️-tech-stack)
 3. [🏗️ Architecture Overview](#️-architecture-overview)
-    - [📘 Admin Updates Book (with History Tracking)](#-admin-updates-book-with-history-tracking)
-    - [📗 Customer Places Order](#-customer-places-order)
-4. [🚀 Getting Started](#-getting-started)
+    - [📘 Entity Relationship Diagram (ERD)](#-entity-relationship-diagram-erd)
+    - [📘 Admin Updates Book (with History Tracking) Sequence Diagram](#-admin-updates-book-with-history-tracking-sequence-diagram)
+    - [📗 Customer Places Order Sequence Diagram](#-customer-places-order-sequence-diagram)
+5. [🚀 Getting Started](#-getting-started)
     - [⚙️ Setup](#️-setup)
     - [📌 Prerequisites](#-prerequisites)
-5. [🔗 API Endpoints](#-api-endpoints)
-6. [🔐 Authentication Flow](#-authentication-flow)
-7. [🧪 Testing](#-testing)
-8. [📂 Project Structure](#-project-structure)
-9. [📜 OpenAPI Contract](#-openapi-contract)
-10. [👥 Authors](#-authors)
+6. [🔗 API Endpoints](#-api-endpoints)
+7. [🔐 Authentication Flow](#-authentication-flow)
+8. [🧪 Testing](#-testing)
+9. [📂 Project Structure](#-project-structure)
+10. [📜 OpenAPI Contract](#-openapi-contract)
+11. [👥 Authors](#-authors)
 
 ---
 
@@ -63,7 +64,7 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
     - **GitHub Actions** for automated CI tests on push and pull requests
 
 ---
-# 🛠️ Technology Stack
+# 🛠️ Tech Stack
 
 | Layer               | Technology                                     |
 |---------------------|------------------------------------------------|
@@ -121,7 +122,107 @@ Whether you are a **customer** browsing and purchasing books or an **admin** man
 ---
 
 # 🏗️ Architecture Overview
-## 📘 Admin Updates Book (with History Tracking)
+## 📘 Entity Relationship Diagram (ERD)
+
+The diagram below illustrates the **core data model** of the Book Store Management System:  
+
+- **User Hierarchy**  
+  - `USER` is a base entity representing authentication details (`username`, `email`, `password`).  
+  - `ADMIN` and `CUSTOMER` both extend `USER`.  
+    - **Admins** manage books and track updates.  
+    - **Customers** place orders and maintain account balance and address.  
+
+- **Books & History**  
+  - `BOOK` stores details like ISBN, author, title, description, price, stock quantity, and timestamps.  
+  - `BOOKHISTORY` records every change made to a book (old value → new value) along with the admin responsible, ensuring full **audit logging**.  
+
+- **Orders & Items**  
+  - `ORDER` represents a customer’s order, with fields for order date, status (e.g., pending, delivered, cancelled), cancellation reasons, and delivery info.  
+  - Each order contains multiple `ORDERITEM`s, linking specific books with quantity and price at purchase time.  
+
+- **Relationships**  
+  - A **Customer places many Orders**.  
+  - Each **Order contains multiple OrderItems**.  
+  - A **Book can appear in multiple OrderItems**.  
+  - A **Book’s changes are tracked in BookHistory**.  
+  - An **Admin manages Books and logs changes**.  
+
+This design ensures **data integrity**, **traceability of book updates**, and a clear separation between **users** and their roles (admin vs customer).  
+
+---
+
+```mermaid
+erDiagram
+    USER {
+        Long id
+        String username
+        String email
+        String password
+    }
+
+    ADMIN {
+        Long id
+    }
+
+    CUSTOMER {
+        Long id
+        String address
+        float balance
+    }
+
+    BOOK {
+        Long id
+        String isbn
+        String author
+        String title
+        String description
+        int quantity
+        float price
+        String coverImageUrl
+        LocalDateTime createdAt
+        LocalDateTime updatedAt
+    }
+
+    BOOKHISTORY {
+        Long id
+        Long entityId
+        String field
+        String oldValue
+        String newValue
+        Long changedBy
+        LocalDateTime timestamp
+    }
+
+    ORDER {
+        Long id
+        LocalDateTime orderDate
+        Enum status
+        LocalDateTime cancelledAt
+        String cancellationReason
+        LocalDateTime deliveredAt
+    }
+
+    ORDERITEM {
+        Long id
+        int quantity
+        float price
+    }
+
+    %% Inheritance
+    USER ||--|| ADMIN : "extends"
+    USER ||--|| CUSTOMER : "extends"
+
+    %% Relationships
+    CUSTOMER ||--o{ ORDER : "places"
+    ORDER ||--o{ ORDERITEM : "contains"
+    BOOK ||--o{ ORDERITEM : "ordered in"
+    BOOK ||--o{ BOOKHISTORY : "changes logged"
+
+    %% Admin interactions
+    ADMIN ||--o{ BOOK : "creates/updates"
+    ADMIN ||--o{ BOOKHISTORY : "logs changes"
+```
+## 📘 Admin Updates Book (with History Tracking) Sequence Diagram
 
 When an Admin updates a book, the system first checks if the book exists. If found, it compares the old and new values, creates a BookHistory entry for audit purposes, saves it, and then updates the book record. If the book is not found, an exception is thrown.
 ```mermaid
@@ -153,7 +254,7 @@ sequenceDiagram
         AdminController -->> Admin: error response
     end
 ```
-## 📗 Customer Places Order
+## 📗 Customer Places Order Sequence Diagram
 When a Customer places an order, the system validates the customer, checks if the book is available in stock, reduces the quantity, creates an OrderItem, and saves the order. If the book is out of stock, the system throws an exception.
 ```mermaid
 sequenceDiagram
@@ -191,7 +292,7 @@ sequenceDiagram
 
 # 🚀 Getting Started
 
-## Prerequisites
+## 📌 Prerequisites
 
 - Java 17 (or above)
 - Maven
@@ -465,7 +566,7 @@ mvn test
 └── 📄 pom.xml
 
 ```
-# 📖 OpenAPI Contract & Usage
+# 📜 OpenAPI Contract
 
 This project follows a **contract-first** approach.
 All API endpoints are defined in the OpenAPI specification:
