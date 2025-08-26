@@ -1022,8 +1022,6 @@ components:
           type: string
           enum: ["PLACED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"]
           example: "PLACED"
-        customer:
-          $ref: '#/components/schemas/CustomerReference'
         items:
           type: array
           items:
@@ -1060,18 +1058,6 @@ components:
         book:
           $ref: '#/components/schemas/BookResponse'
       required: ["id", "quantity", "price", "book"]
-
-    CustomerReference:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        username:
-          type: string
-          example: "John Doe"
-      required: ["id", "username"]
 
     Customer:
       type: object
@@ -1195,10 +1181,6 @@ components:
     BookResponse:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
         isbn:
           type: string
           pattern: '^(97[89])?[0-9]{9}[0-9X]$'
@@ -1611,9 +1593,6 @@ components:
       summary: Order request example
       description: Example of placing a new order
       value:
-        customer:
-          id: 1
-          username: "john_doe"
         items:
           - book:
               id: 1

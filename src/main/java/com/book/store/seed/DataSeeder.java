@@ -62,11 +62,11 @@ public class DataSeeder {
 
         // Books to seed
         List<Book> books = Arrays.asList(
-                createBook("9781234567890", "Author One", "Spring Boot in Action", "N/A", 1, 29f, ""),
-                createBook("9781234567891", "Author Two", "Java Concurrency Mastery", "N/A", 2, 35f, ""),
-                createBook("9781234567892", "Author Three", "Microservices with Spring Cloud", "N/A", 1, 40.4f, ""),
-                createBook("9781234567893", "Author Four", "Clean Code", "N/A", 1, 25f, ""),
-                createBook("9781234567894", "Author Five", "Effective Java", "N/A", 1, 33f, "")
+                createBook("9781234567890", "Author One", "Spring Boot in Action", "N/A", 3, 29f, ""),
+                createBook("9781234567891", "Author Two", "Java Concurrency Mastery", "N/A", 4, 35f, ""),
+                createBook("9781234567892", "Author Three", "Microservices with Spring Cloud", "N/A", 5, 40.4f, ""),
+                createBook("9781234567893", "Author Four", "Clean Code", "N/A", 3, 25f, ""),
+                createBook("9781234567894", "Author Five", "Effective Java", "N/A", 3, 33f, "")
         );
 
         // Save books and place orders
