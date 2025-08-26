@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public User registerUser(String username, String password, String email) {
+    public User registerUser(String username, String password, String email, String address) {
         if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -40,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
         customer.setPassword(encodedPassword);
         customer.setEmail(email);
         customer.setBalance(100.0f);
+        customer.setAddress(address);
         userRepository.save(customer);
         customerRepository.save(customer);
         return customer;

@@ -1,5 +1,6 @@
 package com.book.store.controller;
 
+import com.book.store.entity.Customer;
 import com.book.store.entity.User;
 import com.book.store.service.AuthService;
 import com.book.store.service.JwtService;
@@ -43,8 +44,10 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseEntity<RegisterResponseApiDto> register(RegisterRequestApiDto request) {
-        User registeredUser = authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail());
-
+        User registeredUser = authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getAddress());
+        Customer customer = new Customer();
+        customer.setId(registeredUser.getId());
+        customer.setAddress(request.getAddress());
         RegisterResponseApiDto response = new RegisterResponseApiDto(
                 registeredUser.getId(),
                 registeredUser.getUsername(),
