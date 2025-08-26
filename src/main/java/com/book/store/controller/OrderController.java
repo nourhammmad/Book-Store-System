@@ -22,16 +22,16 @@ public class OrderController implements OrdersApi {
 
     // Contract-defined endpoints
     @Override
-    public ResponseEntity<PaginatedOrderResponseApiDto> findAllOrders(Integer page, Integer size) {
+    public ResponseEntity<PaginatedOrderResponseForAdminApiDto> findAllOrders(Integer page, Integer size) {
         var orderPage = orderService.findAll(page, size);
         var content = orderPage.getContent()
                 .stream()
-                .map(orderMapper::toResponseDto)
+                .map(orderMapper::toAdminResponseDto)
                 .toList();
         var totalElements = orderPage.getTotalElements();
         var totalPages = orderPage.getTotalPages();
 
-        PaginatedOrderResponseApiDto response = new PaginatedOrderResponseApiDto(content, page, size, totalElements, totalPages);
+        PaginatedOrderResponseForAdminApiDto response = new PaginatedOrderResponseForAdminApiDto(content, page, size, totalElements, totalPages);
 
         return ResponseEntity.ok(response);
     }
