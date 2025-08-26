@@ -226,10 +226,6 @@ erDiagram
 
 When an Admin updates a book, the system first checks if the book exists. If found, it compares the old and new values, creates a BookHistory entry for audit purposes, saves it, and then updates the book record. If the book is not found, an exception is thrown.
 ```mermaid
-%%{init:{'theme':'base','themeVariables':{'primaryColor':'#ffcccc',
-'edgeColor':'#cc0000','primaryTextColor':'#000000',
-'lineColor':'#cc0000'}}
-}%%
 sequenceDiagram
     actor Admin
     participant AdminController
