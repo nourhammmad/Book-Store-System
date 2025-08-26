@@ -51,10 +51,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedOrderResponse'
+                $ref: '#/components/schemas/PaginatedOrderResponseForAdmin'
               examples:
                 ordersExample:
-                  $ref: '#/components/examples/ordersExample'
+                  $ref: '#/components/examples/ordersExampleForAdmin'
         '400':
           description: Invalid pagination parameters
           content:
@@ -239,7 +239,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomError'
-    put:
+    patch:
       tags:
         - Orders
       security:
@@ -908,6 +908,35 @@ components:
           example: true
       required: ["content", "page", "size", "totalElements", "totalPages"]
 
+    PaginatedOrderResponseForAdmin:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResponseForAdmin'
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          example: 1
+        totalPages:
+          type: integer
+          example: 1
+        first:
+          type: boolean
+          example: true
+        last:
+          type: boolean
+          example: true
+      required: [ "content", "page", "size", "totalElements", "totalPages" ]
+
+
     PaginatedBookResponse:
       type: object
       properties:
@@ -1001,6 +1030,46 @@ components:
             $ref: '#/components/schemas/OrderItemRequest'
           minItems: 1
       required: ["items"]
+
+    OrderResponseForAdmin:
+      type: object
+      properties:
+        customer:
+          $ref: '#/components/schemas/CustomerReference'
+        id:
+          type: integer
+          format: int64
+          example: 1
+        orderDate:
+          type: string
+          format: date-time
+          example: "2025-08-14T15:30:00Z"
+        totalPrice:
+          type: number
+          format: float
+          minimum: 0
+          example: 59.98
+        status:
+          type: string
+          enum: [ "PLACED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED" ]
+          example: "PLACED"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemResponse'
+      required: [ "id", "orderDate", "totalPrice", "status", "customer", "items" ]
+
+    CustomerReference:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        username:
+          type: string
+          example: "John Doe"
+      required: [ "id", "username" ]
 
     OrderResponse:
       type: object
@@ -1236,10 +1305,13 @@ components:
           type: string
           enum: ["title", "author", "description", "price", "quantity"]
           example: "price"
+        oldValue:
+          type: string
+          example: "24.99"
         newValue:
           type: string
           example: "19.99"
-      required: ["field", "newValue"]
+      required: ["field", "oldValue", "newValue"]
 
     CustomError:
       type: object
@@ -1455,6 +1527,35 @@ components:
   examples:
     ordersExample:
       summary: Example orders response
+      description: A sample response showing paginated orders for the logged in customer
+      value:
+        content:
+          - id: 1
+            orderDate: "2025-08-14T15:30:00Z"
+            totalPrice: 59.98
+            status: "PLACED"
+            customer:
+              id: 1
+              username: "John Doe"
+            items:
+              - id: 1
+                quantity: 2
+                price: 59.98
+                book:
+                  id: 1
+                  isbn: "9780134685991"
+                  title: "Spring Boot Guide"
+                  author: "John Smith"
+                  price: 29.99
+        page: 0
+        size: 10
+        totalElements: 1
+        totalPages: 1
+        first: true
+        last: true
+
+    ordersExampleForAdmin:
+      summary: Example orders response
       description: A sample response showing paginated orders
       value:
         content:
@@ -1481,6 +1582,7 @@ components:
         totalPages: 1
         first: true
         last: true
+
 
     booksExample:
       summary: Example books response
@@ -1583,6 +1685,7 @@ components:
       description: Example of a book field update request
       value:
         field: "price"
+        oldValue: "24.99"
         newValue: "19.99"
 
     orderRequestExample:

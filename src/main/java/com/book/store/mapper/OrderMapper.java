@@ -2,10 +2,7 @@ package com.book.store.mapper;
 
 import com.book.store.entity.Order;
 import com.book.store.entity.OrderItem;
-import com.book.store.server.dto.OrderRequestApiDto;
-import com.book.store.server.dto.OrderResponseApiDto;
-import com.book.store.server.dto.OrderItemRequestApiDto;
-import com.book.store.server.dto.OrderItemResponseApiDto;
+import com.book.store.server.dto.*;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,6 +25,13 @@ public interface OrderMapper {
     @Mapping(target = "totalPrice", expression = "java(order.getTotalPrice())")
     @Mapping(target = "status", source = "status")
     OrderResponseApiDto toResponseDto(Order order);
+
+    // New mapping: Order -> OrderResponseForAdminApiDto
+    @Mapping(target = "items", source = "items")
+    @Mapping(target = "totalPrice", expression = "java(order.getTotalPrice())")
+    @Mapping(target = "status", source = "status")
+    OrderResponseForAdminApiDto toAdminResponseDto(Order order);
+
 
     // Partial update (ignores null fields)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
