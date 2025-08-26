@@ -62,7 +62,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-  /order:
+  /customer/order:
     get:
       tags:
         - Orders
@@ -139,7 +139,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-  /order/{id}:
+  /customer/order/{id}:
     patch:
       tags:
         - Orders
@@ -297,7 +297,7 @@ paths:
                 $ref: '#/components/schemas/CustomError'
 
   # Customer endpoints
-  /customer:
+  /admin/customer:
     get:
       summary: Get all customers (paginated)
       tags:
@@ -328,7 +328,7 @@ paths:
                 customersExample:
                   $ref: '#/components/examples/customersExample'
 
-  /customer/{id}:
+  /admin/customer/{id}:
     get:
       summary: Get customer by ID
       tags:
@@ -558,7 +558,7 @@ paths:
                 $ref: '#/components/schemas/CustomError'
 
   # Books endpoints
-  /book:
+  /customer/book:
     get:
       tags:
         - Books
@@ -591,6 +591,7 @@ paths:
                 booksExample:
                   $ref: '#/components/examples/booksExample'
 
+  /admin/book:
     post:
       tags:
         - Books
@@ -622,7 +623,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-  /book/{id}:
+  /customer/book/{id}:
     get:
       tags:
         - Books
@@ -655,6 +656,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
+  /admin/book/{id}:
     delete:
       tags:
         - Books
@@ -680,7 +682,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-  /book/{id}/cover:
+  /admin/book/{id}/cover:
     post:
       tags:
         - Books
@@ -717,7 +719,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CustomError'
 
-  /book/isbn/{isbn}:
+  /customer/book/isbn/{isbn}:
     get:
       tags:
         - Books
@@ -1312,7 +1314,13 @@ components:
           minLength: 5
           maxLength: 50
           example: "newuser@example.com"
-      required: ["username", "password", "email"]
+        address:
+          type: string
+          format: string
+          minLength: 5
+          maxLength: 50
+          example: "123st"
+      required: ["username", "password", "email", "address"]
 
     RegisterResponse:
       type: object
