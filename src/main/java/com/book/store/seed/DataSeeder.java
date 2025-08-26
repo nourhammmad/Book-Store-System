@@ -72,7 +72,7 @@ public class DataSeeder {
             Book savedBook = bookService.createBook(book);
             System.out.println("📚 Seeded book: " + savedBook.getTitle());
 
-            OrderRequestApiDto orderRequest = getOrderRequestApiDto(savedCustomer, savedBook);
+            OrderRequestApiDto orderRequest = getOrderRequestApiDto(savedBook);
 
             Order order = orderService.placeOrder(orderRequest);
             System.out.println("🛒 Placed order for: " + book.getTitle() + " | Order ID: " + order.getId());
@@ -89,7 +89,7 @@ public class DataSeeder {
 
     }
 
-    private static OrderRequestApiDto getOrderRequestApiDto(Customer savedCustomer, Book savedBook) {
+    private static OrderRequestApiDto getOrderRequestApiDto(Book savedBook) {
 
         BookReferenceApiDto bookRef = new BookReferenceApiDto(savedBook.getId());
 

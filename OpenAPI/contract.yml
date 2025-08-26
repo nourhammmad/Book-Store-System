@@ -1236,13 +1236,10 @@ components:
           type: string
           enum: ["title", "author", "description", "price", "quantity"]
           example: "price"
-        oldValue:
-          type: string
-          example: "24.99"
         newValue:
           type: string
           example: "19.99"
-      required: ["field", "oldValue", "newValue"]
+      required: ["field", "newValue"]
 
     CustomError:
       type: object
@@ -1586,7 +1583,6 @@ components:
       description: Example of a book field update request
       value:
         field: "price"
-        oldValue: "24.99"
         newValue: "19.99"
 
     orderRequestExample:

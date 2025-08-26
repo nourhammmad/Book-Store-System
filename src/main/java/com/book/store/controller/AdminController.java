@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class AdminController implements AdminsApi {
@@ -69,7 +67,6 @@ public class AdminController implements AdminsApi {
         Book updatedBook = adminService.updateBookFields(
                 id,
                 bookFieldUpdateApiDto.getField().getValue(),
-                bookFieldUpdateApiDto.getOldValue(),
                 bookFieldUpdateApiDto.getNewValue(),
                 userDetails.getUser().getId()
         );

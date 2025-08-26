@@ -63,7 +63,7 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Admin with ID " + id + " not found"));
     }
 
-    public Book updateBookFields(Long entityId, String field, String oldValue, String newValue, Long changedBy) {
+    public Book updateBookFields(Long entityId, String field, String newValue, Long changedBy) {
         if (entityId == null) {
             throw new IllegalArgumentException("entityId is null");
         }
@@ -78,46 +78,49 @@ public class AdminService {
         }
 
         String normalizedField = field.trim().toLowerCase();
-        switch (normalizedField) {
-            case "title":
-            case "author":
-            case "isbn":
-            case "description":
-                break;
-            case "price":
-                try {
-                    Float.parseFloat(newValue);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Invalid value for price: " + newValue);
-                }
-                break;
-            case "quantity":
-                try {
-                    Integer.parseInt(newValue);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Invalid value for quantity: " + newValue);
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Field '" + field + "' cannot be updated");
-        }
 
-        Book updatedBook = bookRepository.findById(entityId)
+        return bookRepository.findById(entityId)
                 .map(book -> {
+                    String oldValue;
                     switch (normalizedField) {
-                        case "title" -> book.setTitle(newValue);
-                        case "isbn" -> book.setIsbn(newValue);
-                        case "price" -> book.setPrice(Float.parseFloat(newValue));
-                        case "author" -> book.setAuthor(newValue);
-                        case "quantity" -> book.setQuantity(Integer.parseInt(newValue));
-                        case "description" -> book.setDescription(newValue);
+                        case "title":
+                            oldValue = book.getTitle();
+                            book.setTitle(newValue);
+                            break;
+                        case "isbn":
+                            oldValue = book.getIsbn();
+                            book.setIsbn(newValue);
+                            break;
+                        case "price":
+                            oldValue = String.valueOf(book.getPrice());
+                            try {
+                                book.setPrice(Float.parseFloat(newValue));
+                            } catch (NumberFormatException e) {
+                                throw new IllegalArgumentException("Invalid value for price: " + newValue);
+                            }
+                            break;
+                        case "author":
+                            oldValue = book.getAuthor();
+                            book.setAuthor(newValue);
+                            break;
+                        case "quantity":
+                            oldValue = String.valueOf(book.getQuantity());
+                            try {
+                                book.setQuantity(Integer.parseInt(newValue));
+                            } catch (NumberFormatException e) {
+                                throw new IllegalArgumentException("Invalid value for quantity: " + newValue);
+                            }
+                            break;
+                        case "description":
+                            oldValue = book.getDescription();
+                            book.setDescription(newValue);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Field '" + field + "' cannot be updated");
                     }
+                    bookHistoryService.logChange(entityId, field, oldValue, newValue, changedBy);
                     return bookRepository.save(book);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with id " + entityId));
-
-        bookHistoryService.logChange(entityId, field, oldValue, newValue, changedBy);
-
-        return updatedBook;
     }
 }
