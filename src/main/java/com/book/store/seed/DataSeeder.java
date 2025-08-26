@@ -7,7 +7,6 @@ import com.book.store.repository.UserRepository;
 
 import com.book.store.entity.Book;
 import com.book.store.security.CustomUserDetails;
-import com.book.store.server.dto.CustomerReferenceApiDto;
 import com.book.store.server.dto.BookReferenceApiDto;
 import com.book.store.server.dto.OrderRequestApiDto;
 import com.book.store.server.dto.OrderItemRequestApiDto;
@@ -21,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Arrays;
 import java.util.List;
@@ -92,10 +90,6 @@ public class DataSeeder {
     }
 
     private static OrderRequestApiDto getOrderRequestApiDto(Customer savedCustomer, Book savedBook) {
-        CustomerReferenceApiDto customerRef = new CustomerReferenceApiDto(
-            savedCustomer.getId(),
-            savedCustomer.getUsername()
-        );
 
         BookReferenceApiDto bookRef = new BookReferenceApiDto(savedBook.getId());
 
