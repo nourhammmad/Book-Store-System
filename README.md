@@ -495,8 +495,8 @@ mvn test
 │       └── 📄 maven-wrapper.properties
 ├── 📂 OpenAPI
 │   ├── 📄 contract.yml
-│   ├── 📄 examples.json
-│   └── 📄 schemas.json
+│   
+│
 ├── 📂 src
 │   ├── 📂 main
 │   │   ├── 📂 java
