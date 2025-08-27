@@ -77,28 +77,4 @@ public class AuthServiceImpl implements AuthService {
         } else
             throw new IllegalArgumentException("Invalid role specified");
     }
-
-    @Override
-    public User authenticateUser(String identifier, String password) {
-        User user = userRepository.findByUsername(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username/email or password"));
-
-        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid username/email or password");
-        }
-
-        return user;
-    }
-
-    @Override
-    public String getCurrentUserUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException("User not authenticated");
-        }
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return userDetails.getUsername();
-    }
-
 }

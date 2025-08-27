@@ -45,9 +45,6 @@ public class AuthController implements AuthApi {
     @Override
     public ResponseEntity<RegisterResponseApiDto> register(RegisterRequestApiDto request) {
         User registeredUser = authService.registerUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getAddress());
-        Customer customer = new Customer();
-        customer.setId(registeredUser.getId());
-        customer.setAddress(request.getAddress());
         RegisterResponseApiDto response = new RegisterResponseApiDto(
                 registeredUser.getId(),
                 registeredUser.getUsername(),
